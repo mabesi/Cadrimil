@@ -1,0 +1,38 @@
+/* Empty. Add your own CSS if you like */
+
+.content-left {
+  text-align: left !important;
+}
+
+.content-right {
+  text-align: right !important;
+}
+
+.content-center {
+  text-align: center !important;
+}
+
+form.pure-form div.row input{
+  width: 98%;
+  text-align: right;
+  font-size: 12px;
+}
+
+input.input-valor {
+  width:80px;
+  text-align: right;
+}
+
+div.head{
+  background-color: #EEEDEC;
+}
+
+div.head div div{
+  text-align: center;
+}
+
+ion-content {
+  background-image: url(../img/money.jpg);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}

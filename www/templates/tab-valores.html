@@ -1,0 +1,70 @@
+<ion-view view-title="Cadrimil - Tabela de Diárias">
+  <ion-content class="padding">
+
+    <div class="head">
+      <div class="row">
+        <div class="col-10">
+          <h5>P/G</h5>
+        </div>
+        <div class="col-90">
+          <div class="row">
+            <div class="col-25">
+              L1
+            </div>
+            <div class="col-25">
+              L2
+            </div>
+            <div class="col-25">
+              L3
+            </div>
+            <div class="col-25">
+              L4
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <form class="pure-form" >
+    <div class="row " ng-repeat="item in tabela track by $index">
+        <div class="col-10 content-center">
+          <h4>{{item.classe}}</h4>
+        </div>
+        <div class="col-90">
+          <div class="row">
+            <div class="col-25">
+              <input type="number" min="0" step="0.01" ng-model="item.valor.l1">
+            </div>
+            <div class="col-25">
+              <input type="number" min="0" step="0.01" ng-model="item.valor.l2">
+            </div>
+            <div class="col-25">
+              <input type="number" min="0" step="0.01" ng-model="item.valor.l3">
+            </div>
+            <div class="col-25">
+              <input type="number" min="0" step="0.01" ng-model="item.valor.l4">
+            </div>
+          </div>
+        </div>
+    </div>
+  </form>
+
+    <label class="item item-input">
+      <div class="row">
+        <div class="col-67">
+          <div class="input-label">
+            Adicional Emb/Des
+          </div>
+        </div>
+        <div class="col-33 content-center">
+          <form class="pure-form">
+            <input class="input-valor" type="number" min="0" step="0.01" ng-model="testeAdicional.valor" >
+          </form>
+        </div>
+      </div>
+    </label>
+
+    <button class="button button-block button-positive" ng-click="salvarTabela()">Salvar</button>
+    <button class="button button-block button-assertive" ng-click="tabelaPadrao()">Valores Padrão</button>
+
+  </ion-content>
+</ion-view>

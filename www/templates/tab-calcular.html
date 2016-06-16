@@ -1,0 +1,122 @@
+<ion-view view-title="Cadrimil - Cálculo de Diárias">
+  <ion-content class="padding">
+
+    <form class="pure-form" >
+      <div class="head">
+        <div class="row">
+          <div class="col-33 content-center">
+            CMTE
+          </div>
+          <div class="col-33 content-center">
+            OF GEN
+          </div>
+          <div class="col-33 content-center">
+            OF SUP
+          </div>
+        </div>
+      </div>
+        <div class="row">
+          <div class="col-33">
+            <input type="number" min="0" step="1" ng-model="cmte">
+          </div>
+          <div class="col-33">
+            <input type="number" min="0" step="1" ng-model="general">
+          </div>
+          <div class="col-33">
+            <input type="number" min="0" step="1" ng-model="superior">
+          </div>
+        </div>
+      <div class="head">
+        <div class="row">
+          <div class="col-25 content-center">
+            OF/ASP
+          </div>
+          <div class="col-25 content-center">
+            SO/SGT
+          </div>
+          <div class="col-25 content-center">
+            ALUNOS
+          </div>
+          <div class="col-25 content-center">
+            CB/SD
+          </div>
+        </div>
+      </div>
+        <div class="row">
+          <div class="col-25">
+            <input type="number" min="0" step="1" ng-model="oficial">
+          </div>
+          <div class="col-25">
+            <input type="number" min="0" step="1" ng-model="sosgt">
+          </div>
+          <div class="col-25">
+            <input type="number" min="0" step="1" ng-model="alunos">
+          </div>
+          <div class="col-25">
+            <input type="number" min="0" step="1" ng-model="cbsd">
+          </div>
+        </div>
+  </form>
+
+    <ul class="list">
+      <label class="item item-input">
+        <div class="row">
+          <div class="col-67">
+            <div class="input-label">
+              Total de Dias
+            </div>
+          </div>
+          <div class="col-33 content-center">
+            <form class="pure-form">
+              <input class="input-valor" min="0" step="1" type="number" ng-model="totalDias">
+            </form>
+          </div>
+        </div>
+      </label>
+
+      <label class="item item-input item-select">
+      <div class="input-label">
+        Localidade
+      </div>
+      <select ng-model="localidade">
+        <option value='l1'>BR, MN e RJ</option>
+        <option value='l2'>BH, FZ, PA, RF, SP e SV</option>
+        <option value='l3'>Demais Capitais</option>
+        <option value='l4'>Demais Localidades</option>
+      </select>
+      </label>
+
+      <li class="item item-toggle">
+         Última Diária Inteira
+         <label class="toggle toggle-balanced">
+           <input type="checkbox" ng-model="ultimaInteira">
+           <div class="track">
+             <div class="handle"></div>
+           </div>
+         </label>
+      </li>
+      <li class="item item-toggle">
+         Embarque/Desembarque
+         <label class="toggle toggle-balanced">
+           <input type="checkbox" ng-model="adicional">
+           <div class="track">
+             <div class="handle"></div>
+           </div>
+         </label>
+      </li>
+  </ul>
+
+  <div class="item item-assertive" ng-show="exibirMensagem">
+    {{msg}}
+  </div>
+  <div class="item item-balanced" ng-show="exibirResultado">
+    <strong>Resultado: {{valorTotal|currency:'R$ '}}</strong>
+  </div>
+
+  <button class="button button-positive button-block" ng-click="calcularDiarias(cmte,general,superior,oficial,sosgt,
+          alunos,cbsd,totalDias,localidade,ultimaInteira,adicional)">
+    Calcular
+  </button>
+
+  </ion-content>
+</ion-view>
