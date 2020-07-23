@@ -6,7 +6,7 @@ Faça download do aplicativo na Google Play:
 
 ### Instalação e desenvolvimento
 
-1. Clone este repositório: `git clone git@github.com:mabesi/Cadrimil.git.git`
+1. Clone este repositório: `git clone git@github.com:mabesi/Cadrimil.git`
 2. `cd Cadrimil`
 3. `npm install`
 4. Execute `ionic serve` a partir do terminal
