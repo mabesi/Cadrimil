@@ -28,4 +28,4 @@ Faça download do aplicativo na Google Play:
 [issues-shield]: https://img.shields.io/github/issues/mabesi/Cadrimil.svg
 [issues-url]: https://github.com/mabesi/Cadrimil/issues
 [license-shield]: https://img.shields.io/github/license/mabesi/Cadrimil.svg
-[license-url]: https://github.com/mabesi/Cadrimil/blob/master/LICENSE.txt
+[license-url]: https://github.com/mabesi/Cadrimil/blob/master/LICENSE
