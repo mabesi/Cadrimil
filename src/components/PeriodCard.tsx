@@ -12,7 +12,7 @@ import { useData } from '../context/DataContext';
 interface PeriodCardProps {
     period: Period;
     onRemove: () => void;
-    onEdit: () => void;
+    onEdit?: () => void;
 }
 
 export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
@@ -41,17 +41,19 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
                     </Text>
                     <View style={styles.actions}>
                         <CustomButton
-                            title="✏️"
-                            onPress={onEdit}
-                            variant="secondary"
-                            style={styles.actionButton}
-                        />
-                        <CustomButton
                             title="🗑️"
                             onPress={onRemove}
                             variant="danger"
                             style={styles.actionButton}
                         />
+                        {onEdit && (
+                            <CustomButton
+                                title="✏️"
+                                onPress={onEdit}
+                                variant="secondary"
+                                style={styles.actionButton}
+                            />
+                        )}
                     </View>
                 </View>
                 <Text style={styles.subtitle}>
@@ -63,7 +65,7 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
                     <Text style={styles.diarias}> ({numDiarias.toFixed(1)} Diárias)</Text>
                 </Text>
                 <Text style={styles.cost}>
-                    Custo: {formatCurrency(custoPeriodo)}
+                    Custo: R$ {formatCurrency(custoPeriodo)}
                 </Text>
             </View>
         </View>
@@ -100,9 +102,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.text,
         flex: 1,
+        paddingRight: 40, // Prevent text from overlapping with buttons
     },
     actions: {
-        flexDirection: 'row',
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        flexDirection: 'column',
         gap: 8,
     },
     actionButton: {

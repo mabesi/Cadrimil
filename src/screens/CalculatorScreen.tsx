@@ -34,8 +34,10 @@ export function CalculatorScreen() {
         removePeriod,
         saveMission,
         setIncluirAED,
+        updatePeriod,
     } = useMission();
 
+    const [editingPeriodId, setEditingPeriodId] = useState<string | null>(null);
     const [nomeMissao, setNomeMissao] = useState(currentMissionState.nomeMissao);
     const [localidade, setLocalidade] = useState('');
     const [grupo, setGrupo] = useState('');
@@ -78,18 +80,74 @@ export function CalculatorScreen() {
             return;
         }
 
-        addPeriod({
+        const periodData = {
             grupo,
             localidade,
             dataInicio,
             dataFim,
             quantidadeMilitares: parseInt(quantidade),
             contarUltimoDiaInteiro: contarInteiro,
-        });
+        };
+
+        if (editingPeriodId) {
+            updatePeriod({
+                ...periodData,
+                id: editingPeriodId,
+            });
+            Alert.alert('Sucesso', 'Período atualizado com sucesso!');
+            setEditingPeriodId(null);
+        } else {
+            addPeriod(periodData);
+        }
 
         // Reset form
         setQuantidade('');
         setContarInteiro(false);
+        // Keep locality and group for convenience, or reset if preferred. 
+        // User didn't specify, but keeping them is usually better for multiple entries.
+        // If editing, maybe we should clear them to avoid confusion? 
+        // Let's clear them if we were editing to signal "done".
+        if (editingPeriodId) {
+            setGrupo('');
+            setLocalidade('');
+        }
+    };
+
+    const handleEditPeriod = (period: any) => {
+        setEditingPeriodId(period.id);
+        setGrupo(period.grupo);
+        setLocalidade(period.localidade);
+        setQuantidade(period.quantidadeMilitares.toString());
+        setDataInicio(new Date(period.dataInicio));
+        setDataFim(new Date(period.dataFim));
+        setContarInteiro(period.contarUltimoDiaInteiro);
+
+        // Scroll to top to show form (optional, but good UX)
+    };
+
+    const handleCancelEdit = () => {
+        setEditingPeriodId(null);
+        setQuantidade('');
+        setContarInteiro(false);
+        setGrupo('');
+        setLocalidade('');
+        setDataInicio(new Date());
+        setDataFim(new Date());
+    };
+
+    const handleRemovePeriod = (id: string) => {
+        Alert.alert(
+            'Confirmar Exclusão',
+            'Tem certeza que deseja remover este período?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Remover',
+                    style: 'destructive',
+                    onPress: () => removePeriod(id),
+                },
+            ]
+        );
     };
 
     const handleSaveMission = async () => {
@@ -117,7 +175,6 @@ export function CalculatorScreen() {
             };
 
             await exportPDF(mission, cadrmilData);
-            Alert.alert('Sucesso', 'PDF gerado com sucesso!');
         } catch (error) {
             Alert.alert('Erro', 'Erro ao gerar PDF');
         }
@@ -162,6 +219,7 @@ export function CalculatorScreen() {
                                 value={quantidade}
                                 onChangeText={setQuantidade}
                                 keyboardType="numeric"
+                                style={{ textAlign: 'center' }}
                             />
                         </View>
                     </View>
@@ -211,17 +269,28 @@ export function CalculatorScreen() {
 
                     <View style={{ marginVertical: 12 }}>
                         <CustomCheckbox
-                            label="Contar Último Dia como Diária Inteira (1.0)"
+                            label="Contar último dia como diária inteira (1.0)"
                             value={contarInteiro}
                             onValueChange={setContarInteiro}
                         />
                     </View>
 
-                    <CustomButton
-                        title="ADICIONAR"
-                        onPress={handleAddPeriod}
-                        variant="primary"
-                    />
+                    <View style={styles.buttonRow}>
+                        {editingPeriodId && (
+                            <CustomButton
+                                title="CANCELAR"
+                                onPress={handleCancelEdit}
+                                variant="danger"
+                                style={{ flex: 1, marginRight: 8 }}
+                            />
+                        )}
+                        <CustomButton
+                            title={editingPeriodId ? "ATUALIZAR" : "ADICIONAR"}
+                            onPress={handleAddPeriod}
+                            variant="primary"
+                            style={{ flex: 1 }}
+                        />
+                    </View>
                 </View>
 
                 {/* Resumo da Missão */}
@@ -234,8 +303,8 @@ export function CalculatorScreen() {
                             <PeriodCard
                                 key={period.id}
                                 period={period}
-                                cadrmilData={cadrmilData}
-                                onRemove={() => removePeriod(period.id)}
+                                onRemove={() => handleRemovePeriod(period.id)}
+                                onEdit={() => handleEditPeriod(period)}
                             />
                         ))}
                     </View>
@@ -379,5 +448,9 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: Colors.primary,
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });

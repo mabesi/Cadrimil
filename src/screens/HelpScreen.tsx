@@ -104,6 +104,12 @@ export function HelpScreen() {
                         {'\n'}
                         4. <Text style={styles.bold}>Adicionar:</Text> Clique no botão "ADICIONAR". O app calculará automaticamente a quantidade de dias e o valor total para aquele trecho.
                         {'\n\n'}
+                        <Text style={styles.bold}>Gerenciando Períodos:</Text>
+                        {'\n'}
+                        • <Text style={styles.bold}>Editar (✏️):</Text> Toque no ícone de lápis no cartão do período para carregar os dados de volta no formulário. Faça as alterações e clique em "ATUALIZAR".
+                        {'\n'}
+                        • <Text style={styles.bold}>Excluir (🗑️):</Text> Toque no ícone de lixeira para remover um período. Uma confirmação será solicitada para evitar exclusões acidentais.
+                        {'\n\n'}
                         <Text style={styles.note}>Nota: Você pode adicionar múltiplos períodos (trechos) na mesma simulação. O total geral será exibido no final da tela.</Text>
                     </Text>
                 </AccordionItem>
@@ -114,11 +120,27 @@ export function HelpScreen() {
                         {'\n\n'}
                         <Text style={styles.bold}>Funcionalidades:</Text>
                         {'\n'}
-                        • <Text style={styles.bold}>Salvar:</Text> Na tela de cálculo, após adicionar períodos, você pode dar um nome à missão e salvá-la para consulta futura.
+                        • <Text style={styles.bold}>Salvar:</Text> Na tela de cálculo, após adicionar períodos, digite um nome para a missão e clique em "Salvar Missão". Ela ficará armazenada no seu dispositivo.
                         {'\n'}
                         • <Text style={styles.bold}>Editar:</Text> Toque no botão "Editar" em um cartão de missão para carregar todos os dados de volta na calculadora e fazer ajustes.
                         {'\n'}
                         • <Text style={styles.bold}>Excluir:</Text> Use o botão "Excluir" para remover missões antigas ou incorretas do seu histórico.
+                    </Text>
+                </AccordionItem>
+
+                <AccordionItem title="Gerando Relatórios (PDF)">
+                    <Text style={styles.text}>
+                        Você pode gerar um relatório detalhado da sua simulação para imprimir ou compartilhar.
+                        {'\n\n'}
+                        <Text style={styles.bold}>Como Gerar:</Text>
+                        {'\n'}
+                        1. Adicione pelo menos um período na calculadora.
+                        {'\n'}
+                        2. (Opcional) Marque a opção "Incluir Adicional de Embarque e Desembarque" se aplicável.
+                        {'\n'}
+                        3. Clique no botão "Relatório PDF" no final da tela.
+                        {'\n\n'}
+                        O PDF incluirá todos os trechos, cálculos detalhados, referências legais e o valor total estimado. Você poderá salvar o arquivo ou compartilhá-lo via WhatsApp, E-mail, etc.
                     </Text>
                 </AccordionItem>
 
@@ -196,7 +218,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: 16, // Reduced from 20
-        paddingBottom: 40, // Reduced from 60
+        paddingBottom: 10, // Reduced from 60
     },
     donationContainer: {
         backgroundColor: Colors.white,
@@ -282,7 +304,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 14,
         color: Colors.textSecondary,
-        lineHeight: 20, // Reduced from 22
+        lineHeight: 18, // Reduced from 22
     },
     bold: {
         fontWeight: '700',

@@ -25,11 +25,13 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
     periodosHTML += `
       <tr style="border-bottom: 1px solid #e0e0e0;">
         <td style="padding: 10px;">${index + 1}</td>
-        <td style="padding: 10px;">Grupo ${period.grupo}</td>
+        <td style="padding: 10px; max-width: 150px; word-wrap: break-word;">${period.grupo} - ${data.grupos[period.grupo]}</td>
         <td style="padding: 10px;">${data.localidades[period.localidade]}</td>
         <td style="padding: 10px;">${period.quantidadeMilitares}</td>
-        <td style="padding: 10px;">${DateHelpers.format(period.dataInicio, 'dd/MM/yyyy')}</td>
-        <td style="padding: 10px;">${DateHelpers.format(period.dataFim, 'dd/MM/yyyy')}</td>
+        <td style="padding: 10px;">
+          ${DateHelpers.format(period.dataInicio, 'dd/MM/yy')}<br>
+          ${DateHelpers.format(period.dataFim, 'dd/MM/yy')}
+        </td>
         <td style="padding: 10px;">${numDiarias.toFixed(1)}</td>
         <td style="padding: 10px;">R$ ${formatCurrency(custoPeriodo)}</td>
       </tr>
@@ -51,7 +53,7 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
             color: #333;
           }
           .header {
-            background-color: #003366;
+            background-color: #203110;
             color: white;
             padding: 20px;
             text-align: center;
@@ -69,8 +71,8 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
             margin-bottom: 20px;
           }
           .mission-info h2 {
-            color: #003366;
-            border-bottom: 2px solid #003366;
+            color: #203110;
+            border-bottom: 2px solid #203110;
             padding-bottom: 5px;
           }
           table {
@@ -79,15 +81,16 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
             margin-bottom: 20px;
           }
           th {
-            background-color: #e0e0e0;
+            background-color: #203110;
+            color: white;
             padding: 10px;
             text-align: left;
             font-weight: bold;
             border-bottom: 2px solid #ccc;
           }
           .total-box {
-            background-color: #e6ffed;
-            border: 2px solid #28a745;
+            background-color: #e5e577;
+            border: 2px solid #415527;
             padding: 15px;
             text-align: center;
             margin-top: 20px;
@@ -99,7 +102,7 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
           .total-box .value {
             font-size: 32px;
             font-weight: bold;
-            color: #28a745;
+            color: #415527;
           }
           .footer {
             margin-top: 30px;
@@ -128,11 +131,10 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
           <thead>
             <tr>
               <th>#</th>
-              <th>Grupo</th>
+              <th style="max-width: 150px;">Grupo</th>
               <th>Localidade</th>
               <th>Qtd.</th>
-              <th>Início</th>
-              <th>Fim</th>
+              <th>Início/Fim</th>
               <th>Diárias</th>
               <th>Custo</th>
             </tr>
