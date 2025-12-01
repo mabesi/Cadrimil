@@ -1,24 +1,25 @@
 // Period Card component
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Period, CadrmilData } from '../types';
+import { Period } from '../types';
 import { DateHelpers } from '../utils/dateHelpers';
 import { calcularDiarias, getValorDiaria } from '../utils/calculations';
 import { formatCurrency } from '../utils/formatters';
 import { Colors } from '../constants/colors';
 import { CustomButton } from './CustomButton';
+import { useData } from '../context/DataContext';
 
 interface PeriodCardProps {
     period: Period;
-    cadrmilData: CadrmilData;
     onRemove: () => void;
+    onEdit: () => void;
 }
 
-export const PeriodCard: React.FC<PeriodCardProps> = ({
-    period,
-    cadrmilData,
-    onRemove,
-}) => {
+export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
+    const { cadrmilData } = useData();
+
+    if (!cadrmilData) return null;
+
     const numDiarias = calcularDiarias(
         period.dataInicio,
         period.dataFim,
@@ -38,12 +39,20 @@ export const PeriodCard: React.FC<PeriodCardProps> = ({
                     <Text style={styles.title}>
                         {cadrmilData.grupos[period.grupo]} ({period.quantidadeMilitares})
                     </Text>
-                    <CustomButton
-                        title="🗑️"
-                        onPress={onRemove}
-                        variant="danger"
-                        style={styles.removeButton}
-                    />
+                    <View style={styles.actions}>
+                        <CustomButton
+                            title="✏️"
+                            onPress={onEdit}
+                            variant="secondary"
+                            style={styles.actionButton}
+                        />
+                        <CustomButton
+                            title="🗑️"
+                            onPress={onRemove}
+                            variant="danger"
+                            style={styles.actionButton}
+                        />
+                    </View>
                 </View>
                 <Text style={styles.subtitle}>
                     {cadrmilData.localidades[period.localidade]}
@@ -54,12 +63,12 @@ export const PeriodCard: React.FC<PeriodCardProps> = ({
                     <Text style={styles.diarias}> ({numDiarias.toFixed(1)} Diárias)</Text>
                 </Text>
                 <Text style={styles.cost}>
-                    Custo: R$ {formatCurrency(custoPeriodo)}
+                    Custo: {formatCurrency(custoPeriodo)}
                 </Text>
             </View>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -67,8 +76,8 @@ const styles = StyleSheet.create({
         borderLeftWidth: 4,
         borderLeftColor: Colors.periodBorder,
         borderRadius: 8,
-        padding: 16,
-        marginBottom: 12,
+        padding: 12,
+        marginBottom: 10,
         shadowColor: Colors.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
@@ -83,14 +92,24 @@ const styles = StyleSheet.create({
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         marginBottom: 4,
     },
     title: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: 'bold',
         color: Colors.text,
         flex: 1,
+    },
+    actions: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    actionButton: {
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+        minWidth: 40,
+        borderRadius: 4,
     },
     subtitle: {
         fontSize: 14,
@@ -112,9 +131,5 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: Colors.success,
         marginTop: 2,
-    },
-    removeButton: {
-        minWidth: 40,
-        borderRadius: 4,
     },
 });

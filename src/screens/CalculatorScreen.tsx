@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     periodsContainer: {
-        gap: 12,
+        gap: 1,
     },
     totalContainer: {
         backgroundColor: Colors.card,

@@ -13,6 +13,7 @@ interface MissionContextType {
     incluirAED: boolean;
     valorTotal: number;
     addPeriod: (period: Omit<Period, 'id'>) => void;
+    updatePeriod: (period: Period) => void;
     removePeriod: (id: string) => void;
     saveMission: (nomeMissao: string) => Promise<boolean>;
     editMission: (id: string) => void;
@@ -61,6 +62,10 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             id: Date.now().toString(),
         };
         setCurrentPeriods([...currentPeriods, newPeriod]);
+    };
+
+    const updatePeriod = (period: Period) => {
+        setCurrentPeriods(currentPeriods.map(p => p.id === period.id ? period : p));
     };
 
     const removePeriod = (id: string) => {
@@ -160,6 +165,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
                 incluirAED,
                 valorTotal,
                 addPeriod,
+                updatePeriod,
                 removePeriod,
                 saveMission,
                 editMission,
