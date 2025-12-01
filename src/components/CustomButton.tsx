@@ -1,10 +1,11 @@
 // Standard Professional Button
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, View } from 'react-native';
 import { Colors } from '../constants/colors';
 
 interface CustomButtonProps {
     title: string;
+    subtitle?: string;
     onPress: () => void;
     variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'outline';
     disabled?: boolean;
@@ -13,6 +14,7 @@ interface CustomButtonProps {
 
 export function CustomButton({
     title,
+    subtitle,
     onPress,
     variant = 'primary',
     disabled = false,
@@ -38,19 +40,25 @@ export function CustomButton({
             disabled={disabled}
             activeOpacity={0.7}
         >
-            <Text style={textStyle}>{title}</Text>
+            {subtitle ? (
+                <View style={styles.textContainer}>
+                    <Text style={textStyle}>{title}</Text>
+                    <Text style={styles.subtitle}>{subtitle}</Text>
+                </View>
+            ) : (
+                <Text style={textStyle}>{title}</Text>
+            )}
         </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
     button: {
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        padding: 10,
         borderRadius: 6,
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: 48,
+        minHeight: 40,
     },
     primary: {
         backgroundColor: Colors.primary,
@@ -76,10 +84,18 @@ const styles = StyleSheet.create({
         opacity: 0.6,
         backgroundColor: Colors.border,
     },
+    textContainer: {
+        alignItems: 'center',
+    },
     text: {
         color: Colors.white,
         fontSize: 16,
         fontWeight: '600',
+    },
+    subtitle: {
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontSize: 11,
+        marginTop: 2,
     },
     textOutline: {
         color: Colors.primary,

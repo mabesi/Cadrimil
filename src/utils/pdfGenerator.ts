@@ -1,26 +1,28 @@
 // PDF Generator utility
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Mission, CadrmilData, Period } from '../types';
 import { DateHelpers } from './dateHelpers';
 import { calcularDiarias, getValorDiaria } from './calculations';
+import { formatCurrency } from './formatters';
 
 /**
  * Generate HTML content for PDF
  */
 function generateMissionHTML(mission: Mission, data: CadrmilData): string {
-    let periodosHTML = '';
+  let periodosHTML = '';
 
-    mission.periodos.forEach((period, index) => {
-        const numDiarias = calcularDiarias(
-            period.dataInicio,
-            period.dataFim,
-            period.contarUltimoDiaInteiro
-        );
-        const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
-        const custoPeriodo = numDiarias * valorUnitario * period.quantidadeMilitares;
+  mission.periodos.forEach((period, index) => {
+    const numDiarias = calcularDiarias(
+      period.dataInicio,
+      period.dataFim,
+      period.contarUltimoDiaInteiro
+    );
+    const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
+    const custoPeriodo = numDiarias * valorUnitario * period.quantidadeMilitares;
 
-        periodosHTML += `
+    periodosHTML += `
       <tr style="border-bottom: 1px solid #e0e0e0;">
         <td style="padding: 10px;">${index + 1}</td>
         <td style="padding: 10px;">Grupo ${period.grupo}</td>
@@ -29,15 +31,15 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
         <td style="padding: 10px;">${DateHelpers.format(period.dataInicio, 'dd/MM/yyyy')}</td>
         <td style="padding: 10px;">${DateHelpers.format(period.dataFim, 'dd/MM/yyyy')}</td>
         <td style="padding: 10px;">${numDiarias.toFixed(1)}</td>
-        <td style="padding: 10px;">R$ ${custoPeriodo.toFixed(2).replace('.', ',')}</td>
+        <td style="padding: 10px;">R$ ${formatCurrency(custoPeriodo)}</td>
       </tr>
     `;
-    });
+  });
 
-    const totalMilitares = mission.periodos.reduce((sum, p) => sum + p.quantidadeMilitares, 0);
-    const aedTotal = mission.incluirAED ? data.aed.value * totalMilitares : 0;
+  const totalMilitares = mission.periodos.reduce((sum, p) => sum + p.quantidadeMilitares, 0);
+  const aedTotal = mission.incluirAED ? data.aed.value * totalMilitares : 0;
 
-    return `
+  return `
     <!DOCTYPE html>
     <html>
       <head>
@@ -143,14 +145,14 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
         ${mission.incluirAED ? `
           <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 20px;">
             <strong>Adicional de Embarque e Desembarque (AED):</strong> 
-            R$ ${aedTotal.toFixed(2).replace('.', ',')} 
-            (${totalMilitares} militares × R$ ${data.aed.value.toFixed(2).replace('.', ',')})
+            R$ ${formatCurrency(aedTotal)} 
+            (${totalMilitares} militares × R$ ${formatCurrency(data.aed.value)})
           </div>
         ` : ''}
         
         <div class="total-box">
           <h3>VALOR TOTAL CALCULADO</h3>
-          <div class="value">R$ ${mission.valorTotal.toFixed(2).replace('.', ',')}</div>
+          <div class="value">R$ ${formatCurrency(mission.valorTotal)}</div>
         </div>
         
         <div class="footer">
@@ -167,25 +169,40 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
  * Generate and export PDF
  */
 export async function exportPDF(mission: Mission, data: CadrmilData): Promise<void> {
-    try {
-        const html = generateMissionHTML(mission, data);
+  try {
+    const html = generateMissionHTML(mission, data);
 
-        const { uri } = await Print.printToFileAsync({ html });
+    const { uri } = await Print.printToFileAsync({ html });
 
-        const canShare = await Sharing.isAvailableAsync();
-        if (canShare) {
-            await Sharing.shareAsync(uri, {
-                mimeType: 'application/pdf',
-                dialogTitle: `Relatório - ${mission.nomeMissao}`,
-                UTI: 'com.adobe.pdf',
-            });
-        } else {
-            console.log('Sharing is not available on this device');
-            // On some platforms, we might just want to print
-            await Print.printAsync({ html });
-        }
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        throw new Error('Erro ao gerar PDF');
+    const canShare = await Sharing.isAvailableAsync();
+    if (canShare) {
+      // Sanitize mission name for filename (remove special characters)
+      const sanitizedName = mission.nomeMissao
+        .trim() // Trim whitespace first
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/_+$/, '') // Remove trailing underscores again just in case
+        .substring(0, 50) || 'Relatorio';
+
+      // Copy file with custom name
+      const newUri = `${FileSystem.cacheDirectory}${sanitizedName}.pdf`;
+      await FileSystem.copyAsync({
+        from: uri,
+        to: newUri,
+      });
+
+      await Sharing.shareAsync(newUri, {
+        mimeType: 'application/pdf',
+        dialogTitle: `Relatório - ${mission.nomeMissao}`,
+        UTI: 'com.adobe.pdf',
+      });
+    } else {
+      console.log('Sharing is not available on this device');
+      // On some platforms, we might just want to print
+      await Print.printAsync({ html });
     }
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    throw new Error('Erro ao gerar PDF');
+  }
 }

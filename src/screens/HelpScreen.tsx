@@ -102,7 +102,7 @@ export function HelpScreen() {
                         {'\n'}
                         3. <Text style={styles.bold}>Período:</Text> Selecione a data de início e a data de fim da missão nos calendários.
                         {'\n'}
-                        4. <Text style={styles.bold}>Adicionar:</Text> Clique no botão "ADICIONAR PERÍODO". O app calculará automaticamente a quantidade de dias e o valor total para aquele trecho.
+                        4. <Text style={styles.bold}>Adicionar:</Text> Clique no botão "ADICIONAR". O app calculará automaticamente a quantidade de dias e o valor total para aquele trecho.
                         {'\n\n'}
                         <Text style={styles.note}>Nota: Você pode adicionar múltiplos períodos (trechos) na mesma simulação. O total geral será exibido no final da tela.</Text>
                     </Text>

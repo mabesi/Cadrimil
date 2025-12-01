@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     },
     linkText: {
         fontSize: 14,
-        color: '#6366f1',
+        color: Colors.secondaryLight,
         fontWeight: '500',
         textDecorationLine: 'underline',
     },

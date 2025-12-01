@@ -24,6 +24,9 @@ export function CustomSelect({
     items,
     placeholder = 'Selecione...',
 }: CustomSelectProps) {
+    const selectedItem = items.find(item => item.value === value);
+    const displayText = selectedItem ? selectedItem.label : placeholder;
+
     return (
         <View style={styles.container}>
             <Text style={styles.label}>{label}</Text>
@@ -36,6 +39,17 @@ export function CustomSelect({
                     style={pickerSelectStyles}
                     useNativeAndroidPickerStyle={false}
                 />
+                {value && (
+                    <View style={styles.textOverlay} pointerEvents="none">
+                        <Text
+                            style={styles.displayText}
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                        >
+                            {displayText}
+                        </Text>
+                    </View>
+                )}
             </View>
         </View>
     );
@@ -48,7 +62,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '500',
-        color: Colors.text,
+        color: Colors.textLight,
         marginBottom: 6,
     },
     pickerContainer: {
@@ -56,6 +70,22 @@ const styles = StyleSheet.create({
         borderColor: Colors.border,
         borderRadius: 6,
         backgroundColor: Colors.white,
+        position: 'relative',
+    },
+    textOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 30,
+        bottom: 0,
+        justifyContent: 'center',
+        paddingHorizontal: 12,
+        backgroundColor: Colors.white,
+    },
+    displayText: {
+        fontSize: 16,
+        color: Colors.text,
+        textAlign: 'left',
     },
 });
 
@@ -64,13 +94,19 @@ const pickerSelectStyles = {
         fontSize: 16,
         paddingVertical: 10,
         paddingHorizontal: 12,
-        color: Colors.text,
+        paddingRight: 30,
+        color: 'transparent', // Hide native text, use overlay instead
+        textAlign: 'left' as const,
+        writingDirection: 'ltr' as const,
     },
     inputAndroid: {
         fontSize: 16,
         paddingVertical: 10,
         paddingHorizontal: 12,
-        color: Colors.text,
+        paddingRight: 30,
+        color: 'transparent', // Hide native text, use overlay instead
+        textAlign: 'left' as const,
+        writingDirection: 'ltr' as const,
     },
     placeholder: {
         color: Colors.textMuted,

@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '500',
-        color: Colors.text,
+        color: Colors.textLight,
         marginBottom: 6,
     },
     input: {
@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         paddingHorizontal: 12,
         paddingVertical: 10,
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight: 'bold',
         backgroundColor: Colors.white,
         color: Colors.text,
     },

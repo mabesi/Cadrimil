@@ -50,7 +50,10 @@ export function MissionsScreen() {
 
     return (
         <View style={GlobalStyles.container}>
-            <ScrollView style={styles.content}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.content}
+            >
                 <Text style={styles.title}>Missões Salvas</Text>
 
                 <CustomButton
@@ -80,8 +83,12 @@ export function MissionsScreen() {
 }
 
 const styles = StyleSheet.create({
+    scrollView: {
+        flex: 1,
+    },
     content: {
         padding: 20,
+        paddingBottom: 10,
     },
     title: {
         fontSize: 24,

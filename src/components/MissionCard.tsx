@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Mission } from '../types';
 import { CustomButton } from './CustomButton';
 import { Colors } from '../constants/colors';
+import { formatCurrency } from '../utils/formatters';
 
 interface MissionCardProps {
     mission: Mission;
@@ -37,10 +38,7 @@ export function MissionCard({ mission, onEdit, onDelete }: MissionCardProps) {
 
             <View style={styles.totalContainer}>
                 <Text style={styles.totalValue}>
-                    {mission.valorTotal.toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                    })}
+                    R$ {formatCurrency(mission.valorTotal)}
                 </Text>
             </View>
 
@@ -69,7 +67,7 @@ const styles = StyleSheet.create({
         borderLeftColor: Colors.secondary,
         borderRadius: 8,
         padding: 16,
-        marginBottom: 12,
+        marginBottom: 10,
         shadowColor: Colors.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,

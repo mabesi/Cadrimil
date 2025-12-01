@@ -12,7 +12,7 @@ export function Header() {
         <LinearGradient
             colors={[Colors.gradientStart, Colors.gradientEnd]}
             start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+            end={{ x: 0, y: 1 }}
             style={styles.container}
         >
             <View style={styles.logoContainer}>
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     },
     logoContainer: {
         width: '100%',
-        backgroundColor: '#E0E6E1', // Light grayish green
+        backgroundColor: Colors.cardSecondary,
         borderRadius: 8,
         paddingVertical: 8,
         paddingHorizontal: 16,
@@ -63,11 +63,11 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: '#4CAF50', // Green
+        backgroundColor: Colors.accent,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: '#388E3C', // Darker green border
+        borderColor: Colors.secondary,
         shadowColor: Colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
     helpIcon: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: Colors.white,
+        color: Colors.primary,
     },
 });

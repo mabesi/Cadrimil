@@ -11,6 +11,7 @@ import { useData } from '../context/DataContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
+import { formatCurrency } from '../utils/formatters';
 
 export function TablesScreen() {
     const { cadrmilData, loading } = useData();
@@ -119,7 +120,7 @@ export function TablesScreen() {
                                     const valor = cadrmilData.diarias[grupo][loc];
                                     return (
                                         <Text key={loc} style={[styles.diariasCell, styles.valueColumn]}>
-                                            {valor ? valor.toFixed(2).replace('.', ',') : 'N/D'}
+                                            {valor ? formatCurrency(valor) : 'N/D'}
                                         </Text>
                                     );
                                 })}
@@ -132,7 +133,7 @@ export function TablesScreen() {
                 <View style={styles.aedContainer}>
                     <Text style={styles.aedTitle}>{cadrmilData.aed.title}</Text>
                     <Text style={styles.aedValue}>
-                        R$ {cadrmilData.aed.value.toFixed(2).replace('.', ',')}
+                        R$ {formatCurrency(cadrmilData.aed.value)}
                     </Text>
                     <Text style={styles.aedSubtext}>Valor por militar</Text>
                 </View>

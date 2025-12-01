@@ -1,5 +1,5 @@
 // Calculator Screen
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -21,6 +21,7 @@ import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
 import { exportPDF } from '../utils/pdfGenerator';
 import { DateHelpers } from '../utils/dateHelpers';
+import { formatCurrency } from '../utils/formatters';
 
 export function CalculatorScreen() {
     const { cadrmilData, loading } = useData();
@@ -38,12 +39,19 @@ export function CalculatorScreen() {
     const [nomeMissao, setNomeMissao] = useState(currentMissionState.nomeMissao);
     const [localidade, setLocalidade] = useState('');
     const [grupo, setGrupo] = useState('');
-    const [quantidade, setQuantidade] = useState('1');
+    const [quantidade, setQuantidade] = useState(''); // Default empty
     const [dataInicio, setDataInicio] = useState(new Date());
     const [dataFim, setDataFim] = useState(new Date());
     const [contarInteiro, setContarInteiro] = useState(false);
     const [showDatePickerInicio, setShowDatePickerInicio] = useState(false);
     const [showDatePickerFim, setShowDatePickerFim] = useState(false);
+
+    // Sync mission name when loading a saved mission
+    useEffect(() => {
+        if (currentMissionState.nomeMissao) {
+            setNomeMissao(currentMissionState.nomeMissao);
+        }
+    }, [currentMissionState.nomeMissao]);
 
     if (loading || !cadrmilData) {
         return <LoadingSpinner message="Carregando dados..." />;
@@ -55,7 +63,7 @@ export function CalculatorScreen() {
     }));
 
     const grupoOptions = Object.keys(cadrmilData.grupos).map(key => ({
-        label: `${key} - ${cadrmilData.grupos[key].substring(0, 30)}...`,
+        label: `${key} - ${cadrmilData.grupos[key]}`,
         value: key,
     }));
 
@@ -80,12 +88,12 @@ export function CalculatorScreen() {
         });
 
         // Reset form
-        setQuantidade('1');
+        setQuantidade('');
         setContarInteiro(false);
     };
 
     const handleSaveMission = async () => {
-        await saveMission(nomeMissao);
+        await saveMission(nomeMissao.trim());
     };
 
     const handleGeneratePDF = async () => {
@@ -97,7 +105,7 @@ export function CalculatorScreen() {
         try {
             const mission = {
                 id: currentMissionState.id || Date.now().toString(),
-                nomeMissao: nomeMissao || 'Missão Sem Título',
+                nomeMissao: nomeMissao.trim() || 'Missão Sem Nome',
                 dataCriacao: new Date().toISOString(),
                 periodos: currentPeriods,
                 incluirAED,
@@ -120,15 +128,15 @@ export function CalculatorScreen() {
             <View style={styles.content}>
                 {/* Nome da Missão */}
                 <CustomInput
-                    label="Nome da Missão (Local)"
+                    label="Missão"
                     value={nomeMissao}
                     onChangeText={setNomeMissao}
-                    placeholder="Ex: Missão Sudeste"
+                    placeholder="Ex. Operação Brasil"
                 />
 
                 {/* Formulário de Adição de Período */}
                 <View style={[GlobalStyles.card, styles.formCard]}>
-                    <Text style={styles.sectionTitle}>Adicionar Período/Localidade</Text>
+                    <Text style={styles.sectionTitle}>Dados da Missão</Text>
 
                     <CustomSelect
                         label="Localidade"
@@ -201,14 +209,16 @@ export function CalculatorScreen() {
                         />
                     )}
 
-                    <CustomCheckbox
-                        label="Contar Último Dia como Diária Inteira (1.0)"
-                        value={contarInteiro}
-                        onValueChange={setContarInteiro}
-                    />
+                    <View style={{ marginVertical: 12 }}>
+                        <CustomCheckbox
+                            label="Contar Último Dia como Diária Inteira (1.0)"
+                            value={contarInteiro}
+                            onValueChange={setContarInteiro}
+                        />
+                    </View>
 
                     <CustomButton
-                        title="ADICIONAR PERÍODO"
+                        title="ADICIONAR"
                         onPress={handleAddPeriod}
                         variant="primary"
                     />
@@ -219,13 +229,16 @@ export function CalculatorScreen() {
                 {currentPeriods.length === 0 ? (
                     <Text style={styles.emptyText}>Nenhum período adicionado.</Text>
                 ) : (
-                    currentPeriods.map(period => (
-                        <PeriodCard
-                            key={period.id}
-                            period={period}
-                            onRemove={() => removePeriod(period.id)}
-                        />
-                    ))
+                    <View style={styles.periodsContainer}>
+                        {currentPeriods.map((period) => (
+                            <PeriodCard
+                                key={period.id}
+                                period={period}
+                                cadrmilData={cadrmilData}
+                                onRemove={() => removePeriod(period.id)}
+                            />
+                        ))}
+                    </View>
                 )}
 
                 {/* Opções Adicionais */}
@@ -237,7 +250,7 @@ export function CalculatorScreen() {
                         onValueChange={setIncluirAED}
                     />
                     <Text style={styles.aedText}>
-                        Valor do AED: R$ {cadrmilData.aed.value.toFixed(2).replace('.', ',')} / militar
+                        Valor do AED: R$ {formatCurrency(cadrmilData.aed.value)} / militar
                     </Text>
                 </View>
 
@@ -245,20 +258,21 @@ export function CalculatorScreen() {
                 <View style={styles.resultBox}>
                     <Text style={styles.resultLabel}>VALOR TOTAL CALCULADO</Text>
                     <Text style={styles.resultValue}>
-                        R$ {valorTotal.toFixed(2).replace('.', ',')}
+                        R$ {formatCurrency(valorTotal)}
                     </Text>
                 </View>
 
                 {/* Ações */}
                 <View style={styles.actions}>
                     <CustomButton
-                        title="Salvar Missão (Local)"
+                        title="Salvar Missão"
+                        subtitle="Localmente"
                         onPress={handleSaveMission}
-                        variant="warning"
+                        variant="success"
                         style={styles.actionButton}
                     />
                     <CustomButton
-                        title="Gerar Relatório PDF"
+                        title="Relatório PDF"
                         onPress={handleGeneratePDF}
                         variant="success"
                         style={styles.actionButton}
@@ -279,7 +293,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: Colors.text,
+        color: Colors.textLight,
         marginBottom: 12,
         borderBottomWidth: 1,
         borderBottomColor: Colors.border,
@@ -302,7 +316,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '500',
-        color: Colors.text,
+        color: Colors.textLight,
         marginBottom: 4,
     },
     emptyText: {
@@ -343,5 +357,27 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         flex: 1,
+    },
+    periodsContainer: {
+        gap: 12,
+    },
+    totalContainer: {
+        backgroundColor: Colors.card,
+        padding: 16,
+        borderRadius: 12,
+        marginTop: 16,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: Colors.border,
+    },
+    totalLabel: {
+        fontSize: 14,
+        color: Colors.textMuted,
+        marginBottom: 4,
+    },
+    totalValue: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: Colors.primary,
     },
 });

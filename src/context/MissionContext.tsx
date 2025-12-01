@@ -120,7 +120,6 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         });
         setCurrentPeriods(mission.periodos);
         setIncluirAED(mission.incluirAED);
-        Alert.alert('Sucesso', `Missão "${mission.nomeMissao}" carregada para edição.`);
     };
 
     const deleteMission = async (id: string) => {
