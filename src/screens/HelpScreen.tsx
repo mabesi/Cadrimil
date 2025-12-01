@@ -10,8 +10,11 @@ import {
     LayoutAnimation,
     Platform,
     UIManager,
+    Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
+import { RewardedAd, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
 import { GlobalStyles } from '../constants/styles';
 import { Colors } from '../constants/colors';
 import { CustomButton } from '../components/CustomButton';
@@ -26,6 +29,38 @@ if (
 export function HelpScreen() {
     const navigation = useNavigation();
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
+    const [loaded, setLoaded] = useState(false);
+
+    // Use the provided Ad Unit ID from config or Test ID for development
+    // The ID is now managed in adConfig.js and exposed via app.config.ts
+    const adUnitId = __DEV__ ? TestIds.REWARDED : (Constants.expoConfig?.extra?.adUnitId || TestIds.REWARDED);
+
+    const rewarded = React.useMemo(() => {
+        return RewardedAd.createForAdRequest(adUnitId, {
+            requestNonPersonalizedAdsOnly: true,
+        });
+    }, [adUnitId]);
+
+    React.useEffect(() => {
+        const unsubscribeLoaded = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
+            setLoaded(true);
+        });
+        const unsubscribeEarned = rewarded.addAdEventListener(
+            RewardedAdEventType.EARNED_REWARD,
+            reward => {
+                Alert.alert('Obrigado!', 'Obrigado por apoiar o desenvolvimento do Cadrimil!');
+            },
+        );
+
+        // Start loading the ad straight away
+        rewarded.load();
+
+        // Unsubscribe from events on unmount
+        return () => {
+            unsubscribeLoaded();
+            unsubscribeEarned();
+        };
+    }, [rewarded]);
 
     const toggleSection = (title: string) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -75,16 +110,38 @@ export function HelpScreen() {
                 {/* Donation Section */}
                 <View style={styles.donationContainer}>
                     <Text style={styles.donationText}>
-                        Gostou do app? Apoie o desenvolvimento!
+                        Gostou do app?{'\n'}Apoie o desenvolvimento!
                     </Text>
-                    <TouchableOpacity
-                        style={styles.customDonationButton}
-                        onPress={handleDonation}
-                        activeOpacity={0.7}
-                    >
-                        <Text style={styles.heartIcon}>❤️</Text>
-                        <Text style={styles.donationButtonText}>FAZER UMA DOAÇÃO</Text>
-                    </TouchableOpacity>
+                    <View style={styles.donationButtonsRow}>
+                        <TouchableOpacity
+                            style={styles.customDonationButton}
+                            onPress={handleDonation}
+                            activeOpacity={0.7}
+                        >
+                            <Text style={styles.heartIcon}>❤️</Text>
+                            <Text style={styles.donationButtonText}>DOAR</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.customDonationButton,
+                                styles.adButton,
+                                !loaded && styles.disabledButton
+                            ]}
+                            onPress={() => {
+                                if (loaded) {
+                                    rewarded.show();
+                                } else {
+                                    Alert.alert('Aguarde', 'Carregando anúncio...');
+                                }
+                            }}
+                            activeOpacity={0.7}
+                            disabled={!loaded}
+                        >
+                            <Text style={styles.adIcon}>📺</Text>
+                            <Text style={styles.adButtonText}>VER ANÚNCIO</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/* Usage Information */}
@@ -245,13 +302,35 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 10, // Reduced from 12
-        paddingHorizontal: 24,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
         borderRadius: 8,
         borderWidth: 2,
         borderColor: Colors.danger,
         backgroundColor: 'transparent',
+        flex: 1,
+    },
+    donationButtonsRow: {
+        flexDirection: 'row',
+        gap: 12,
         width: '100%',
+    },
+    adButton: {
+        borderColor: Colors.secondaryLight,
+    },
+    disabledButton: {
+        opacity: 0.5,
+        borderColor: Colors.border,
+    },
+    adIcon: {
+        fontSize: 18,
+        marginRight: 8,
+    },
+    adButtonText: {
+        color: Colors.secondary,
+        fontSize: 14,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
     },
     heartIcon: {
         fontSize: 18,
@@ -260,7 +339,7 @@ const styles = StyleSheet.create({
     },
     donationButtonText: {
         color: Colors.danger,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
         textTransform: 'uppercase',
     },
