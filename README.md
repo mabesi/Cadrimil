@@ -8,7 +8,7 @@
 
 - **Calculadora de Diárias**: Simule valores inserindo múltiplos trechos e localidades.
 - **Gerenciamento de Missões**: Salve, edite e exclua seus cálculos para consulta futura.
-- **Importação e Exportação**: Compartilhe missões ou faça backup via arquivo JSON.
+- **Importação e Exportação**: Compartilhe missões ou faça backup via arquivo próprio (`.cmil`) ou JSON. O app reconhece e abre arquivos `.cmil` diretamente.
 - **Tabelas de Valores**: Consulte valores atualizados de diárias e Adicional de Embarque/Desembarque (AED).
 - **Legislação**: Acesso rápido aos decretos que regulamentam as indenizações.
 - **Relatórios em PDF**: Gere e compartilhe o detalhamento dos cálculos em formato PDF.
