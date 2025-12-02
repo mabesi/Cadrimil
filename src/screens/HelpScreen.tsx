@@ -19,12 +19,7 @@ import { GlobalStyles } from '../constants/styles';
 import { Colors } from '../constants/colors';
 import { CustomButton } from '../components/CustomButton';
 
-if (
-    Platform.OS === 'android' &&
-    UIManager.setLayoutAnimationEnabledExperimental
-) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+
 
 export function HelpScreen() {
     const navigation = useNavigation();

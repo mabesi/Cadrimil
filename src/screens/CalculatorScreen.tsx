@@ -54,8 +54,17 @@ export function CalculatorScreen() {
     const [showDatePickerFim, setShowDatePickerFim] = useState(false);
 
     // Sync mission name when loading a saved mission or resetting
+    // Sync mission name and reset form when loading a saved mission or resetting
     useEffect(() => {
         setNomeMissao(currentMissionState.nomeMissao);
+        // Reset form fields
+        setLocalidade('');
+        setGrupo('');
+        setQuantidade('');
+        setDataInicio(new Date());
+        setDataFim(new Date());
+        setContarInteiro(false);
+        setEditingPeriodId(null);
     }, [currentMissionState]);
 
     if (loading || !cadrmilData) {

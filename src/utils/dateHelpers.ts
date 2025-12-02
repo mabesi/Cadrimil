@@ -19,7 +19,6 @@ export const DateHelpers = {
     },
 
     fromISOString: (isoString: string): Date => {
-        const [year, month, day] = isoString.split('-').map(Number);
-        return new Date(year, month - 1, day);
+        return dateFnsParseISO(isoString);
     },
 };

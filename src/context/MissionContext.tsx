@@ -4,6 +4,7 @@ import { Mission, Period, MissionState } from '../types';
 import { loadMissions, saveMission as saveMissionToStorage, deleteMission as deleteMissionFromStorage } from '../services/storage';
 import { useData } from './DataContext';
 import { calculateTotal } from '../utils/calculations';
+import { DateHelpers } from '../utils/dateHelpers';
 import { Alert } from 'react-native';
 
 interface MissionContextType {
@@ -19,7 +20,6 @@ interface MissionContextType {
     editMission: (id: string) => void;
     deleteMission: (id: string) => Promise<void>;
     resetCalculator: () => void;
-    setIncluirAED: (value: boolean) => void;
     setIncluirAED: (value: boolean) => void;
     loadSavedMissions: () => Promise<void>;
     loadMissionFromObject: (mission: Mission) => void;
@@ -166,7 +166,12 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             // Let's clear ID to treat as a new copy unless saved.
             nomeMissao: mission.nomeMissao,
         });
-        setCurrentPeriods(mission.periodos);
+        const parsedPeriods = mission.periodos.map(p => ({
+            ...p,
+            dataInicio: typeof p.dataInicio === 'string' ? DateHelpers.fromISOString(p.dataInicio as unknown as string) : p.dataInicio,
+            dataFim: typeof p.dataFim === 'string' ? DateHelpers.fromISOString(p.dataFim as unknown as string) : p.dataFim,
+        }));
+        setCurrentPeriods(parsedPeriods);
         setIncluirAED(mission.incluirAED);
         // valorTotal will be recalculated by useEffect
     };
