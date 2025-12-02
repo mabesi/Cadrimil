@@ -8,11 +8,14 @@ import { TablesScreen } from '../screens/TablesScreen';
 import { DecreesScreen } from '../screens/DecreesScreen';
 import { HelpScreen } from '../screens/HelpScreen';
 import { Colors } from '../constants/colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function TabNavigator() {
+    const insets = useSafeAreaInsets();
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -22,9 +25,9 @@ function TabNavigator() {
                     backgroundColor: Colors.white,
                     borderTopWidth: 1,
                     borderTopColor: Colors.border,
-                    paddingBottom: 5,
+                    paddingBottom: insets.bottom + 5,
                     paddingTop: 5,
-                    height: 60,
+                    height: 60 + insets.bottom,
                 },
                 tabBarLabelStyle: {
                     fontSize: 12,

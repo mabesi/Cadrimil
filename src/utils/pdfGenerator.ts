@@ -179,7 +179,12 @@ export async function exportPDF(mission: Mission, data: CadrmilData): Promise<vo
     const canShare = await Sharing.isAvailableAsync();
     if (canShare) {
       // Sanitize mission name for filename (remove special characters)
-      const sanitizedName = mission.nomeMissao
+      // Sanitize mission name for filename (remove special characters)
+      const normalizedName = mission.nomeMissao
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      const sanitizedName = normalizedName
         .trim() // Trim whitespace first
         .replace(/[^a-zA-Z0-9\s]/g, '')
         .replace(/\s+/g, '_')

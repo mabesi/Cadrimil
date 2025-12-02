@@ -20,7 +20,9 @@ interface MissionContextType {
     deleteMission: (id: string) => Promise<void>;
     resetCalculator: () => void;
     setIncluirAED: (value: boolean) => void;
+    setIncluirAED: (value: boolean) => void;
     loadSavedMissions: () => Promise<void>;
+    loadMissionFromObject: (mission: Mission) => void;
 }
 
 const MissionContext = createContext<MissionContextType | undefined>(undefined);
@@ -154,6 +156,19 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         setCurrentMissionState({ id: null, nomeMissao: '' });
         setCurrentPeriods([]);
         setIncluirAED(false);
+        setValorTotal(0);
+    };
+
+    const loadMissionFromObject = (mission: Mission) => {
+        setCurrentMissionState({
+            id: null, // New ID will be generated on save, or keep it if we want to overwrite? Let's treat import as new/unsaved initially or keep ID?
+            // User request: "import a mission". Usually implies loading data.
+            // Let's clear ID to treat as a new copy unless saved.
+            nomeMissao: mission.nomeMissao,
+        });
+        setCurrentPeriods(mission.periodos);
+        setIncluirAED(mission.incluirAED);
+        // valorTotal will be recalculated by useEffect
     };
 
     return (
@@ -173,6 +188,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
                 resetCalculator,
                 setIncluirAED,
                 loadSavedMissions,
+                loadMissionFromObject,
             }}
         >
             {children}

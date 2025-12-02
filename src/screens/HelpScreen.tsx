@@ -172,10 +172,23 @@ export function HelpScreen() {
                 </AccordionItem>
 
                 <AccordionItem title="Gerenciando Missões">
+                    <Text style={styles.paragraph}>
+                        Na aba "Missões", você pode ver todas as missões salvas. Use o botão de editar (lápis) para abrir a missão na calculadora ou o botão de excluir (lixeira) para removê-la.
+                    </Text>
+
+                    <Text style={styles.subtitle}>Exportar e Importar Missões</Text>
+                    <Text style={styles.paragraph}>
+                        Você pode compartilhar suas missões com outros usuários ou fazer backup dos seus dados.
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        <Text style={styles.bold}>Exportar:</Text> Na aba "Missões", clique no botão "Exportar JSON" no cartão da missão. O arquivo será gerado e você poderá enviá-lo via WhatsApp, E-mail, etc.
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        <Text style={styles.bold}>Importar:</Text> Na aba "Cálculo", clique no botão de importar (📥) ao lado do nome da missão. Selecione o arquivo `.json` recebido para carregar os dados automaticamente.
+                    </Text>
+
+                    <Text style={styles.subtitle}>Funcionalidades Adicionais</Text>
                     <Text style={styles.text}>
-                        Na aba "Missões", você tem acesso ao histórico de todos os seus cálculos salvos.
-                        {'\n\n'}
-                        <Text style={styles.bold}>Funcionalidades:</Text>
                         {'\n'}
                         • <Text style={styles.bold}>Salvar:</Text> Na tela de cálculo, após adicionar períodos, digite um nome para a missão e clique em "Salvar Missão". Ela ficará armazenada no seu dispositivo.
                         {'\n'}
@@ -383,7 +396,20 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 14,
         color: Colors.textSecondary,
-        lineHeight: 18, // Reduced from 22
+        lineHeight: 18,
+    },
+    paragraph: {
+        fontSize: 14,
+        color: Colors.textSecondary,
+        lineHeight: 18,
+        marginBottom: 12,
+    },
+    subtitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.text,
+        marginTop: 16,
+        marginBottom: 8,
     },
     bold: {
         fontWeight: '700',
@@ -421,8 +447,8 @@ const styles = StyleSheet.create({
         color: Colors.text,
     },
     devLink: {
-        fontSize: 14,
         color: Colors.primary,
         textDecorationLine: 'underline',
+        fontSize: 14,
     },
 });

@@ -19,6 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         supportsTablet: true,
         bundleIdentifier: 'com.mabesi.cadrimil',
     },
+    scheme: 'cadrimil',
     android: {
         adaptiveIcon: {
             foregroundImage: './assets/adaptive-icon.png',
@@ -27,6 +28,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         package: 'com.mabesi.cadrimil',
         edgeToEdgeEnabled: true,
         predictiveBackGestureEnabled: false,
+        intentFilters: [
+            {
+                action: 'VIEW',
+                data: [
+                    {
+                        scheme: 'file',
+                        mimeType: '*/*',
+                        pathPattern: '.*\\.cmil',
+                    },
+                    {
+                        scheme: 'content',
+                        mimeType: '*/*',
+                        pathPattern: '.*\\.cmil',
+                    },
+                ],
+                category: ['BROWSABLE', 'DEFAULT'],
+            },
+        ],
     },
     plugins: [
         [

@@ -32,20 +32,8 @@ export function MissionsScreen() {
     };
 
     const handleReset = () => {
-        Alert.alert(
-            'Confirmar',
-            'Deseja limpar o formulário de cálculo?',
-            [
-                { text: 'Cancelar', style: 'cancel' },
-                {
-                    text: 'Limpar',
-                    onPress: () => {
-                        resetCalculator();
-                        Alert.alert('Sucesso', 'Formulário de Cálculo Limpo. Pronto para uma nova missão.');
-                    },
-                },
-            ]
-        );
+        resetCalculator();
+        navigation.navigate('Cálculo' as never);
     };
 
     return (

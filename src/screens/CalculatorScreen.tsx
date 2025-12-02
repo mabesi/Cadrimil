@@ -7,8 +7,12 @@ import {
     StyleSheet,
     Alert,
     Platform,
+    TouchableOpacity,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as DocumentPicker from 'expo-document-picker';
+// @ts-ignore
+import * as FileSystem from 'expo-file-system/legacy';
 import { useData } from '../context/DataContext';
 import { useMission } from '../context/MissionContext';
 import { CustomInput } from '../components/CustomInput';
@@ -35,6 +39,7 @@ export function CalculatorScreen() {
         saveMission,
         setIncluirAED,
         updatePeriod,
+        loadMissionFromObject,
     } = useMission();
 
     const [editingPeriodId, setEditingPeriodId] = useState<string | null>(null);
@@ -180,16 +185,52 @@ export function CalculatorScreen() {
         }
     };
 
+    const handleImportMission = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'application/json',
+                copyToCacheDirectory: true,
+            });
+
+            if (result.canceled) {
+                return;
+            }
+
+            const fileUri = result.assets[0].uri;
+            const fileContent = await FileSystem.readAsStringAsync(fileUri);
+            const missionData = JSON.parse(fileContent);
+
+            if (!missionData.periodos || !Array.isArray(missionData.periodos)) {
+                Alert.alert('Erro', 'Arquivo de missão inválido.');
+                return;
+            }
+
+            loadMissionFromObject(missionData);
+            Alert.alert('Sucesso', `Missão "${missionData.nomeMissao}" importada!`);
+
+        } catch (error) {
+            Alert.alert('Erro', 'Falha ao importar missão.');
+            console.error(error);
+        }
+    };
+
     return (
         <ScrollView style={GlobalStyles.container}>
             <View style={styles.content}>
-                {/* Nome da Missão */}
-                <CustomInput
-                    label="Missão"
-                    value={nomeMissao}
-                    onChangeText={setNomeMissao}
-                    placeholder="Ex. Operação Brasil"
-                />
+                {/* Nome da Missão e Importar */}
+                <View style={styles.missionHeaderRow}>
+                    <View style={{ flex: 1 }}>
+                        <CustomInput
+                            label="Missão"
+                            value={nomeMissao}
+                            onChangeText={setNomeMissao}
+                            placeholder="Ex. Operação Brasil"
+                        />
+                    </View>
+                    <TouchableOpacity style={styles.importButton} onPress={handleImportMission}>
+                        <Text style={styles.importButtonText}>📥</Text>
+                    </TouchableOpacity>
+                </View>
 
                 {/* Formulário de Adição de Período */}
                 <View style={[GlobalStyles.card, styles.formCard]}>
@@ -452,5 +493,25 @@ const styles = StyleSheet.create({
     buttonRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    missionHeaderRow: {
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        gap: 10,
+        marginBottom: 0, // CustomInput already has margin? Let's check. CustomInput usually has marginBottom.
+    },
+    importButton: {
+        height: 50, // Match typical input height
+        width: 50,
+        backgroundColor: Colors.backgroundSecondary,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: Colors.border,
+        marginBottom: 16, // Align with input's margin
+    },
+    importButtonText: {
+        fontSize: 24,
     },
 });
