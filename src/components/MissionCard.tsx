@@ -1,7 +1,7 @@
 // Mission Card component
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Share } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Mission } from '../types';
 import { Colors } from '../constants/colors';

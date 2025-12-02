@@ -8,7 +8,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { Header } from './src/components/Header';
 import { View, StyleSheet, Text } from 'react-native';
 import * as Linking from 'expo-linking';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 const prefix = Linking.createURL('/');
 
@@ -51,7 +51,15 @@ function DeepLinkHandler() {
       const { url } = event;
       if (url && (url.endsWith('.cmil') || url.startsWith('content://') || url.startsWith('file://'))) {
         try {
-          const content = await FileSystem.readAsStringAsync(url);
+          let fileUri = url;
+          if (url.startsWith('content://')) {
+            const fileName = `temp_import_${Date.now()}.cmil`;
+            const destination = `${FileSystem.cacheDirectory}${fileName}`;
+            await FileSystem.copyAsync({ from: url, to: destination });
+            fileUri = destination;
+          }
+
+          const content = await FileSystem.readAsStringAsync(fileUri);
           const missionData = JSON.parse(content);
           loadMissionFromObject(missionData);
         } catch (error) {

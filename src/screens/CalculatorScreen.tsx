@@ -53,12 +53,10 @@ export function CalculatorScreen() {
     const [showDatePickerInicio, setShowDatePickerInicio] = useState(false);
     const [showDatePickerFim, setShowDatePickerFim] = useState(false);
 
-    // Sync mission name when loading a saved mission
+    // Sync mission name when loading a saved mission or resetting
     useEffect(() => {
-        if (currentMissionState.nomeMissao) {
-            setNomeMissao(currentMissionState.nomeMissao);
-        }
-    }, [currentMissionState.nomeMissao]);
+        setNomeMissao(currentMissionState.nomeMissao);
+    }, [currentMissionState]);
 
     if (loading || !cadrmilData) {
         return <LoadingSpinner message="Carregando dados..." />;

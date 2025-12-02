@@ -173,28 +173,36 @@ export function HelpScreen() {
 
                 <AccordionItem title="Gerenciando Missões">
                     <Text style={styles.paragraph}>
-                        Na aba "Missões", você pode ver todas as missões salvas. Use o botão de editar (lápis) para abrir a missão na calculadora ou o botão de excluir (lixeira) para removê-la.
+                        Na aba "Missões", você pode ver todas as missões salvas. Use os botões nos cartões de missão para gerenciá-las.
                     </Text>
 
-                    <Text style={styles.subtitle}>Exportar e Importar Missões</Text>
+                    <Text style={styles.subtitle}>Funcionalidades Principais</Text>
+
                     <Text style={styles.paragraph}>
-                        Você pode compartilhar suas missões com outros usuários ou fazer backup dos seus dados.
-                    </Text>
-                    <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>Exportar:</Text> Na aba "Missões", clique no botão "Exportar JSON" no cartão da missão. O arquivo será gerado e você poderá enviá-lo via WhatsApp, E-mail, etc.
-                    </Text>
-                    <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>Importar:</Text> Na aba "Cálculo", clique no botão de importar (📥) ao lado do nome da missão. Selecione o arquivo `.json` recebido para carregar os dados automaticamente.
+                        <Text style={styles.bold}>✏️ Editar:</Text> Toque no ícone de lápis (botão azul) para carregar a missão de volta na calculadora. Você poderá alterar datas, localidades, grupos e salvar as modificações.
                     </Text>
 
-                    <Text style={styles.subtitle}>Funcionalidades Adicionais</Text>
-                    <Text style={styles.text}>
+                    <Text style={styles.paragraph}>
+                        <Text style={styles.bold}>🗑️ Excluir:</Text> Toque no ícone de lixeira (botão vermelho) para remover a missão permanentemente do seu histórico.
+                    </Text>
+
+                    <Text style={styles.paragraph}>
+                        <Text style={styles.bold}>📤 Exportar:</Text> Toque no ícone de compartilhamento (botão verde) para gerar um arquivo `.cmil`. Você pode enviar este arquivo via WhatsApp, E-mail ou salvar em seus arquivos para backup.
+                    </Text>
+
+                    <Text style={styles.subtitle}>Importando Missões</Text>
+                    <Text style={styles.paragraph}>
+                        <Text style={styles.bold}>📥 Importar:</Text> Na aba "Cálculo", ao lado do campo de nome da missão, existe um botão de importação.
                         {'\n'}
-                        • <Text style={styles.bold}>Salvar:</Text> Na tela de cálculo, após adicionar períodos, digite um nome para a missão e clique em "Salvar Missão". Ela ficará armazenada no seu dispositivo.
+                        1. Toque no botão 📥.
                         {'\n'}
-                        • <Text style={styles.bold}>Editar:</Text> Toque no botão "Editar" em um cartão de missão para carregar todos os dados de volta na calculadora e fazer ajustes.
+                        2. Selecione um arquivo `.cmil` ou `.json` que você recebeu ou salvou anteriormente.
                         {'\n'}
-                        • <Text style={styles.bold}>Excluir:</Text> Use o botão "Excluir" para remover missões antigas ou incorretas do seu histórico.
+                        3. A missão será carregada automaticamente na calculadora.
+                    </Text>
+
+                    <Text style={styles.note}>
+                        Dica: Se você receber um arquivo `.cmil` pelo WhatsApp, pode tentar abri-lo diretamente com o Cadrimil.
                     </Text>
                 </AccordionItem>
 
@@ -292,10 +300,10 @@ const styles = StyleSheet.create({
     },
     donationContainer: {
         backgroundColor: Colors.white,
-        padding: 18, // Reduced from 24
+        padding: 14, // Reduced from 18
         borderRadius: 12,
         alignItems: 'center',
-        marginBottom: 18, // Reduced from 24
+        marginBottom: 14, // Reduced from 18
         borderWidth: 1,
         borderColor: Colors.borderLight,
         shadowColor: Colors.black,
@@ -307,7 +315,7 @@ const styles = StyleSheet.create({
     donationText: {
         fontSize: 16,
         color: Colors.text,
-        marginBottom: 12, // Reduced from 16
+        marginBottom: 8, // Reduced from 12
         textAlign: 'center',
         fontWeight: '500',
     },
@@ -315,7 +323,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 10,
+        paddingVertical: 8, // Reduced from 10
         paddingHorizontal: 16,
         borderRadius: 8,
         borderWidth: 2,
@@ -360,13 +368,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
         color: Colors.text,
-        marginBottom: 10, // Reduced from 12
-        marginTop: 6, // Reduced from 8
+        marginBottom: 8, // Reduced from 10
+        marginTop: 4, // Reduced from 6
     },
     accordionItem: {
         backgroundColor: Colors.white,
         borderRadius: 8,
-        marginBottom: 8, // Reduced from 10
+        marginBottom: 6, // Reduced from 8
         borderWidth: 1,
         borderColor: Colors.borderLight,
         overflow: 'hidden',
@@ -375,7 +383,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 12, // Reduced from 16
+        padding: 10, // Reduced from 12
         backgroundColor: Colors.white,
     },
     accordionTitle: {
@@ -389,7 +397,7 @@ const styles = StyleSheet.create({
         color: Colors.primary,
     },
     accordionContent: {
-        padding: 12, // Reduced from 16
+        padding: 10, // Reduced from 12
         paddingTop: 0,
         backgroundColor: Colors.white,
     },
@@ -402,14 +410,14 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: Colors.textSecondary,
         lineHeight: 18,
-        marginBottom: 12,
+        marginBottom: 8, // Reduced from 12
     },
     subtitle: {
         fontSize: 16,
         fontWeight: '600',
         color: Colors.text,
-        marginTop: 16,
-        marginBottom: 8,
+        marginTop: 12, // Reduced from 16
+        marginBottom: 6, // Reduced from 8
     },
     bold: {
         fontWeight: '700',
@@ -419,24 +427,24 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontStyle: 'italic',
         color: Colors.textMuted,
-        marginTop: 6, // Reduced from 8
+        marginTop: 4, // Reduced from 6
     },
     footer: {
-        marginTop: 30, // Reduced from 40
-        marginBottom: 16, // Reduced from 20
+        marginTop: 20, // Reduced from 30
+        marginBottom: 10, // Reduced from 16
         alignItems: 'center',
         borderTopWidth: 1,
         borderTopColor: Colors.borderLight,
-        paddingTop: 18, // Reduced from 24
+        paddingTop: 12, // Reduced from 18
     },
     devContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     devLogo: {
-        width: 50,
-        height: 50,
-        marginRight: 12,
+        width: 40, // Reduced from 50
+        height: 40, // Reduced from 50
+        marginRight: 10, // Reduced from 12
     },
     devInfo: {
         justifyContent: 'center',
