@@ -43,7 +43,7 @@ const linking: any = {
   },
 };
 
-export default function App() {
+function DeepLinkHandler() {
   const { loadMissionFromObject } = useMission();
 
   React.useEffect(() => {
@@ -73,10 +73,15 @@ export default function App() {
     };
   }, [loadMissionFromObject]);
 
+  return null;
+}
+
+export default function App() {
   return (
     <SafeAreaProvider>
       <DataProvider>
         <MissionProvider>
+          <DeepLinkHandler />
           <View style={styles.container}>
             <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
               <View style={styles.content}>
