@@ -1,7 +1,7 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 const adConfig = require('./adConfig');
 
-export default ({ config }: ConfigContext): ExpoConfig & { splash?: any } => ({
+export default ({ config }: ConfigContext): ExpoConfig => ({
     ...config,
     name: 'Cadrimil',
     slug: 'cadrimil',
@@ -9,11 +9,6 @@ export default ({ config }: ConfigContext): ExpoConfig & { splash?: any } => ({
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
-    splash: {
-        image: './assets/splash-icon.png',
-        resizeMode: 'contain',
-        backgroundColor: '#71fa55ff',
-    },
     ios: {
         supportsTablet: true,
         bundleIdentifier: 'com.mabesi.cadrimil',
@@ -47,6 +42,14 @@ export default ({ config }: ConfigContext): ExpoConfig & { splash?: any } => ({
         ],
     },
     plugins: [
+        [
+            'expo-splash-screen',
+            {
+                image: './assets/splash-icon.png',
+                resizeMode: 'contain',
+                backgroundColor: '#71fa55ff',
+            },
+        ],
         [
             'react-native-google-mobile-ads',
             {
