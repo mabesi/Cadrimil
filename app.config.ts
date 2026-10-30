@@ -1,7 +1,7 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 const adConfig = require('./adConfig');
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
+export default ({ config }: ConfigContext): ExpoConfig & { splash?: any } => ({
     ...config,
     name: 'Cadrimil',
     slug: 'cadrimil',
@@ -9,7 +9,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
-    newArchEnabled: true,
     splash: {
         image: './assets/splash-icon.png',
         resizeMode: 'contain',
@@ -27,7 +26,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
         package: 'com.mabesi.cadrimil',
         versionCode: 2,
-        edgeToEdgeEnabled: true,
         predictiveBackGestureEnabled: false,
         intentFilters: [
             {
