@@ -13,7 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     splash: {
         image: './assets/splash-icon.png',
         resizeMode: 'contain',
-        backgroundColor: '#003366',
+        backgroundColor: '#71fa55ff',
     },
     ios: {
         supportsTablet: true,
@@ -23,7 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     android: {
         adaptiveIcon: {
             foregroundImage: './assets/adaptive-icon.png',
-            backgroundColor: '#003366',
+            backgroundColor: '#71fa55ff',
         },
         package: 'com.mabesi.cadrimil',
         versionCode: 2,
