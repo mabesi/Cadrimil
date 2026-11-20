@@ -33,56 +33,6 @@ export function calcularDiarias(
 }
 
 /**
- * Calculate the cost of a single period
- */
-export function calculatePeriodCost(
-    period: Period,
-    data: CadrimilData
-): number {
-    const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
-    const numDiarias = calcularDiarias(
-        period.dataInicio,
-        period.dataFim,
-        period.contarUltimoDiaInteiro
-    );
-    return numDiarias * valorUnitario * period.quantidadeMilitares;
-}
-
-/**
- * Calculate the total cost of a mission
- */
-export function calculateTotalMission(
-    periods: Period[],
-    incluirAED: boolean,
-    aedValue: number
-): number {
-    let total = 0;
-    let totalMilitares = 0;
-
-    periods.forEach((period) => {
-        const valorUnitario = getValorDiaria(
-            period.grupo,
-            period.localidade,
-            { diarias: {} } as CadrimilData // We'll pass the full data in the actual usage
-        );
-        const numDiarias = calcularDiarias(
-            period.dataInicio,
-            period.dataFim,
-            period.contarUltimoDiaInteiro
-        );
-        const custoPeriodo = numDiarias * valorUnitario * period.quantidadeMilitares;
-        total += custoPeriodo;
-        totalMilitares += period.quantidadeMilitares;
-    });
-
-    if (incluirAED) {
-        total += aedValue * totalMilitares;
-    }
-
-    return total;
-}
-
-/**
  * Calculate total with full data context
  */
 export function calculateTotal(
