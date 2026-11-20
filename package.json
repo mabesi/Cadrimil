@@ -1,6 +1,7 @@
 {
   "name": "cadrimil-app",
   "version": "1.0.2",
+  "license": "MIT",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",

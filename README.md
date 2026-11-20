@@ -135,7 +135,7 @@ cadrimil/
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a [MIT License](https://opensource.org/license/MIT).
+Este projeto está licenciado sob a [MIT License](./LICENSE).
 
 ## ⚠️ Isenção de Responsabilidade
 
