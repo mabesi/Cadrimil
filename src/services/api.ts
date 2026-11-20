@@ -1,5 +1,6 @@
 // API service for loading Cadrimil data
 import { CadrimilData } from '../types';
+import { isCadrimilData } from '../utils/validation';
 
 const API_URL = 'https://apps.mabesi.dev/cadrimil/api.json';
 
@@ -7,6 +8,8 @@ const API_URL = 'https://apps.mabesi.dev/cadrimil/api.json';
  * Load Cadrimil data from the API
  */
 export async function loadCadrimilData(): Promise<CadrimilData> {
+    let payload: unknown;
+
     try {
         const response = await fetch(API_URL);
 
@@ -14,12 +17,18 @@ export async function loadCadrimilData(): Promise<CadrimilData> {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data: CadrimilData = await response.json();
-        return data;
+        payload = await response.json();
     } catch (error) {
         console.error('Error loading Cadrimil data:', error);
         throw new Error('Erro ao carregar dados da API. Verifique sua conexão.');
     }
+
+    if (!isCadrimilData(payload)) {
+        console.error('Invalid Cadrimil data received from API:', payload);
+        throw new Error('A API retornou dados em formato inválido.');
+    }
+
+    return payload;
 }
 
 /**
@@ -43,5 +52,5 @@ export async function loadCadrimilDataWithRetry(
         }
     }
 
-    throw lastError || new Error('Failed to load data after retries');
+    throw lastError || new Error('Erro ao carregar dados da API após várias tentativas.');
 }
