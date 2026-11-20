@@ -2,7 +2,7 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Mission, CadrmilData, Period } from '../types';
+import { Mission, CadrimilData, Period } from '../types';
 import { DateHelpers } from './dateHelpers';
 import { calcularDiarias, getValorDiaria } from './calculations';
 import { formatCurrency } from './formatters';
@@ -10,7 +10,7 @@ import { formatCurrency } from './formatters';
 /**
  * Generate HTML content for PDF
  */
-function generateMissionHTML(mission: Mission, data: CadrmilData): string {
+function generateMissionHTML(mission: Mission, data: CadrimilData): string {
   let periodosHTML = '';
 
   mission.periodos.forEach((period, index) => {
@@ -170,7 +170,7 @@ function generateMissionHTML(mission: Mission, data: CadrmilData): string {
 /**
  * Generate and export PDF
  */
-export async function exportPDF(mission: Mission, data: CadrmilData): Promise<void> {
+export async function exportPDF(mission: Mission, data: CadrimilData): Promise<void> {
   try {
     const html = generateMissionHTML(mission, data);
 

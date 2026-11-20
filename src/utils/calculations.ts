@@ -1,5 +1,5 @@
 // Calculation utilities for Cadrimil
-import { CadrmilData, Period } from '../types';
+import { CadrimilData, Period } from '../types';
 import { DateHelpers } from './dateHelpers';
 
 /**
@@ -8,7 +8,7 @@ import { DateHelpers } from './dateHelpers';
 export function getValorDiaria(
     grupo: string,
     localidade: string,
-    data: CadrmilData
+    data: CadrimilData
 ): number {
     if (data.diarias[grupo] && data.diarias[grupo][localidade]) {
         return data.diarias[grupo][localidade];
@@ -37,7 +37,7 @@ export function calcularDiarias(
  */
 export function calculatePeriodCost(
     period: Period,
-    data: CadrmilData
+    data: CadrimilData
 ): number {
     const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
     const numDiarias = calcularDiarias(
@@ -63,7 +63,7 @@ export function calculateTotalMission(
         const valorUnitario = getValorDiaria(
             period.grupo,
             period.localidade,
-            { diarias: {} } as CadrmilData // We'll pass the full data in the actual usage
+            { diarias: {} } as CadrimilData // We'll pass the full data in the actual usage
         );
         const numDiarias = calcularDiarias(
             period.dataInicio,
@@ -88,7 +88,7 @@ export function calculateTotalMission(
 export function calculateTotal(
     periods: Period[],
     incluirAED: boolean,
-    data: CadrmilData
+    data: CadrimilData
 ): number {
     let total = 0;
     let totalMilitares = 0;

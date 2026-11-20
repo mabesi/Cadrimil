@@ -28,7 +28,7 @@ interface MissionContextType {
 const MissionContext = createContext<MissionContextType | undefined>(undefined);
 
 export function MissionProvider({ children }: { children: ReactNode }) {
-    const { cadrmilData } = useData();
+    const { cadrimilData } = useData();
     const [currentMissionState, setCurrentMissionState] = useState<MissionState>({
         id: null,
         nomeMissao: '',
@@ -45,11 +45,11 @@ export function MissionProvider({ children }: { children: ReactNode }) {
 
     // Recalculate total whenever periods or AED changes
     useEffect(() => {
-        if (cadrmilData) {
-            const total = calculateTotal(currentPeriods, incluirAED, cadrmilData);
+        if (cadrimilData) {
+            const total = calculateTotal(currentPeriods, incluirAED, cadrimilData);
             setValorTotal(total);
         }
-    }, [currentPeriods, incluirAED, cadrmilData]);
+    }, [currentPeriods, incluirAED, cadrimilData]);
 
     const loadSavedMissions = async () => {
         const missions = await loadMissions();
@@ -75,7 +75,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     };
 
     const saveMission = async (nomeMissao: string): Promise<boolean> => {
-        if (!cadrmilData) {
+        if (!cadrimilData) {
             Alert.alert('Erro', 'Dados não carregados');
             return false;
         }
@@ -93,7 +93,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             periodos: currentPeriods,
             incluirAED,
             valorTotal,
-            decretosReferencia: cadrmilData.decretos.map(d => ({
+            decretosReferencia: cadrimilData.decretos.map(d => ({
                 decree: d.decree,
                 date: d.date,
             })),

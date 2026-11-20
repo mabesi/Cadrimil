@@ -1,12 +1,12 @@
 // API service for loading Cadrimil data
-import { CadrmilData } from '../types';
+import { CadrimilData } from '../types';
 
 const API_URL = 'https://apps.mabesi.dev/cadrimil/api.json';
 
 /**
  * Load Cadrimil data from the API
  */
-export async function loadCadrmilData(): Promise<CadrmilData> {
+export async function loadCadrimilData(): Promise<CadrimilData> {
     try {
         const response = await fetch(API_URL);
 
@@ -14,7 +14,7 @@ export async function loadCadrmilData(): Promise<CadrmilData> {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data: CadrmilData = await response.json();
+        const data: CadrimilData = await response.json();
         return data;
     } catch (error) {
         console.error('Error loading Cadrimil data:', error);
@@ -25,15 +25,15 @@ export async function loadCadrmilData(): Promise<CadrmilData> {
 /**
  * Load Cadrimil data with retry logic
  */
-export async function loadCadrmilDataWithRetry(
+export async function loadCadrimilDataWithRetry(
     maxRetries: number = 3,
     retryDelay: number = 1000
-): Promise<CadrmilData> {
+): Promise<CadrimilData> {
     let lastError: Error | null = null;
 
     for (let i = 0; i < maxRetries; i++) {
         try {
-            return await loadCadrmilData();
+            return await loadCadrimilData();
         } catch (error) {
             lastError = error as Error;
             if (i < maxRetries - 1) {

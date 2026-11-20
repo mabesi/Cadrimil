@@ -28,7 +28,7 @@ import { DateHelpers } from '../utils/dateHelpers';
 import { formatCurrency } from '../utils/formatters';
 
 export function CalculatorScreen() {
-    const { cadrmilData, loading } = useData();
+    const { cadrimilData, loading } = useData();
     const {
         currentMissionState,
         currentPeriods,
@@ -67,17 +67,17 @@ export function CalculatorScreen() {
         setEditingPeriodId(null);
     }, [currentMissionState]);
 
-    if (loading || !cadrmilData) {
+    if (loading || !cadrimilData) {
         return <LoadingSpinner message="Carregando dados..." />;
     }
 
-    const localidadeOptions = Object.keys(cadrmilData.localidades).map(key => ({
-        label: cadrmilData.localidades[key],
+    const localidadeOptions = Object.keys(cadrimilData.localidades).map(key => ({
+        label: cadrimilData.localidades[key],
         value: key,
     }));
 
-    const grupoOptions = Object.keys(cadrmilData.grupos).map(key => ({
-        label: `${key} - ${cadrmilData.grupos[key]}`,
+    const grupoOptions = Object.keys(cadrimilData.grupos).map(key => ({
+        label: `${key} - ${cadrimilData.grupos[key]}`,
         value: key,
     }));
 
@@ -180,13 +180,13 @@ export function CalculatorScreen() {
                 periodos: currentPeriods,
                 incluirAED,
                 valorTotal,
-                decretosReferencia: cadrmilData.decretos.map(d => ({
+                decretosReferencia: cadrimilData.decretos.map(d => ({
                     decree: d.decree,
                     date: d.date,
                 })),
             };
 
-            await exportPDF(mission, cadrmilData);
+            await exportPDF(mission, cadrimilData);
         } catch (error) {
             Alert.alert('Erro', 'Erro ao gerar PDF');
         }
@@ -367,7 +367,7 @@ export function CalculatorScreen() {
                         onValueChange={setIncluirAED}
                     />
                     <Text style={styles.aedText}>
-                        Valor do AED: R$ {formatCurrency(cadrmilData.aed.value)} / militar
+                        Valor do AED: R$ {formatCurrency(cadrimilData.aed.value)} / militar
                     </Text>
                 </View>
 

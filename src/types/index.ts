@@ -26,7 +26,7 @@ export type Diarias = {
     };
 };
 
-export interface CadrmilData {
+export interface CadrimilData {
     decretos: Decreto[];
     aed: AED;
     grupos: Grupos;

@@ -16,9 +16,9 @@ interface PeriodCardProps {
 }
 
 export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
-    const { cadrmilData } = useData();
+    const { cadrimilData } = useData();
 
-    if (!cadrmilData) return null;
+    if (!cadrimilData) return null;
 
     const numDiarias = calcularDiarias(
         period.dataInicio,
@@ -28,7 +28,7 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
     const valorUnitario = getValorDiaria(
         period.grupo,
         period.localidade,
-        cadrmilData
+        cadrimilData
     );
     const custoPeriodo = numDiarias * valorUnitario * period.quantidadeMilitares;
 
@@ -37,7 +37,7 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
             <View style={styles.content}>
                 <View style={styles.headerRow}>
                     <Text style={styles.title}>
-                        {cadrmilData.grupos[period.grupo]} ({period.quantidadeMilitares})
+                        {cadrimilData.grupos[period.grupo]} ({period.quantidadeMilitares})
                     </Text>
                     <View style={styles.actions}>
                         <CustomButton
@@ -57,7 +57,7 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
                     </View>
                 </View>
                 <Text style={styles.subtitle}>
-                    {cadrmilData.localidades[period.localidade]}
+                    {cadrimilData.localidades[period.localidade]}
                 </Text>
                 <Text style={styles.dates}>
                     {DateHelpers.format(period.dataInicio, 'dd/MM/yyyy')} -{' '}

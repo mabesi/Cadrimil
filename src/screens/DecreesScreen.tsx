@@ -14,9 +14,9 @@ import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
 
 export function DecreesScreen() {
-    const { cadrmilData, loading } = useData();
+    const { cadrimilData, loading } = useData();
 
-    if (loading || !cadrmilData) {
+    if (loading || !cadrimilData) {
         return <LoadingSpinner message="Carregando decretos..." />;
     }
 
@@ -31,7 +31,7 @@ export function DecreesScreen() {
             <View style={styles.content}>
                 <Text style={styles.title}>Referências Legais</Text>
 
-                {cadrmilData.decretos.map((decreto, index) => (
+                {cadrimilData.decretos.map((decreto, index) => (
                     <View key={index} style={styles.decreeCard}>
                         <Text style={styles.decreeTitle}>{decreto.title}</Text>
                         <View style={styles.decreeInfo}>

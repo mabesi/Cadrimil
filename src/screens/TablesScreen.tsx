@@ -14,16 +14,16 @@ import { GlobalStyles } from '../constants/styles';
 import { formatCurrency } from '../utils/formatters';
 
 export function TablesScreen() {
-    const { cadrmilData, loading } = useData();
+    const { cadrimilData, loading } = useData();
     const [gruposExpanded, setGruposExpanded] = useState(false);
     const [localidadesExpanded, setLocalidadesExpanded] = useState(false);
 
-    if (loading || !cadrmilData) {
+    if (loading || !cadrimilData) {
         return <LoadingSpinner message="Carregando tabelas..." />;
     }
 
-    const grupoKeys = Object.keys(cadrmilData.grupos);
-    const localidadeKeys = Object.keys(cadrmilData.localidades);
+    const grupoKeys = Object.keys(cadrimilData.grupos);
+    const localidadeKeys = Object.keys(cadrimilData.localidades);
 
     return (
         <ScrollView style={GlobalStyles.container}>
@@ -48,7 +48,7 @@ export function TablesScreen() {
                                 ]}
                             >
                                 <Text style={styles.grupoCode}>{grupo}</Text>
-                                <Text style={styles.grupoDesc}>{cadrmilData.grupos[grupo]}</Text>
+                                <Text style={styles.grupoDesc}>{cadrimilData.grupos[grupo]}</Text>
                             </View>
                         ))}
                     </View>
@@ -74,7 +74,7 @@ export function TablesScreen() {
                                 ]}
                             >
                                 <Text style={styles.locCode}>{loc}</Text>
-                                <Text style={styles.locDesc}>{cadrmilData.localidades[loc]}</Text>
+                                <Text style={styles.locDesc}>{cadrimilData.localidades[loc]}</Text>
                             </View>
                         ))}
                     </View>
@@ -95,7 +95,7 @@ export function TablesScreen() {
                             {localidadeKeys.map(loc => (
                                 <View key={loc} style={[styles.diariasHeaderCell, styles.valueColumn]}>
                                     <Text style={styles.diariasHeaderText} numberOfLines={2}>
-                                        {cadrmilData.localidades[loc]}
+                                        {cadrimilData.localidades[loc]}
                                     </Text>
                                 </View>
                             ))}
@@ -114,10 +114,10 @@ export function TablesScreen() {
                                     {grupo}
                                 </Text>
                                 <Text style={[styles.diariasCell, styles.descColumn]}>
-                                    {cadrmilData.grupos[grupo]}
+                                    {cadrimilData.grupos[grupo]}
                                 </Text>
                                 {localidadeKeys.map(loc => {
-                                    const valor = cadrmilData.diarias[grupo][loc];
+                                    const valor = cadrimilData.diarias[grupo][loc];
                                     return (
                                         <Text key={loc} style={[styles.diariasCell, styles.valueColumn]}>
                                             {valor ? formatCurrency(valor) : 'N/D'}
@@ -131,9 +131,9 @@ export function TablesScreen() {
 
                 {/* AED */}
                 <View style={styles.aedContainer}>
-                    <Text style={styles.aedTitle}>{cadrmilData.aed.title}</Text>
+                    <Text style={styles.aedTitle}>{cadrimilData.aed.title}</Text>
                     <Text style={styles.aedValue}>
-                        R$ {formatCurrency(cadrmilData.aed.value)}
+                        R$ {formatCurrency(cadrimilData.aed.value)}
                     </Text>
                     <Text style={styles.aedSubtext}>Valor por militar</Text>
                 </View>

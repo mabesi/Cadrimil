@@ -1,10 +1,10 @@
 // Data Context for managing Cadrimil API data
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CadrmilData } from '../types';
-import { loadCadrmilDataWithRetry } from '../services/api';
+import { CadrimilData } from '../types';
+import { loadCadrimilDataWithRetry } from '../services/api';
 
 interface DataContextType {
-    cadrmilData: CadrmilData | null;
+    cadrimilData: CadrimilData | null;
     loading: boolean;
     error: string | null;
     reloadData: () => Promise<void>;
@@ -13,7 +13,7 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: ReactNode }) {
-    const [cadrmilData, setCadrmilData] = useState<CadrmilData | null>(null);
+    const [cadrimilData, setCadrimilData] = useState<CadrimilData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -21,8 +21,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         try {
             setLoading(true);
             setError(null);
-            const data = await loadCadrmilDataWithRetry();
-            setCadrmilData(data);
+            const data = await loadCadrimilDataWithRetry();
+            setCadrimilData(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
             console.error('Error loading data:', err);
@@ -40,7 +40,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <DataContext.Provider value={{ cadrmilData, loading, error, reloadData }}>
+        <DataContext.Provider value={{ cadrimilData, loading, error, reloadData }}>
             {children}
         </DataContext.Provider>
     );
