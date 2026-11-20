@@ -7,6 +7,15 @@ import { DateHelpers } from './dateHelpers';
 import { calcularDiarias, getValorDiaria } from './calculations';
 import { formatCurrency } from './formatters';
 
+function formatMetaDate(value: string | undefined): string | null {
+  if (!value) return null;
+
+  const parsed = DateHelpers.parseISO(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  return DateHelpers.format(parsed, 'dd/MM/yyyy');
+}
+
 /**
  * Generate HTML content for PDF
  */
@@ -40,6 +49,14 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
 
   const totalMilitares = mission.periodos.reduce((sum, p) => sum + p.quantidadeMilitares, 0);
   const aedTotal = mission.incluirAED ? data.aed.value * totalMilitares : 0;
+
+  const validFrom = formatMetaDate(data.meta?.validFrom);
+  const updatedAt = formatMetaDate(data.meta?.updatedAt);
+  const dataValidity = validFrom
+    ? `Tabela de valores com vigência desde ${validFrom}.`
+    : updatedAt
+      ? `Tabela de valores atualizada em ${updatedAt}.`
+      : '';
 
   return `
     <!DOCTYPE html>
@@ -158,6 +175,7 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
         </div>
         
         <div class="footer">
+          ${dataValidity ? `<p>${dataValidity}</p>` : ''}
           <p><strong>Referências Legais:</strong></p>
           ${mission.decretosReferencia.map(d => `<p>• ${d.decree}, de ${d.date}</p>`).join('')}
           <p style="margin-top: 15px;">Relatório gerado pelo aplicativo Cadrimil</p>

@@ -8,25 +8,22 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { useData } from '../context/DataContext';
-import { LoadingSpinner } from '../components/LoadingSpinner';
+import { DataStatusBanner } from '../components/DataStatusBanner';
 import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
 import { formatCurrency } from '../utils/formatters';
 
 export function TablesScreen() {
-    const { cadrimilData, loading } = useData();
+    const { cadrimilData } = useData();
     const [gruposExpanded, setGruposExpanded] = useState(false);
     const [localidadesExpanded, setLocalidadesExpanded] = useState(false);
-
-    if (loading || !cadrimilData) {
-        return <LoadingSpinner message="Carregando tabelas..." />;
-    }
 
     const grupoKeys = Object.keys(cadrimilData.grupos);
     const localidadeKeys = Object.keys(cadrimilData.localidades);
 
     return (
         <ScrollView style={GlobalStyles.container}>
+            <DataStatusBanner />
             <View style={styles.content}>
                 {/* Tabela de Grupos */}
                 <TouchableOpacity

@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "updatedAt": "2026-11-20",
+    "validFrom": "2024-12-19",
+    "source": "Fallback embutido — Decreto nº 12.324/2024"
+  },
+  "decretos": [
+    {
+      "title": "Decreto de Regulamentação (LRM)",
+      "decree": "Decreto nº 4.307",
+      "date": "18 de julho de 2002",
+      "link": "https://www.planalto.gov.br/ccivil_03/decreto/2002/D4307.htm"
+    },
+    {
+      "title": "Tabela de Diárias Militares",
+      "decree": "Decreto nº 12.324",
+      "date": "19 de dezembro de 2024",
+      "link": "https://www.planalto.gov.br/ccivil_03/_Ato2023-2026/2024/Decreto/D12324.htm"
+    },
+    {
+      "title": "Adicional de Embarque e Desembarque",
+      "decree": "Decreto nº 6.907",
+      "date": "21 de julho de 2009",
+      "link": "https://www.planalto.gov.br/ccivil_03/_Ato2007-2010/2009/Decreto/D6907.htm#art8"
+    }
+  ],
+  "aed": {
+    "title": "Adicional de Embarque e Desembarque",
+    "value": 95
+  },
+  "grupos": {
+    "A": "Comandantes",
+    "B": "Oficiais-Generais",
+    "C": "Oficiais-Superiores",
+    "D": "Demais Oficiais e Aspirantes",
+    "E": "Suboficiais, Subtenentes, Sargentos e Cadetes",
+    "F": "Alunos Oficiais, Colégio Naval e Escolas Prep.",
+    "G": "Demais Praças e Praças Especiais"
+  },
+  "localidades": {
+    "1": "BR, MN, RJ e SP",
+    "2": "Demais Capitais",
+    "3": "Demais Cidades"
+  },
+  "diarias": {
+    "A": {
+      "1": 800,
+      "2": 700,
+      "3": 650
+    },
+    "B": {
+      "1": 600,
+      "2": 515,
+      "3": 455
+    },
+    "C": {
+      "1": 510,
+      "2": 450,
+      "3": 395
+    },
+    "D": {
+      "1": 425,
+      "2": 380,
+      "3": 335
+    },
+    "E": {
+      "1": 425,
+      "2": 380,
+      "3": 335
+    },
+    "F": {
+      "1": 355,
+      "2": 315,
+      "3": 280
+    },
+    "G": {
+      "1": 355,
+      "2": 315,
+      "3": 280
+    }
+  }
+}

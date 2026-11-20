@@ -20,7 +20,7 @@ import { CustomSelect } from '../components/CustomSelect';
 import { CustomButton } from '../components/CustomButton';
 import { CustomCheckbox } from '../components/CustomCheckbox';
 import { PeriodCard } from '../components/PeriodCard';
-import { LoadingSpinner } from '../components/LoadingSpinner';
+import { DataStatusBanner } from '../components/DataStatusBanner';
 import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
 import { exportPDF } from '../utils/pdfGenerator';
@@ -28,7 +28,7 @@ import { DateHelpers } from '../utils/dateHelpers';
 import { formatCurrency } from '../utils/formatters';
 
 export function CalculatorScreen() {
-    const { cadrimilData, loading } = useData();
+    const { cadrimilData } = useData();
     const {
         currentMissionState,
         currentPeriods,
@@ -66,10 +66,6 @@ export function CalculatorScreen() {
         setContarInteiro(false);
         setEditingPeriodId(null);
     }, [currentMissionState]);
-
-    if (loading || !cadrimilData) {
-        return <LoadingSpinner message="Carregando dados..." />;
-    }
 
     const localidadeOptions = Object.keys(cadrimilData.localidades).map(key => ({
         label: cadrimilData.localidades[key],
@@ -223,6 +219,7 @@ export function CalculatorScreen() {
 
     return (
         <ScrollView style={GlobalStyles.container}>
+            <DataStatusBanner />
             <View style={styles.content}>
                 {/* Nome da Missão e Importar */}
                 <View style={styles.missionHeaderRow}>

@@ -38,6 +38,40 @@ function isDecreto(value: unknown): value is Decreto {
     );
 }
 
+function isCadrimilMeta(value: unknown): boolean {
+    if (!isRecord(value)) return false;
+
+    if (
+        typeof value.schemaVersion !== 'number' ||
+        !Number.isInteger(value.schemaVersion) ||
+        value.schemaVersion < 1
+    ) {
+        return false;
+    }
+
+    if (
+        !isNonEmptyString(value.updatedAt) ||
+        Number.isNaN(new Date(value.updatedAt).getTime())
+    ) {
+        return false;
+    }
+
+    if (value.validFrom !== undefined) {
+        if (
+            !isNonEmptyString(value.validFrom) ||
+            Number.isNaN(new Date(value.validFrom).getTime())
+        ) {
+            return false;
+        }
+    }
+
+    if (value.source !== undefined && !isNonEmptyString(value.source)) {
+        return false;
+    }
+
+    return true;
+}
+
 function isDiarias(
     value: unknown,
     grupos: Record<string, string>,
@@ -66,6 +100,10 @@ function isDiarias(
  */
 export function isCadrimilData(value: unknown): value is CadrimilData {
     if (!isRecord(value)) return false;
+
+    if (value.meta !== undefined && !isCadrimilMeta(value.meta)) {
+        return false;
+    }
 
     if (!Array.isArray(value.decretos) || !value.decretos.every(isDecreto)) {
         return false;

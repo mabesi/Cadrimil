@@ -9,16 +9,12 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { useData } from '../context/DataContext';
-import { LoadingSpinner } from '../components/LoadingSpinner';
+import { DataStatusBanner } from '../components/DataStatusBanner';
 import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
 
 export function DecreesScreen() {
-    const { cadrimilData, loading } = useData();
-
-    if (loading || !cadrimilData) {
-        return <LoadingSpinner message="Carregando decretos..." />;
-    }
+    const { cadrimilData } = useData();
 
     const handleOpenLink = (url: string) => {
         Linking.openURL(url).catch(err => {
@@ -28,6 +24,7 @@ export function DecreesScreen() {
 
     return (
         <ScrollView style={GlobalStyles.container}>
+            <DataStatusBanner />
             <View style={styles.content}>
                 <Text style={styles.title}>Referências Legais</Text>
 

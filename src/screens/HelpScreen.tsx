@@ -226,6 +226,8 @@ export function HelpScreen() {
                         • Consulte o valor do Adicional de Embarque e Desembarque (AED).
                         {'\n'}
                         • As tabelas são atualizadas conforme a legislação vigente.
+                        {'\n'}
+                        • Sem conexão, o app usa a última tabela salva no dispositivo ou a tabela embutida e indica a data de vigência.
                     </Text>
                 </AccordionItem>
 

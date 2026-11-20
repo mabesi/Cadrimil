@@ -26,7 +26,15 @@ export type Diarias = {
     };
 };
 
+export interface CadrimilMeta {
+    schemaVersion: number;
+    updatedAt: string;
+    validFrom?: string;
+    source?: string;
+}
+
 export interface CadrimilData {
+    meta?: CadrimilMeta;
     decretos: Decreto[];
     aed: AED;
     grupos: Grupos;

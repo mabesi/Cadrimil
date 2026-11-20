@@ -52,7 +52,7 @@ Cada lição recebe uma classificação:
 | L-015 | Documentação verificada contra o código | `BASE` | Adotado |
 | L-016 | Dependências, lockfile e auditoria | `BASE` | Adotado |
 | L-017 | Configuração local obrigatória e não versionada | `BASE` | Adotado |
-| L-018 | Funcionamento offline e cache | `ADAPT` | Pendente |
+| L-018 | Funcionamento offline e cache | `ADAPT` | Adotado |
 | L-019 | Estados de erro, carregamento e vazio | `BASE` | Parcial |
 | L-020 | Segurança de importação, exportação e HTML | `BASE` | Parcial |
 | L-021 | Versionamento de schema e migração de dados | `BASE` | Pendente |
@@ -80,7 +80,7 @@ Cada lição recebe uma classificação:
 ### O que precisa amadurecer
 
 - **Sem testes automatizados, lint ou CI**: a validação dependia de `tsc`, `expo-doctor` e teste manual.
-- **Sem cache/offline**: se a API falhar, o app não tem dados para calcular.
+- **Atualização offline ainda básica**: há fallback e cache, mas falta sincronização em background e teste automatizado do fluxo.
 - **Sem versionamento de schema**: o JSON remoto e as missões salvas não têm `schemaVersion` nem migração.
 - **Strings em português hardcoded**: não há i18n.
 - **Sem observabilidade**: não há crash reporting, analytics ou logs estruturados.
@@ -94,6 +94,7 @@ Cada lição recebe uma classificação:
 | Estratégia | Como apareceu no Cadrimil | Tag | Por que reutilizar |
 |---|---|---|---|
 | Dados externos em JSON | `https://apps.mabesi.dev/cadrimil/api.json` alimenta tabelas, grupos, localidades, AED e decretos | `BASE` | Atualização de conteúdo sem publicar novo app |
+| Fallback offline em 3 camadas | API → cache local → JSON embutido, com banner de origem e data | `BASE` | Garante cálculo na primeira execução offline |
 | Validação de contrato | `isCadrimilData` valida o JSON antes de entrar no estado | `BASE` | Evita crash e dados inválidos na UI |
 | Contextos separados | `DataContext` (remoto) e `MissionContext` (local/UI) | `BASE` | Reduz acoplamento e facilita testes |
 | Cálculos puros | `getValorDiaria`, `calcularDiarias`, `calculateTotal` | `BASE` | Regras testáveis, sem dependência de React |

@@ -10,6 +10,7 @@
 - **Gerenciamento de Missões**: Salve, edite e exclua seus cálculos para consulta futura.
 - **Importação e Exportação**: Exporte missões em `.cmil` (JSON) e importe arquivos `.json`. O app também reconhece e abre arquivos `.cmil` diretamente pelo sistema.
 - **Tabelas de Valores**: Consulte valores atualizados de diárias e Adicional de Embarque/Desembarque (AED).
+- **Funcionamento offline**: Usa a última tabela salva no dispositivo ou a tabela embutida no app quando a API não está acessível.
 - **Legislação**: Acesso rápido aos decretos que regulamentam as indenizações.
 - **Relatórios em PDF**: Gere e compartilhe o detalhamento dos cálculos em formato PDF.
 - **Interface Moderna**: Design profissional e minimalista, com gradientes e identidade visual própria.
