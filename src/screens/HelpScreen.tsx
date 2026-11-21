@@ -8,8 +8,6 @@ import {
     Image,
     Linking,
     LayoutAnimation,
-    Platform,
-    UIManager,
     Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -17,7 +15,6 @@ import Constants from 'expo-constants';
 import { RewardedAd, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
 import { GlobalStyles } from '../constants/styles';
 import { Colors } from '../constants/colors';
-import { CustomButton } from '../components/CustomButton';
 
 
 
@@ -146,82 +143,138 @@ export function HelpScreen() {
                     <Text style={styles.text}>
                         A aba "Cálculo" é a principal ferramenta para simular os valores a receber.
                         {'\n\n'}
-                        <Text style={styles.bold}>Passo a Passo:</Text>
+                        <Text style={styles.bold}>Passo a passo:</Text>
                         {'\n'}
-                        1. <Text style={styles.bold}>Grupo de Militares:</Text> Selecione o seu círculo hierárquico (ex: Oficiais Generais, Oficiais Superiores, Praças, etc).
+                        1. <Text style={styles.bold}>Localidade:</Text> escolha o destino da missão. A localidade influencia o valor da diária.
                         {'\n'}
-                        2. <Text style={styles.bold}>Localidade:</Text> Escolha o destino da missão. As localidades influenciam o valor da diária (ex: Capital Federal, Outras Capitais, Deslocamentos no Exterior).
+                        2. <Text style={styles.bold}>Grupo:</Text> selecione o círculo hierárquico correspondente.
                         {'\n'}
-                        3. <Text style={styles.bold}>Período:</Text> Selecione a data de início e a data de fim da missão nos calendários.
+                        3. <Text style={styles.bold}>QTD:</Text> informe a quantidade de militares do grupo naquele período.
                         {'\n'}
-                        4. <Text style={styles.bold}>Adicionar:</Text> Clique no botão "ADICIONAR". O app calculará automaticamente a quantidade de dias e o valor total para aquele trecho.
+                        4. <Text style={styles.bold}>Período:</Text> selecione as datas de início e fim da missão.
+                        {'\n'}
+                        5. <Text style={styles.bold}>Adicionar:</Text> toque em "ADICIONAR". O app calcula a quantidade de diárias e o valor daquele trecho.
                         {'\n\n'}
-                        <Text style={styles.bold}>Gerenciando Períodos:</Text>
+                        <Text style={styles.bold}>Opções do período:</Text>
                         {'\n'}
-                        • <Text style={styles.bold}>Editar (✏️):</Text> Toque no ícone de lápis no cartão do período para carregar os dados de volta no formulário. Faça as alterações e clique em "ATUALIZAR".
+                        • <Text style={styles.bold}>Último dia inteiro:</Text> marque "Contar
+                        último dia como diária inteira (1.0)" quando o último dia também deve
+                        ser pago integralmente. Sem a marcação, ele conta como meia diária.
                         {'\n'}
-                        • <Text style={styles.bold}>Excluir (🗑️):</Text> Toque no ícone de lixeira para remover um período. Uma confirmação será solicitada para evitar exclusões acidentais.
+                        • <Text style={styles.bold}>AED:</Text> em "Opções Adicionais", marque
+                        "Incluir Adicional de Embarque e Desembarque" para somar o AED ao total.
                         {'\n\n'}
-                        <Text style={styles.note}>Nota: Você pode adicionar múltiplos períodos (trechos) na mesma simulação. O total geral será exibido no final da tela.</Text>
+                        <Text style={styles.bold}>Gerenciando períodos:</Text>
+                        {'\n'}
+                        • <Text style={styles.bold}>Editar (✏️):</Text> toque no lápis do cartão do período. O formulário é preenchido e a tela volta ao topo; altere os dados e toque em "ATUALIZAR".
+                        {'\n'}
+                        • <Text style={styles.bold}>Excluir (🗑️):</Text> toque na lixeira e confirme a exclusão para remover o período.
+                        {'\n\n'}
+                        <Text style={styles.note}>Nota: você pode adicionar vários períodos na mesma missão. O total geral aparece no final da tela.</Text>
+                    </Text>
+                </AccordionItem>
+
+                <AccordionItem title="Minhas Missões">
+                    <Text style={styles.paragraph}>
+                        Use esta opção quando você faz parte de um dos grupos lançados e quer
+                        acompanhar apenas os seus valores individuais.
+                    </Text>
+
+                    <Text style={styles.text}>
+                        <Text style={styles.bold}>Como registrar:</Text>
+                        {'\n'}
+                        1. Selecione o seu grupo no formulário de cálculo.
+                        {'\n'}
+                        2. Marque a opção "Registrar em Minhas Missões", logo abaixo de
+                        "Contar último dia como diária inteira".
+                        {'\n'}
+                        3. O app exibirá "Meu grupo: ...". Esse é o grupo usado no cálculo
+                        individual.
+                        {'\n'}
+                        4. Salve a missão normalmente.
+                        {'\n\n'}
+                        Para trocar o grupo registrado, desmarque e marque novamente a opção
+                        com o grupo correto selecionado.
+                    </Text>
+
+                    <Text style={styles.subtitle}>Visualização</Text>
+                    <Text style={styles.paragraph}>
+                        Na aba "Missões", a seção "Minhas Missões" fica recolhida por padrão.
+                        Toque no cabeçalho para expandir e ver os cartões com apenas os seus
+                        períodos, as suas diárias, o AED (quando incluído) e o total individual.
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        Ao final da seção é exibido o total recebido por você, somando todas as
+                        missões registradas.
+                    </Text>
+
+                    <Text style={styles.note}>
+                        Os valores são preservados no momento do lançamento. Uma atualização da
+                        tabela de diárias não altera missões já salvas.
                     </Text>
                 </AccordionItem>
 
                 <AccordionItem title="Gerenciando Missões">
                     <Text style={styles.paragraph}>
-                        Na aba "Missões", você pode ver todas as missões salvas. Use os botões nos cartões de missão para gerenciá-las.
+                        A aba "Missões" possui duas seções: "Minhas Missões", com a visão
+                        individual, e "Todas as Missões", com a visão completa dos gastos de
+                        todos os grupos e militares.
                     </Text>
 
-                    <Text style={styles.subtitle}>Minhas Missões</Text>
+                    <Text style={styles.subtitle}>Todas as Missões</Text>
                     <Text style={styles.paragraph}>
-                        Para acompanhar apenas os seus valores, selecione o seu grupo ao lançar
-                        um período e marque a opção "Registrar em Minhas Missões". A seção
-                        "Minhas Missões" exibirá somente os períodos e valores do seu grupo,
-                        sem os demais militares ou grupos.
-                    </Text>
-
-                    <Text style={styles.subtitle}>Funcionalidades Principais</Text>
-
-                    <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>✏️ Editar:</Text> Toque no ícone de lápis (botão azul) para carregar a missão de volta na calculadora. Você poderá alterar datas, localidades, grupos e salvar as modificações.
+                        Os cartões mostram o nome da missão, a quantidade de períodos, se o AED
+                        foi incluído e o valor total. Use os botões para editar, excluir ou
+                        exportar.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>🗑️ Excluir:</Text> Toque no ícone de lixeira (botão vermelho) para remover a missão permanentemente do seu histórico.
+                        <Text style={styles.bold}>✏️ Editar:</Text> carrega a missão na
+                        calculadora. Para alterar um período, toque no lápis do cartão do
+                        período; o formulário é preenchido e a tela volta ao topo.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>📤 Exportar:</Text> Toque no ícone de compartilhamento (botão verde) para gerar um arquivo `.cmil`. Você pode enviar este arquivo via WhatsApp, E-mail ou salvar em seus arquivos para backup.
+                        <Text style={styles.bold}>🗑️ Excluir:</Text> remove a missão do
+                        histórico após confirmação.
+                    </Text>
+
+                    <Text style={styles.paragraph}>
+                        <Text style={styles.bold}>📤 Exportar:</Text> gera um arquivo `.cmil`
+                        com os dados e os valores históricos da missão para backup ou
+                        compartilhamento.
                     </Text>
 
                     <Text style={styles.subtitle}>Importando Missões</Text>
                     <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>📥 Importar:</Text> Na aba "Cálculo", ao lado do campo de nome da missão, existe um botão de importação.
-                        {'\n'}
-                        1. Toque no botão 📥.
-                        {'\n'}
-                        2. Selecione um arquivo `.cmil` ou `.json` que você recebeu ou salvou anteriormente.
-                        {'\n'}
-                        3. A missão será carregada automaticamente na calculadora.
+                        <Text style={styles.bold}>📥 Importar:</Text> na aba "Cálculo", ao lado
+                        do nome da missão, toque no botão de importação e selecione um arquivo
+                        `.json`. Para arquivos `.cmil`, abra diretamente pelo WhatsApp ou
+                        gerenciador de arquivos; o Cadrimil reconhece a extensão.
                     </Text>
-
-                    <Text style={styles.note}>
-                        Dica: Se você receber um arquivo `.cmil` pelo WhatsApp, pode tentar abri-lo diretamente com o Cadrimil.
+                    <Text style={styles.paragraph}>
+                        Missões importadas preservam os valores históricos gravados no arquivo.
+                        Arquivos antigos sem esses valores são congelados com a tabela
+                        disponível no momento da importação.
                     </Text>
                 </AccordionItem>
 
                 <AccordionItem title="Gerando Relatórios (PDF)">
                     <Text style={styles.text}>
-                        Você pode gerar um relatório detalhado da sua simulação para imprimir ou compartilhar.
+                        Você pode gerar um relatório detalhado da simulação para imprimir ou
+                        compartilhar.
                         {'\n\n'}
-                        <Text style={styles.bold}>Como Gerar:</Text>
+                        <Text style={styles.bold}>Como gerar:</Text>
                         {'\n'}
                         1. Adicione pelo menos um período na calculadora.
                         {'\n'}
-                        2. (Opcional) Marque a opção "Incluir Adicional de Embarque e Desembarque" se aplicável.
+                        2. Marque "Incluir Adicional de Embarque e Desembarque" se aplicável.
                         {'\n'}
-                        3. Clique no botão "Relatório PDF" no final da tela.
+                        3. Toque em "Relatório PDF" no final da tela.
                         {'\n\n'}
-                        O PDF incluirá todos os trechos, cálculos detalhados, referências legais e o valor total estimado. Você poderá salvar o arquivo ou compartilhá-lo via WhatsApp, E-mail, etc.
+                        O PDF inclui os períodos, os cálculos detalhados, o AED, as referências
+                        legais e o total. Ele usa os valores históricos da missão e indica a
+                        vigência da tabela utilizada.
                     </Text>
                 </AccordionItem>
 
@@ -229,13 +282,29 @@ export function HelpScreen() {
                     <Text style={styles.text}>
                         A aba "Tabelas" serve para consulta rápida dos valores vigentes.
                         {'\n\n'}
-                        • Visualize os valores de diárias organizados por Círculo Hierárquico (linhas) e Localidade (colunas).
+                        • Visualize as diárias organizadas por Círculo Hierárquico e
+                        Localidade.
                         {'\n'}
                         • Consulte o valor do Adicional de Embarque e Desembarque (AED).
                         {'\n'}
                         • As tabelas são atualizadas conforme a legislação vigente.
                         {'\n'}
-                        • Sem conexão, o app usa a última tabela salva no dispositivo ou a tabela embutida e indica a data de vigência.
+                        • Missões já salvas mantêm os valores da época; a tabela atual vale
+                        para novos cálculos.
+                    </Text>
+                </AccordionItem>
+
+                <AccordionItem title="Funcionamento Offline">
+                    <Text style={styles.text}>
+                        O app tenta atualizar a tabela de valores pela API. Se não conseguir
+                        acessar, usa a última tabela salva no dispositivo ou a tabela embutida
+                        no aplicativo.
+                        {'\n\n'}
+                        • Um aviso na tela informa a fonte e a data da tabela em uso.
+                        {'\n'}
+                        • Toque em "Tentar atualizar" para buscar a versão mais recente.
+                        {'\n'}
+                        • Missões salvas continuam disponíveis e mantêm os valores históricos.
                     </Text>
                 </AccordionItem>
 
@@ -410,12 +479,14 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: Colors.textSecondary,
         lineHeight: 18,
+        textAlign: 'justify',
     },
     paragraph: {
         fontSize: 14,
         color: Colors.textSecondary,
         lineHeight: 18,
         marginBottom: 8, // Reduced from 12
+        textAlign: 'justify',
     },
     subtitle: {
         fontSize: 16,
@@ -433,6 +504,7 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         color: Colors.textMuted,
         marginTop: 4, // Reduced from 6
+        textAlign: 'justify',
     },
     footer: {
         marginTop: 20, // Reduced from 30
