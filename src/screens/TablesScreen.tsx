@@ -29,6 +29,8 @@ export function TablesScreen() {
                 <TouchableOpacity
                     style={styles.collapsibleHeader}
                     onPress={() => setGruposExpanded(!gruposExpanded)}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: gruposExpanded }}
                 >
                     <Text style={styles.sectionTitle}>Grupos de Militares</Text>
                     <Text style={styles.collapseIcon}>{gruposExpanded ? '▼' : '▶'}</Text>
@@ -55,6 +57,8 @@ export function TablesScreen() {
                 <TouchableOpacity
                     style={styles.collapsibleHeader}
                     onPress={() => setLocalidadesExpanded(!localidadesExpanded)}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: localidadesExpanded }}
                 >
                     <Text style={styles.sectionTitle}>Localidades</Text>
                     <Text style={styles.collapseIcon}>{localidadesExpanded ? '▼' : '▶'}</Text>

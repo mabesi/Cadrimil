@@ -14,6 +14,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import {
     AdsConsent,
     AdsConsentPrivacyOptionsRequirementStatus,
@@ -156,6 +157,8 @@ export function HelpScreen() {
                 style={styles.accordionHeader}
                 onPress={() => toggleSection(title)}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: expandedSection === title }}
             >
                 <Text style={styles.accordionTitle}>{title}</Text>
                 <Text style={styles.accordionIcon}>
@@ -172,8 +175,14 @@ export function HelpScreen() {
 
     return (
         <View style={GlobalStyles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <ExpoStatusBar style="dark" />
+            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={styles.backButton}
+                    accessibilityRole="button"
+                    accessibilityLabel="Voltar"
+                >
                     <Text style={styles.backButtonText}>← Voltar</Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Ajuda</Text>
@@ -184,7 +193,7 @@ export function HelpScreen() {
                 style={styles.content}
                 contentContainerStyle={[
                     styles.scrollContent,
-                    { paddingBottom: insets.bottom + 96 },
+                    { paddingBottom: insets.bottom + 24 },
                 ]}
             >
 
@@ -198,6 +207,8 @@ export function HelpScreen() {
                             style={styles.customDonationButton}
                             onPress={handleDonation}
                             activeOpacity={0.7}
+                            accessibilityRole="button"
+                            accessibilityLabel="Fazer doação"
                         >
                             <Text style={styles.heartIcon}>❤️</Text>
                             <Text style={styles.donationButtonText}>DOAR</Text>
@@ -212,6 +223,8 @@ export function HelpScreen() {
                             onPress={handleWatchAd}
                             activeOpacity={0.7}
                             disabled={!adsAllowed}
+                            accessibilityRole="button"
+                            accessibilityState={{ disabled: !adsAllowed }}
                         >
                             <Text style={styles.adIcon}>📺</Text>
                             <Text style={styles.adButtonText}>{adButtonLabel}</Text>
@@ -219,7 +232,7 @@ export function HelpScreen() {
                     </View>
 
                     {error && (
-                        <Text style={styles.adErrorText}>
+                        <Text style={styles.adErrorText} accessibilityLiveRegion="polite">
                             Não foi possível carregar o anúncio.
                         </Text>
                     )}
@@ -229,6 +242,8 @@ export function HelpScreen() {
                             style={styles.privacyButton}
                             onPress={handlePrivacyOptions}
                             activeOpacity={0.7}
+                            accessibilityRole="button"
+                            accessibilityLabel="Opções de privacidade"
                         >
                             <Text style={styles.privacyText}>
                                 Opções de privacidade
@@ -436,7 +451,11 @@ export function HelpScreen() {
                         />
                         <View style={styles.devInfo}>
                             <Text style={styles.devName}>Mabesi Apps</Text>
-                            <TouchableOpacity onPress={openDeveloperSite}>
+                            <TouchableOpacity
+                                onPress={openDeveloperSite}
+                                accessibilityRole="link"
+                                accessibilityLabel="Abrir site do desenvolvedor"
+                            >
                                 <Text style={styles.devLink}>apps.mabesi.dev</Text>
                             </TouchableOpacity>
                         </View>

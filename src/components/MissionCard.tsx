@@ -79,13 +79,28 @@ export function MissionCard({ mission, onEdit, onDelete }: MissionCardProps) {
             </View>
 
             <View style={styles.actionsContainer}>
-                <TouchableOpacity onPress={onDelete} style={[styles.iconButton, { backgroundColor: Colors.danger }]}>
+                <TouchableOpacity
+                    onPress={onDelete}
+                    style={[styles.iconButton, { backgroundColor: Colors.danger }]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Excluir missão"
+                >
                     <Text style={styles.iconText}>🗑️</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onEdit} style={[styles.iconButton, { backgroundColor: Colors.primary }]}>
+                <TouchableOpacity
+                    onPress={onEdit}
+                    style={[styles.iconButton, { backgroundColor: Colors.primary }]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Editar missão"
+                >
                     <Text style={styles.iconText}>✏️</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleExport} style={[styles.iconButton, { backgroundColor: Colors.success }]}>
+                <TouchableOpacity
+                    onPress={handleExport}
+                    style={[styles.iconButton, { backgroundColor: Colors.success }]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Exportar missão"
+                >
                     <Text style={styles.iconText}>📤</Text>
                 </TouchableOpacity>
             </View>

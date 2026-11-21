@@ -3,17 +3,19 @@ import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../constants/colors';
 
 export function Header() {
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
 
     return (
         <LinearGradient
             colors={[Colors.gradientStart, Colors.gradientEnd]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
-            style={styles.container}
+            style={[styles.container, { paddingTop: insets.top + 8 }]}
         >
             <View style={styles.logoContainer}>
                 <Image
@@ -24,6 +26,8 @@ export function Header() {
                 <TouchableOpacity
                     style={styles.helpButton}
                     onPress={() => navigation.navigate('Ajuda' as never)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Abrir ajuda"
                 >
                     <Text style={styles.helpIcon}>?</Text>
                 </TouchableOpacity>
@@ -34,7 +38,6 @@ export function Header() {
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: 48,
         paddingBottom: 16,
         paddingHorizontal: 16,
         justifyContent: 'center',

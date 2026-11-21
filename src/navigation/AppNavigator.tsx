@@ -1,5 +1,6 @@
 // App Navigator with Bottom Tabs and Stack
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { CalculatorScreen } from '../screens/CalculatorScreen';
@@ -7,11 +8,21 @@ import { MissionsScreen } from '../screens/MissionsScreen';
 import { TablesScreen } from '../screens/TablesScreen';
 import { DecreesScreen } from '../screens/DecreesScreen';
 import { HelpScreen } from '../screens/HelpScreen';
+import { Header } from '../components/Header';
 import { Colors } from '../constants/colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+function MainScreen() {
+    return (
+        <View style={styles.main}>
+            <Header />
+            <TabNavigator />
+        </View>
+    );
+}
 
 function TabNavigator() {
     const insets = useSafeAreaInsets();
@@ -41,6 +52,7 @@ function TabNavigator() {
                 component={CalculatorScreen}
                 options={{
                     tabBarLabel: 'Cálculo',
+                    tabBarAccessibilityLabel: 'Aba de cálculo de diárias',
                     tabBarIcon: ({ color, size }) => (
                         <TabIcon name="calculator" color={color} size={size} />
                     ),
@@ -51,6 +63,7 @@ function TabNavigator() {
                 component={MissionsScreen}
                 options={{
                     tabBarLabel: 'Missões',
+                    tabBarAccessibilityLabel: 'Aba de missões salvas',
                     tabBarIcon: ({ color, size }) => (
                         <TabIcon name="folder" color={color} size={size} />
                     ),
@@ -61,6 +74,7 @@ function TabNavigator() {
                 component={TablesScreen}
                 options={{
                     tabBarLabel: 'Tabelas',
+                    tabBarAccessibilityLabel: 'Aba de tabelas de valores',
                     tabBarIcon: ({ color, size }) => (
                         <TabIcon name="table" color={color} size={size} />
                     ),
@@ -71,6 +85,7 @@ function TabNavigator() {
                 component={DecreesScreen}
                 options={{
                     tabBarLabel: 'Decretos',
+                    tabBarAccessibilityLabel: 'Aba de decretos e legislação',
                     tabBarIcon: ({ color, size }) => (
                         <TabIcon name="book" color={color} size={size} />
                     ),
@@ -83,12 +98,12 @@ function TabNavigator() {
 export function AppNavigator() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Screen name="Main" component={MainScreen} />
             <Stack.Screen
                 name="Ajuda"
                 component={HelpScreen}
                 options={{
-                    headerShown: false, // We use the global header
+                    headerShown: false,
                     presentation: 'card'
                 }}
             />
@@ -105,11 +120,15 @@ function TabIcon({ name, color, size }: { name: string; color: string; size: num
         book: '📖',
     };
 
-    const { Text } = require('react-native');
-
     return (
         <Text style={{ fontSize: size, color }}>
             {icons[name] || '•'}
         </Text>
     );
 }
+
+const styles = StyleSheet.create({
+    main: {
+        flex: 1,
+    },
+});

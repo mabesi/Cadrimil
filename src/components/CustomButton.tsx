@@ -10,6 +10,7 @@ interface CustomButtonProps {
     variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'outline';
     disabled?: boolean;
     style?: ViewStyle;
+    accessibilityLabel?: string;
 }
 
 export function CustomButton({
@@ -18,7 +19,8 @@ export function CustomButton({
     onPress,
     variant = 'primary',
     disabled = false,
-    style
+    style,
+    accessibilityLabel,
 }: CustomButtonProps) {
 
     const buttonStyle = [
@@ -39,6 +41,9 @@ export function CustomButton({
             onPress={onPress}
             disabled={disabled}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={accessibilityLabel ?? title}
+            accessibilityState={{ disabled }}
         >
             {subtitle ? (
                 <View style={styles.textContainer}>

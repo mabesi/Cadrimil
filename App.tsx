@@ -5,7 +5,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { DataProvider } from './src/context/DataContext';
 import { MissionProvider, useMission } from './src/context/MissionContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
-import { Header } from './src/components/Header';
 import { View, StyleSheet, Text, Alert } from 'react-native';
 import * as Linking from 'expo-linking';
 import { isLocalFileUrl, isMissionFileUrl, readMissionFile } from './src/utils/missionImport';
@@ -50,7 +49,12 @@ const linking: any = {
 };
 
 function DeepLinkHandler() {
-  const { loadMissionFromObject } = useMission();
+  const { importMission } = useMission();
+  const importMissionRef = React.useRef(importMission);
+
+  React.useEffect(() => {
+    importMissionRef.current = importMission;
+  }, [importMission]);
 
   React.useEffect(() => {
     const handleDeepLink = async (event: { url: string }) => {
@@ -65,7 +69,7 @@ function DeepLinkHandler() {
         return;
       }
 
-      loadMissionFromObject(imported.mission);
+      await importMissionRef.current(imported.mission);
     };
 
     const subscription = Linking.addEventListener('url', handleDeepLink);
@@ -79,7 +83,7 @@ function DeepLinkHandler() {
     return () => {
       subscription.remove();
     };
-  }, [loadMissionFromObject]);
+  }, []);
 
   return null;
 }
@@ -91,11 +95,8 @@ export default function App() {
         <MissionProvider>
           <DeepLinkHandler />
           <View style={styles.container}>
-            <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
-              <View style={styles.content}>
-                <Header />
-                <AppNavigator />
-              </View>
+            <NavigationContainer linking={linking} fallback={<Text>Carregando...</Text>}>
+              <AppNavigator />
             </NavigationContainer>
             <StatusBar style="light" />
           </View>
@@ -107,9 +108,6 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  content: {
     flex: 1,
   },
 });

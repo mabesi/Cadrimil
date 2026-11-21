@@ -38,9 +38,18 @@ export function CustomSelect({
                     placeholder={{ label: placeholder, value: '' }}
                     style={pickerSelectStyles}
                     useNativeAndroidPickerStyle={false}
+                    textInputProps={{
+                        accessibilityLabel: `${label}: ${displayText}`,
+                    }}
                 />
                 {value && (
-                    <View style={styles.textOverlay} pointerEvents="none">
+                    <View
+                        style={styles.textOverlay}
+                        pointerEvents="none"
+                        accessible={false}
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                    >
                         <Text
                             style={styles.displayText}
                             numberOfLines={1}

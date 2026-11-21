@@ -41,6 +41,7 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
                             onPress={onRemove}
                             variant="danger"
                             style={styles.actionButton}
+                            accessibilityLabel="Excluir período"
                         />
                         {onEdit && (
                             <CustomButton
@@ -48,6 +49,7 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
                                 onPress={onEdit}
                                 variant="secondary"
                                 style={styles.actionButton}
+                                accessibilityLabel="Editar período"
                             />
                         )}
                     </View>

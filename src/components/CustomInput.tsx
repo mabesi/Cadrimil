@@ -15,6 +15,7 @@ export function CustomInput({ label, error, style, ...props }: CustomInputProps)
             <TextInput
                 style={[styles.input, error && styles.inputError, style]}
                 placeholderTextColor={Colors.textMuted}
+                accessibilityLabel={label}
                 {...props}
             />
             {error && <Text style={styles.errorText}>{error}</Text>}

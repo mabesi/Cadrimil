@@ -38,6 +38,8 @@ export function DecreesScreen() {
                         <TouchableOpacity
                             style={styles.linkButton}
                             onPress={() => handleOpenLink(decreto.link)}
+                            accessibilityRole="link"
+                            accessibilityLabel={`Abrir ${decreto.decree} no navegador`}
                         >
                             <Text style={styles.linkText}>[Ver na íntegra]</Text>
                         </TouchableOpacity>

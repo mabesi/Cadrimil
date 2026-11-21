@@ -24,7 +24,7 @@ interface MissionContextType {
     resetCalculator: () => void;
     setIncluirAED: (value: boolean) => void;
     loadSavedMissions: (migrateSnapshots?: boolean) => Promise<void>;
-    loadMissionFromObject: (mission: Mission) => void;
+    importMission: (mission: Mission) => Promise<boolean>;
 }
 
 const MissionContext = createContext<MissionContextType | undefined>(undefined);
@@ -311,6 +311,52 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         // valorTotal will be recalculated by useEffect
     };
 
+    const importMission = (mission: Mission): Promise<boolean> => {
+        const hasCurrentWork =
+            currentPeriods.length > 0 ||
+            currentMissionState.id !== null ||
+            currentMissionState.nomeMissao.trim().length > 0;
+
+        if (!hasCurrentWork) {
+            loadMissionFromObject(mission);
+            return Promise.resolve(true);
+        }
+
+        return new Promise(resolve => {
+            let settled = false;
+            const finish = (value: boolean) => {
+                if (!settled) {
+                    settled = true;
+                    resolve(value);
+                }
+            };
+
+            Alert.alert(
+                'Substituir cálculo atual?',
+                'A missão importada substituirá os dados do cálculo em andamento.',
+                [
+                    {
+                        text: 'Cancelar',
+                        style: 'cancel',
+                        onPress: () => finish(false),
+                    },
+                    {
+                        text: 'Importar',
+                        style: 'destructive',
+                        onPress: () => {
+                            loadMissionFromObject(mission);
+                            finish(true);
+                        },
+                    },
+                ],
+                {
+                    cancelable: true,
+                    onDismiss: () => finish(false),
+                }
+            );
+        });
+    };
+
     return (
         <MissionContext.Provider
             value={{
@@ -329,7 +375,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
                 resetCalculator,
                 setIncluirAED,
                 loadSavedMissions,
-                loadMissionFromObject,
+                importMission,
             }}
         >
             {children}

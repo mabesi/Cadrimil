@@ -15,6 +15,9 @@ export function CustomCheckbox({ label, value, onValueChange }: CustomCheckboxPr
             style={styles.container}
             onPress={() => onValueChange(!value)}
             activeOpacity={0.7}
+            accessibilityRole="checkbox"
+            accessibilityLabel={label}
+            accessibilityState={{ checked: value }}
         >
             <View style={[styles.checkbox, value && styles.checkboxChecked]}>
                 {value && <Text style={styles.checkmark}>✓</Text>}

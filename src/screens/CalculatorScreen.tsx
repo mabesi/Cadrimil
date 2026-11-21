@@ -43,7 +43,7 @@ export function CalculatorScreen() {
         setIncluirAED,
         updatePeriod,
         resetCalculator,
-        loadMissionFromObject,
+        importMission,
     } = useMission();
 
     const [editingPeriodId, setEditingPeriodId] = useState<string | null>(null);
@@ -299,8 +299,10 @@ export function CalculatorScreen() {
                 return;
             }
 
-            loadMissionFromObject(imported.mission);
-            Alert.alert('Sucesso', `Missão "${imported.mission.nomeMissao}" importada!`);
+            const didImport = await importMission(imported.mission);
+            if (didImport) {
+                Alert.alert('Sucesso', `Missão "${imported.mission.nomeMissao}" importada!`);
+            }
 
         } catch (error) {
             Alert.alert('Erro', 'Falha ao importar missão.');
@@ -322,7 +324,12 @@ export function CalculatorScreen() {
                             placeholder="Ex. Operação Brasil"
                         />
                     </View>
-                    <TouchableOpacity style={styles.importButton} onPress={handleImportMission}>
+                    <TouchableOpacity
+                        style={styles.importButton}
+                        onPress={handleImportMission}
+                        accessibilityRole="button"
+                        accessibilityLabel="Importar missão"
+                    >
                         <Text style={styles.importButtonText}>📥</Text>
                     </TouchableOpacity>
                 </View>
@@ -356,6 +363,7 @@ export function CalculatorScreen() {
                                 onChangeText={setQuantidade}
                                 keyboardType="numeric"
                                 style={{ textAlign: 'center' }}
+                                accessibilityLabel="Quantidade de militares"
                             />
                         </View>
                     </View>
@@ -365,42 +373,72 @@ export function CalculatorScreen() {
                             <Text style={styles.label}>Início</Text>
                             <CustomButton
                                 title={DateHelpers.format(dataInicio, 'dd/MM/yyyy')}
-                                onPress={() => setShowDatePickerInicio(true)}
+                                onPress={() => {
+                                    setShowDatePickerInicio(true);
+                                    setShowDatePickerFim(false);
+                                }}
                                 variant="secondary"
+                                accessibilityLabel={`Data de início: ${DateHelpers.format(dataInicio, 'dd/MM/yyyy')}`}
                             />
                         </View>
                         <View style={styles.halfWidth}>
                             <Text style={styles.label}>Fim</Text>
                             <CustomButton
                                 title={DateHelpers.format(dataFim, 'dd/MM/yyyy')}
-                                onPress={() => setShowDatePickerFim(true)}
+                                onPress={() => {
+                                    setShowDatePickerFim(true);
+                                    setShowDatePickerInicio(false);
+                                }}
                                 variant="secondary"
+                                accessibilityLabel={`Data final: ${DateHelpers.format(dataFim, 'dd/MM/yyyy')}`}
                             />
                         </View>
                     </View>
 
                     {showDatePickerInicio && (
-                        <DateTimePicker
-                            value={dataInicio}
-                            mode="date"
-                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                            onChange={(event, selectedDate) => {
-                                setShowDatePickerInicio(Platform.OS === 'ios');
-                                if (selectedDate) setDataInicio(selectedDate);
-                            }}
-                        />
+                        <>
+                            <DateTimePicker
+                                value={dataInicio}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                onChange={(event, selectedDate) => {
+                                    setShowDatePickerInicio(Platform.OS === 'ios');
+                                    if (selectedDate) setDataInicio(selectedDate);
+                                }}
+                            />
+                            {Platform.OS === 'ios' && (
+                                <CustomButton
+                                    title="Concluir"
+                                    onPress={() => setShowDatePickerInicio(false)}
+                                    variant="secondary"
+                                    style={styles.datePickerDone}
+                                    accessibilityLabel="Concluir seleção da data de início"
+                                />
+                            )}
+                        </>
                     )}
 
                     {showDatePickerFim && (
-                        <DateTimePicker
-                            value={dataFim}
-                            mode="date"
-                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                            onChange={(event, selectedDate) => {
-                                setShowDatePickerFim(Platform.OS === 'ios');
-                                if (selectedDate) setDataFim(selectedDate);
-                            }}
-                        />
+                        <>
+                            <DateTimePicker
+                                value={dataFim}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                onChange={(event, selectedDate) => {
+                                    setShowDatePickerFim(Platform.OS === 'ios');
+                                    if (selectedDate) setDataFim(selectedDate);
+                                }}
+                            />
+                            {Platform.OS === 'ios' && (
+                                <CustomButton
+                                    title="Concluir"
+                                    onPress={() => setShowDatePickerFim(false)}
+                                    variant="secondary"
+                                    style={styles.datePickerDone}
+                                    accessibilityLabel="Concluir seleção da data final"
+                                />
+                            )}
+                        </>
                     )}
 
                     <View style={{ marginVertical: 12 }}>
@@ -528,6 +566,9 @@ const styles = StyleSheet.create({
     },
     halfWidth: {
         flex: 1,
+    },
+    datePickerDone: {
+        marginBottom: 12,
     },
     grupoField: {
         flex: 0.78,
