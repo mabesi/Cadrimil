@@ -13,7 +13,6 @@ import { useData } from '../context/DataContext';
 import { MissionCard } from '../components/MissionCard';
 import { MyMissionCard } from '../components/MyMissionCard';
 import { YearAccordion } from '../components/YearAccordion';
-import { CustomButton } from '../components/CustomButton';
 import { Mission } from '../types';
 import { calculateIndividualMissionTotal } from '../utils/calculations';
 import { groupMissionsByYear } from '../utils/missionGrouping';
@@ -26,9 +25,9 @@ type MissionSection = 'my' | 'all';
 export function MissionsScreen() {
     const navigation = useNavigation();
     const { cadrimilData } = useData();
-    const { savedMissions, editMission, deleteMission, resetCalculator, loadSavedMissions } = useMission();
-    const [myMissionsExpanded, setMyMissionsExpanded] = useState(false);
-    const [allMissionsExpanded, setAllMissionsExpanded] = useState(false);
+    const { savedMissions, editMission, deleteMission, loadSavedMissions } = useMission();
+    const [myMissionsExpanded, setMyMissionsExpanded] = useState(true);
+    const [allMissionsExpanded, setAllMissionsExpanded] = useState(true);
     const [expandedYears, setExpandedYears] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
@@ -41,11 +40,6 @@ export function MissionsScreen() {
 
     const handleEdit = (id: string) => {
         editMission(id);
-        navigation.navigate('Cálculo' as never);
-    };
-
-    const handleReset = () => {
-        resetCalculator();
         navigation.navigate('Cálculo' as never);
     };
 
@@ -86,15 +80,6 @@ export function MissionsScreen() {
                 style={styles.scrollView}
                 contentContainerStyle={styles.content}
             >
-                <Text style={styles.title}>Missões</Text>
-
-                <CustomButton
-                    title="Limpar Formulário de Cálculo"
-                    onPress={handleReset}
-                    variant="danger"
-                    style={styles.resetButton}
-                />
-
                 {savedMissions.length === 0 ? (
                     <Text style={styles.emptyText}>
                         Nenhuma missão salva ainda. Use a aba "Cálculo" para salvar uma nova.
@@ -235,15 +220,6 @@ const styles = StyleSheet.create({
     content: {
         padding: 20,
         paddingBottom: 10,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: Colors.text,
-        marginBottom: 16,
-    },
-    resetButton: {
-        marginBottom: 16,
     },
     section: {
         marginBottom: 24,

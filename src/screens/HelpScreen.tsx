@@ -208,10 +208,11 @@ export function HelpScreen() {
 
                     <Text style={styles.subtitle}>Visualização</Text>
                     <Text style={styles.paragraph}>
-                        Na aba "Missões", a seção "Minhas Missões" fica recolhida por padrão.
-                        Toque no cabeçalho para expandir e ver os cartões com apenas os trechos
-                        marcados, as suas diárias, o AED (quando incluído) e o total individual.
-                        Cada grupo de ano mostra no cabeçalho o total recebido naquele ano.
+                        Na aba "Missões", a seção "Minhas Missões" fica aberta, mas os grupos
+                        de ano começam recolhidos. Toque no ano para expandir e ver os cartões
+                        com apenas os trechos marcados, as suas diárias, o AED (quando
+                        incluído) e o total individual. Cada grupo de ano mostra no cabeçalho
+                        o total recebido naquele ano.
                     </Text>
                     <Text style={styles.paragraph}>
                         Ao final da seção é exibido o total recebido por você, somando todos os
@@ -229,8 +230,8 @@ export function HelpScreen() {
                         A aba "Missões" possui duas seções: "Minhas Missões", com a visão
                         individual, e "Todas as Missões", com a visão completa dos gastos de
                         todos os grupos e militares. Em ambas, as missões são ordenadas pela
-                        data de início do primeiro trecho e agrupadas por ano. As seções e os
-                        grupos de ano ficam recolhidos por padrão.
+                        data de início do primeiro trecho e agrupadas por ano. As seções ficam
+                        abertas; os grupos de ano começam recolhidos.
                     </Text>
 
                     <Text style={styles.subtitle}>Todas as Missões</Text>

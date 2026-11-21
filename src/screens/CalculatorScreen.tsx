@@ -42,6 +42,7 @@ export function CalculatorScreen() {
         saveMission,
         setIncluirAED,
         updatePeriod,
+        resetCalculator,
         loadMissionFromObject,
     } = useMission();
 
@@ -197,6 +198,24 @@ export function CalculatorScreen() {
 
     const handleSaveMission = async () => {
         await saveMission(nomeMissao.trim());
+    };
+
+    const handleResetCalculator = () => {
+        Alert.alert(
+            'Limpar formulário',
+            'Deseja limpar todos os dados do cálculo atual?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Limpar',
+                    style: 'destructive',
+                    onPress: () => {
+                        resetCalculator();
+                        scrollRef.current?.scrollTo({ y: 0, animated: true });
+                    },
+                },
+            ]
+        );
     };
 
     const handleToggleMyMissions = (value: boolean) => {
@@ -454,6 +473,13 @@ export function CalculatorScreen() {
                         style={styles.actionButton}
                     />
                 </View>
+
+                <CustomButton
+                    title="Limpar Formulário de Cálculo"
+                    onPress={handleResetCalculator}
+                    variant="danger"
+                    style={styles.resetButton}
+                />
             </View>
         </ScrollView>
     );
@@ -539,6 +565,9 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         flex: 1,
+    },
+    resetButton: {
+        marginBottom: 20,
     },
     periodsContainer: {
         gap: 1,
