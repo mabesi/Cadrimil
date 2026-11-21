@@ -55,7 +55,7 @@ Cada lição recebe uma classificação:
 | L-018 | Funcionamento offline e cache | `ADAPT` | Adotado |
 | L-019 | Estados de erro, carregamento e vazio | `BASE` | Parcial |
 | L-020 | Segurança de importação, exportação e HTML | `BASE` | Parcial |
-| L-021 | Versionamento de schema e migração de dados | `BASE` | Pendente |
+| L-021 | Versionamento de schema e migração de dados | `BASE` | Parcial |
 | L-022 | Acessibilidade e testIDs | `BASE` | Pendente |
 | L-023 | Safe area, teclado e layout por plataforma | `BASE` | Parcial |
 | L-024 | Observabilidade e relatórios de erro | `ADAPT` | Pendente |
@@ -81,7 +81,7 @@ Cada lição recebe uma classificação:
 
 - **Sem testes automatizados, lint ou CI**: a validação dependia de `tsc`, `expo-doctor` e teste manual.
 - **Atualização offline ainda básica**: há fallback e cache, mas falta sincronização em background e teste automatizado do fluxo.
-- **Sem versionamento de schema**: o JSON remoto e as missões salvas não têm `schemaVersion` nem migração.
+- **Versionamento de schema incompleto**: o JSON remoto já tem `schemaVersion`; as missões salvas ainda não têm versão nem migração.
 - **Strings em português hardcoded**: não há i18n.
 - **Sem observabilidade**: não há crash reporting, analytics ou logs estruturados.
 - **Dívidas de tipagem**: `any`, `as never`, `@ts-ignore` e uso de `expo-file-system/legacy`.
@@ -143,9 +143,9 @@ Cada lição recebe uma classificação:
   - **Prevenção**: persistir o último payload válido, exibir dados em cache e indicar “dados podem estar desatualizados”.
   - **Tag**: `ADAPT`.
 
-- **Sem `schemaVersion` no JSON remoto nem nas missões salvas**.
+- **`schemaVersion` ausente nas missões salvas** (o JSON remoto já possui).
   - **Impacto**: mudanças futuras de formato quebram dados antigos.
-  - **Prevenção**: incluir `schemaVersion`, `updatedAt` e migrações explícitas.
+  - **Prevenção**: incluir `schemaVersion`, `updatedAt` e migrações explícitas também no storage local.
   - **Tag**: `BASE`.
 
 - **Importação valida apenas `periodos` como array**.
@@ -311,7 +311,7 @@ Cada lição recebe uma classificação:
 - `src/services/api.ts` busca `https://apps.mabesi.dev/cadrimil/api.json`.
 - `src/context/DataContext.tsx` carrega uma vez no mount, com retry.
 - `src/utils/validation.ts` valida o contrato.
-- O JSON contém `decretos`, `aed`, `grupos`, `localidades` e `diarias`.
+- O JSON contém `meta`, `decretos`, `aed`, `grupos`, `localidades` e `diarias`.
 
 **Por que reutilizar**:
 - Atualização de conteúdo sem release.
@@ -321,8 +321,12 @@ Cada lição recebe uma classificação:
 **Como generalizar**:
 ```json
 {
-  "schemaVersion": 1,
-  "updatedAt": "2026-11-20T12:00:00Z",
+  "meta": {
+    "schemaVersion": 1,
+    "updatedAt": "2026-11-20T12:00:00Z",
+    "validFrom": "2024-12-19",
+    "source": "Norma/Decreto de referência"
+  },
   "content": { "...": "..." },
   "features": { "donationEnabled": true, "rewardedAdsEnabled": true }
 }
@@ -769,6 +773,12 @@ Ao comparar este documento com os de outros apps, responder:
 
 ```json
 {
+  "meta": {
+    "schemaVersion": 1,
+    "updatedAt": "2026-11-20T21:00:00-03:00",
+    "validFrom": "2024-12-19",
+    "source": "Decreto nº 12.324/2024 em www.planalto.gov.br"
+  },
   "decretos": [
     { "title": "string", "decree": "string", "date": "string", "link": "string" }
   ],

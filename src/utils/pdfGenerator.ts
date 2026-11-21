@@ -50,8 +50,8 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
   const totalMilitares = mission.periodos.reduce((sum, p) => sum + p.quantidadeMilitares, 0);
   const aedTotal = mission.incluirAED ? data.aed.value * totalMilitares : 0;
 
-  const validFrom = formatMetaDate(data.meta?.validFrom);
-  const updatedAt = formatMetaDate(data.meta?.updatedAt);
+  const validFrom = formatMetaDate(data.meta.validFrom);
+  const updatedAt = formatMetaDate(data.meta.updatedAt);
   const dataValidity = validFrom
     ? `Tabela de valores com vigência desde ${validFrom}.`
     : updatedAt

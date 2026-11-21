@@ -13,7 +13,7 @@ interface DataContextType {
     error: string | null;
     dataSource: DataSource;
     fetchedAt: string | null;
-    updatedAt: string | null;
+    updatedAt: string;
     isRefreshing: boolean;
     reloadData: () => Promise<void>;
 }
@@ -42,9 +42,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [cadrimilData, setCadrimilData] = useState<CadrimilData>(bundledData);
     const [dataSource, setDataSource] = useState<DataSource>('bundled');
     const [fetchedAt, setFetchedAt] = useState<string | null>(null);
-    const [updatedAt, setUpdatedAt] = useState<string | null>(
-        bundledData.meta?.updatedAt ?? null
-    );
+    const [updatedAt, setUpdatedAt] = useState<string>(bundledData.meta.updatedAt);
     const [error, setError] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
 
@@ -59,7 +57,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             setCadrimilData(freshData);
             setDataSource('network');
             setFetchedAt(now);
-            setUpdatedAt(freshData.meta?.updatedAt ?? null);
+            setUpdatedAt(freshData.meta.updatedAt);
             await saveDataCache(freshData, now);
         } catch (err) {
             setError(
@@ -77,14 +75,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
             const cached = await loadDataCache();
 
             if (!cancelled && cached) {
-                const cachedDate = cached.payload.meta?.updatedAt ?? cached.fetchedAt;
-                const bundledDate = bundledData.meta?.updatedAt ?? null;
+                const cachedDate = cached.payload.meta.updatedAt;
+                const bundledDate = bundledData.meta.updatedAt;
 
                 if (isAtLeastAsNew(cachedDate, bundledDate)) {
                     setCadrimilData(cached.payload);
                     setDataSource('cache');
                     setFetchedAt(cached.fetchedAt);
-                    setUpdatedAt(cached.payload.meta?.updatedAt ?? null);
+                    setUpdatedAt(cached.payload.meta.updatedAt);
                 }
             }
 

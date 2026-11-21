@@ -15,15 +15,14 @@ function formatDataDate(value: string | null): string | null {
 }
 
 export function DataStatusBanner() {
-    const { cadrimilData, dataSource, updatedAt, fetchedAt, error, isRefreshing, reloadData } = useData();
+    const { cadrimilData, dataSource, updatedAt, error, isRefreshing, reloadData } = useData();
 
     if (dataSource === 'network' && !error && !isRefreshing) {
         return null;
     }
 
-    const date = updatedAt ?? fetchedAt;
-    const formattedDate = formatDataDate(date);
-    const formattedValidFrom = formatDataDate(cadrimilData.meta?.validFrom ?? null);
+    const formattedDate = formatDataDate(updatedAt);
+    const formattedValidFrom = formatDataDate(cadrimilData.meta.validFrom ?? null);
     const dateText = [
         formattedDate ? ` de ${formattedDate}` : '',
         formattedValidFrom ? ` (vigência desde ${formattedValidFrom})` : '',

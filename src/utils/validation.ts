@@ -101,7 +101,7 @@ function isDiarias(
 export function isCadrimilData(value: unknown): value is CadrimilData {
     if (!isRecord(value)) return false;
 
-    if (value.meta !== undefined && !isCadrimilMeta(value.meta)) {
+    if (!isCadrimilMeta(value.meta)) {
         return false;
     }
 

@@ -34,7 +34,7 @@ export interface CadrimilMeta {
 }
 
 export interface CadrimilData {
-    meta?: CadrimilMeta;
+    meta: CadrimilMeta;
     decretos: Decreto[];
     aed: AED;
     grupos: Grupos;
