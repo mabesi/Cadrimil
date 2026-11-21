@@ -60,6 +60,7 @@ Cada lição recebe uma classificação:
 | L-023 | Safe area, teclado e layout por plataforma | `BASE` | Parcial |
 | L-024 | Observabilidade e relatórios de erro | `ADAPT` | Pendente |
 | L-025 | Lições de uso de agentes de IA | `BASE` | Adotado |
+| L-026 | Cálculo total e individual por participante | `ADAPT` | Adotado |
 
 ---
 
@@ -543,7 +544,32 @@ type MonetizationConfig = {
 
 **Tag**: `BASE`.
 
-### 4.10 Privacidade, consentimento e licença
+### 4.10 Cálculo total vs. individual por participante
+
+**O que é**: manter duas visões de valor para a mesma entidade: o total da equipe e o valor individual de um participante.
+
+**No Cadrimil**:
+- `Mission.valorTotal` continua sendo o total de todos os grupos e militares.
+- `Mission.meuGrupo` e `Mission.registrarEmMinhasMissoes` indicam que a missão deve aparecer em "Minhas Missões".
+- `calculateIndividualMissionTotal` filtra apenas os períodos do grupo do usuário e calcula com quantidade 1.
+- `MyMissionCard` exibe somente os períodos e valores do usuário.
+
+**Como generalizar**:
+- Armazenar o identificador do participante (grupo, usuário, e-mail ou ID).
+- Separar claramente `total` de `individual` no modelo e na UI.
+- Calcular o individual com quantidade 1, sem herdar a quantidade do grupo.
+- Se houver rateio, definir a regra explicitamente (por período, por militar, por dia).
+- Exibir a fonte do valor individual e permitir reconciliar com o total.
+
+**Cuidados**:
+- Não confundir quantidade do grupo com quantidade individual.
+- Definir se o adicional (AED) é por período, por missão ou por militar.
+- Participantes podem aparecer em vários períodos do mesmo grupo.
+- Missões antigas precisam de migração/default para os novos campos.
+
+**Tag**: `ADAPT`.
+
+### 4.11 Privacidade, consentimento e licença
 
 **No Cadrimil**:
 - `PRIVACY_POLICY.html` descreve dados locais, AdMob, exportação e contato.

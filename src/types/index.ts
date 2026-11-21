@@ -60,9 +60,13 @@ export interface Mission {
     incluirAED: boolean;
     valorTotal: number;
     decretosReferencia: Array<{ decree: string; date: string }>;
+    meuGrupo: string | null;
+    registrarEmMinhasMissoes: boolean;
 }
 
 export interface MissionState {
     id: string | null;
     nomeMissao: string;
+    meuGrupo: string | null;
+    registrarEmMinhasMissoes: boolean;
 }

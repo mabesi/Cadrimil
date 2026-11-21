@@ -61,3 +61,64 @@ export function calculateTotal(
 
     return total;
 }
+
+export interface IndividualPeriodCost {
+    period: Period;
+    numDiarias: number;
+    valorUnitario: number;
+    valorDiarias: number;
+}
+
+export interface IndividualMissionTotal {
+    total: number;
+    diariasTotal: number;
+    aedTotal: number;
+    periodos: IndividualPeriodCost[];
+}
+
+/**
+ * Calculate the amount received by one specific military (the app user).
+ * Only periods matching the user's group are considered, and the quantity
+ * is always 1 because this is an individual view.
+ */
+export function calculateIndividualMissionTotal(
+    periods: Period[],
+    meuGrupo: string | null,
+    incluirAED: boolean,
+    data: CadrimilData
+): IndividualMissionTotal {
+    if (!meuGrupo) {
+        return { total: 0, diariasTotal: 0, aedTotal: 0, periodos: [] };
+    }
+
+    const userPeriods = periods.filter(period => period.grupo === meuGrupo);
+    let diariasTotal = 0;
+
+    const periodos = userPeriods.map(period => {
+        const numDiarias = calcularDiarias(
+            period.dataInicio,
+            period.dataFim,
+            period.contarUltimoDiaInteiro
+        );
+        const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
+        const valorDiarias = numDiarias * valorUnitario;
+        diariasTotal += valorDiarias;
+
+        return {
+            period,
+            numDiarias,
+            valorUnitario,
+            valorDiarias,
+        };
+    });
+
+    // AED is paid per military in each period, matching the total calculation.
+    const aedTotal = incluirAED ? data.aed.value * userPeriods.length : 0;
+
+    return {
+        total: diariasTotal + aedTotal,
+        diariasTotal,
+        aedTotal,
+        periodos,
+    };
+}

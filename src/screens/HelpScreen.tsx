@@ -171,6 +171,14 @@ export function HelpScreen() {
                         Na aba "Missões", você pode ver todas as missões salvas. Use os botões nos cartões de missão para gerenciá-las.
                     </Text>
 
+                    <Text style={styles.subtitle}>Minhas Missões</Text>
+                    <Text style={styles.paragraph}>
+                        Para acompanhar apenas os seus valores, selecione o seu grupo ao lançar
+                        um período e marque a opção "Registrar em Minhas Missões". A seção
+                        "Minhas Missões" exibirá somente os períodos e valores do seu grupo,
+                        sem os demais militares ou grupos.
+                    </Text>
+
                     <Text style={styles.subtitle}>Funcionalidades Principais</Text>
 
                     <Text style={styles.paragraph}>

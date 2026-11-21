@@ -34,10 +34,12 @@ export function CalculatorScreen() {
         currentPeriods,
         incluirAED,
         valorTotal,
+        calculatorRevision,
         addPeriod,
         removePeriod,
         saveMission,
         setIncluirAED,
+        setMyMissionsRegistration,
         updatePeriod,
         loadMissionFromObject,
     } = useMission();
@@ -65,7 +67,7 @@ export function CalculatorScreen() {
         setDataFim(new Date());
         setContarInteiro(false);
         setEditingPeriodId(null);
-    }, [currentMissionState]);
+    }, [calculatorRevision]);
 
     const localidadeOptions = Object.keys(cadrimilData.localidades).map(key => ({
         label: cadrimilData.localidades[key],
@@ -162,6 +164,18 @@ export function CalculatorScreen() {
         await saveMission(nomeMissao.trim());
     };
 
+    const handleToggleMyMissions = (value: boolean) => {
+        if (value && !grupo) {
+            Alert.alert(
+                'Atenção',
+                'Selecione o grupo do militar antes de registrar em Minhas Missões.'
+            );
+            return;
+        }
+
+        setMyMissionsRegistration(value, value ? grupo : null);
+    };
+
     const handleGeneratePDF = async () => {
         if (currentPeriods.length === 0) {
             Alert.alert('Atenção', 'Adicione pelo menos um período para gerar o PDF.');
@@ -180,6 +194,8 @@ export function CalculatorScreen() {
                     decree: d.decree,
                     date: d.date,
                 })),
+                meuGrupo: currentMissionState.meuGrupo,
+                registrarEmMinhasMissoes: currentMissionState.registrarEmMinhasMissoes,
             };
 
             await exportPDF(mission, cadrimilData);
@@ -318,6 +334,18 @@ export function CalculatorScreen() {
                             value={contarInteiro}
                             onValueChange={setContarInteiro}
                         />
+                        <CustomCheckbox
+                            label="Registrar em Minhas Missões"
+                            value={currentMissionState.registrarEmMinhasMissoes}
+                            onValueChange={handleToggleMyMissions}
+                        />
+                        {currentMissionState.registrarEmMinhasMissoes &&
+                            currentMissionState.meuGrupo && (
+                                <Text style={styles.myGroupText}>
+                                    Meu grupo: {currentMissionState.meuGrupo} -{' '}
+                                    {cadrimilData.grupos[currentMissionState.meuGrupo]}
+                                </Text>
+                            )}
                     </View>
 
                     <View style={styles.buttonRow}>
@@ -443,6 +471,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: Colors.textLight,
         marginTop: 4,
+    },
+    myGroupText: {
+        fontSize: 12,
+        color: Colors.textSecondary,
+        marginTop: 4,
+        marginLeft: 28,
     },
     resultBox: {
         backgroundColor: Colors.resultBackground,

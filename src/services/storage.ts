@@ -17,19 +17,27 @@ export async function loadMissions(): Promise<Mission[]> {
 
         const missions: Mission[] = JSON.parse(missionsJson);
 
-        // Convert date strings back to Date objects
-        return missions.map(mission => ({
-            ...mission,
-            periodos: mission.periodos.map(p => ({
-                ...p,
-                dataInicio: typeof p.dataInicio === 'string'
-                    ? DateHelpers.fromISOString(p.dataInicio as unknown as string)
-                    : p.dataInicio,
-                dataFim: typeof p.dataFim === 'string'
-                    ? DateHelpers.fromISOString(p.dataFim as unknown as string)
-                    : p.dataFim,
-            })),
-        }));
+        // Convert date strings back to Date objects and normalize
+        // fields added after the first released version.
+        return missions.map(mission => {
+            const meuGrupo = mission.meuGrupo ?? null;
+
+            return {
+                ...mission,
+                meuGrupo,
+                registrarEmMinhasMissoes:
+                    Boolean(mission.registrarEmMinhasMissoes) && meuGrupo !== null,
+                periodos: mission.periodos.map(p => ({
+                    ...p,
+                    dataInicio: typeof p.dataInicio === 'string'
+                        ? DateHelpers.fromISOString(p.dataInicio as unknown as string)
+                        : p.dataInicio,
+                    dataFim: typeof p.dataFim === 'string'
+                        ? DateHelpers.fromISOString(p.dataFim as unknown as string)
+                        : p.dataFim,
+                })),
+            };
+        });
     } catch (error) {
         console.error('Error loading missions:', error);
         return [];
