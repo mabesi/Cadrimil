@@ -1,6 +1,11 @@
 // Runtime validation for data received from the Cadrimil API
 import { CadrimilData, Decreto } from '../types';
 
+export const SUPPORTED_SCHEMA_VERSION = 1;
+
+const hasOwn = (value: Record<string, unknown>, key: string): boolean =>
+    Object.prototype.hasOwnProperty.call(value, key);
+
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -44,7 +49,7 @@ function isCadrimilMeta(value: unknown): boolean {
     if (
         typeof value.schemaVersion !== 'number' ||
         !Number.isInteger(value.schemaVersion) ||
-        value.schemaVersion < 1
+        value.schemaVersion !== SUPPORTED_SCHEMA_VERSION
     ) {
         return false;
     }
@@ -79,18 +84,21 @@ function isDiarias(
 ): boolean {
     if (!isRecord(value)) return false;
 
-    const grupoKeys = Object.keys(value);
-    if (grupoKeys.length === 0) return false;
+    const grupoKeys = Object.keys(grupos);
+    const localidadeKeys = Object.keys(localidades);
+
+    if (grupoKeys.length === 0 || localidadeKeys.length === 0) return false;
+    if (Object.keys(value).length !== grupoKeys.length) return false;
 
     return grupoKeys.every((grupo) => {
+        if (!hasOwn(value, grupo)) return false;
+
         const valores = value[grupo];
 
-        if (!Object.prototype.hasOwnProperty.call(grupos, grupo)) return false;
         if (!isNumberMap(valores)) return false;
+        if (Object.keys(valores).length !== localidadeKeys.length) return false;
 
-        return Object.keys(valores).every((localidade) =>
-            Object.prototype.hasOwnProperty.call(localidades, localidade)
-        );
+        return localidadeKeys.every(localidade => hasOwn(valores, localidade));
     });
 }
 

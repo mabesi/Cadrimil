@@ -116,6 +116,16 @@ export function CalculatorScreen() {
                 ? editingPeriod.valorUnitario
                 : getValorDiaria(grupo, localidade, cadrimilData);
 
+        if (!Number.isFinite(valorUnitario) || valorUnitario <= 0) {
+            const grupoLabel = cadrimilData.grupos[grupo] ?? grupo;
+            const localidadeLabel = cadrimilData.localidades[localidade] ?? localidade;
+            Alert.alert(
+                'Valor não encontrado',
+                `Não há valor de diária cadastrado para ${grupoLabel} em ${localidadeLabel}.`
+            );
+            return;
+        }
+
         const periodData = {
             grupo,
             localidade,

@@ -1,5 +1,5 @@
 // Missions Screen
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -29,10 +29,15 @@ export function MissionsScreen() {
     const [myMissionsExpanded, setMyMissionsExpanded] = useState(true);
     const [allMissionsExpanded, setAllMissionsExpanded] = useState(true);
     const [expandedYears, setExpandedYears] = useState<Record<string, boolean>>({});
+    const loadSavedMissionsRef = useRef(loadSavedMissions);
+
+    useEffect(() => {
+        loadSavedMissionsRef.current = loadSavedMissions;
+    }, [loadSavedMissions]);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            loadSavedMissions();
+            void loadSavedMissionsRef.current();
         });
 
         return unsubscribe;

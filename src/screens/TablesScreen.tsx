@@ -112,10 +112,10 @@ export function TablesScreen() {
                                 </Text>
                             </View>
                             {localidadeKeys.map(loc => {
-                                const valor = cadrimilData.diarias[grupo][loc];
+                                const valor = cadrimilData.diarias[grupo]?.[loc];
                                 return (
                                     <Text key={loc} style={[styles.diariasCell, styles.valueColumn]}>
-                                        {valor ? formatCurrency(valor) : 'N/D'}
+                                        {typeof valor === 'number' ? formatCurrency(valor) : 'N/D'}
                                     </Text>
                                 );
                             })}

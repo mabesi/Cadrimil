@@ -1,5 +1,5 @@
 // Data Context for managing Cadrimil API data
-import React, { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { CadrimilData } from '../types';
 import { loadCadrimilDataWithRetry } from '../services/api';
 import { loadDataCache, saveDataCache } from '../services/dataCache';
@@ -45,6 +45,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [updatedAt, setUpdatedAt] = useState<string>(bundledData.meta.updatedAt);
     const [error, setError] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
+    const latestUpdatedAtRef = useRef<string>(bundledData.meta.updatedAt);
 
     const reloadData = useCallback(async () => {
         setIsRefreshing(true);
@@ -52,7 +53,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
         try {
             const freshData = await loadCadrimilDataWithRetry();
+
+            if (!isAtLeastAsNew(freshData.meta.updatedAt, latestUpdatedAtRef.current)) {
+                console.warn(
+                    'Ignoring older Cadrimil data received from the API:',
+                    freshData.meta.updatedAt
+                );
+                return;
+            }
+
             const now = new Date().toISOString();
+            latestUpdatedAtRef.current = freshData.meta.updatedAt;
 
             setCadrimilData(freshData);
             setDataSource('network');
@@ -79,6 +90,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 const bundledDate = bundledData.meta.updatedAt;
 
                 if (isAtLeastAsNew(cachedDate, bundledDate)) {
+                    latestUpdatedAtRef.current = cachedDate;
                     setCadrimilData(cached.payload);
                     setDataSource('cache');
                     setFetchedAt(cached.fetchedAt);
