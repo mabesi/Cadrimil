@@ -28,7 +28,8 @@ export function MissionsScreen() {
     const { cadrimilData } = useData();
     const { savedMissions, editMission, deleteMission, resetCalculator, loadSavedMissions } = useMission();
     const [myMissionsExpanded, setMyMissionsExpanded] = useState(false);
-    const [collapsedYears, setCollapsedYears] = useState<Record<string, boolean>>({});
+    const [allMissionsExpanded, setAllMissionsExpanded] = useState(false);
+    const [expandedYears, setExpandedYears] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -56,14 +57,14 @@ export function MissionsScreen() {
 
     const toggleYear = (section: MissionSection, year: number) => {
         const key = `${section}-${year}`;
-        setCollapsedYears(prev => ({
+        setExpandedYears(prev => ({
             ...prev,
             [key]: !prev[key],
         }));
     };
 
     const isYearExpanded = (section: MissionSection, year: number) => {
-        return !collapsedYears[`${section}-${year}`];
+        return Boolean(expandedYears[`${section}-${year}`]);
     };
 
     const calculateMyMissionsTotal = (missions: Mission[]) => {
@@ -171,29 +172,54 @@ export function MissionsScreen() {
                         </View>
 
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Todas as Missões</Text>
-                            <Text style={styles.sectionSubtitle}>
-                                Visão completa dos gastos com todos os grupos e militares.
-                            </Text>
+                            <TouchableOpacity
+                                style={styles.sectionToggle}
+                                onPress={() => setAllMissionsExpanded(!allMissionsExpanded)}
+                                activeOpacity={0.7}
+                                accessibilityRole="button"
+                                accessibilityState={{ expanded: allMissionsExpanded }}
+                            >
+                                <View style={styles.sectionToggleText}>
+                                    <Text style={styles.sectionTitle}>
+                                        Todas as Missões ({savedMissions.length})
+                                    </Text>
+                                    <Text
+                                        style={[
+                                            styles.sectionSubtitle,
+                                            styles.sectionSubtitleToggle,
+                                        ]}
+                                    >
+                                        Visão completa dos gastos com todos os grupos e
+                                        militares.
+                                    </Text>
+                                </View>
+                                <Text style={styles.sectionToggleIcon}>
+                                    {allMissionsExpanded ? '▼' : '▶'}
+                                </Text>
+                            </TouchableOpacity>
 
-                            {allMissionGroups.map(group => (
-                                <YearAccordion
-                                    key={group.year}
-                                    year={group.year}
-                                    count={group.missions.length}
-                                    expanded={isYearExpanded('all', group.year)}
-                                    onToggle={() => toggleYear('all', group.year)}
-                                >
-                                    {group.missions.map(mission => (
-                                        <MissionCard
-                                            key={mission.id}
-                                            mission={mission}
-                                            onEdit={() => handleEdit(mission.id)}
-                                            onDelete={() => deleteMission(mission.id)}
-                                        />
+                            {allMissionsExpanded && (
+                                <View style={styles.sectionContent}>
+                                    {allMissionGroups.map(group => (
+                                        <YearAccordion
+                                            key={group.year}
+                                            year={group.year}
+                                            count={group.missions.length}
+                                            expanded={isYearExpanded('all', group.year)}
+                                            onToggle={() => toggleYear('all', group.year)}
+                                        >
+                                            {group.missions.map(mission => (
+                                                <MissionCard
+                                                    key={mission.id}
+                                                    mission={mission}
+                                                    onEdit={() => handleEdit(mission.id)}
+                                                    onDelete={() => deleteMission(mission.id)}
+                                                />
+                                            ))}
+                                        </YearAccordion>
                                     ))}
-                                </YearAccordion>
-                            ))}
+                                </View>
+                            )}
                         </View>
                     </>
                 )}
