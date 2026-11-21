@@ -102,14 +102,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.text,
         flex: 1,
-        paddingRight: 40, // Prevent text from overlapping with buttons
     },
     actions: {
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        flexDirection: 'column',
+        flexDirection: 'row',
+        alignItems: 'center',
         gap: 8,
+        marginLeft: 8,
     },
     actionButton: {
         paddingVertical: 2,

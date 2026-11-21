@@ -1,5 +1,5 @@
 // Calculator Screen
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -8,6 +8,7 @@ import {
     Alert,
     Platform,
     TouchableOpacity,
+    type ScrollViewInstance,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
@@ -54,6 +55,7 @@ export function CalculatorScreen() {
     const [contarInteiro, setContarInteiro] = useState(false);
     const [showDatePickerInicio, setShowDatePickerInicio] = useState(false);
     const [showDatePickerFim, setShowDatePickerFim] = useState(false);
+    const scrollRef = useRef<ScrollViewInstance>(null);
 
     // Sync mission name when loading a saved mission or resetting
     // Sync mission name and reset form when loading a saved mission or resetting
@@ -110,17 +112,10 @@ export function CalculatorScreen() {
             addPeriod(periodData);
         }
 
-        // Reset form
+        // Reset form. Keep group/locality so the user can quickly add another
+        // period or mark the mission for their own group after an update.
         setQuantidade('');
         setContarInteiro(false);
-        // Keep locality and group for convenience, or reset if preferred. 
-        // User didn't specify, but keeping them is usually better for multiple entries.
-        // If editing, maybe we should clear them to avoid confusion? 
-        // Let's clear them if we were editing to signal "done".
-        if (editingPeriodId) {
-            setGrupo('');
-            setLocalidade('');
-        }
     };
 
     const handleEditPeriod = (period: any) => {
@@ -132,7 +127,7 @@ export function CalculatorScreen() {
         setDataFim(new Date(period.dataFim));
         setContarInteiro(period.contarUltimoDiaInteiro);
 
-        // Scroll to top to show form (optional, but good UX)
+        scrollRef.current?.scrollTo({ y: 0, animated: true });
     };
 
     const handleCancelEdit = () => {
@@ -234,7 +229,7 @@ export function CalculatorScreen() {
     };
 
     return (
-        <ScrollView style={GlobalStyles.container}>
+        <ScrollView ref={scrollRef} style={GlobalStyles.container}>
             <DataStatusBanner />
             <View style={styles.content}>
                 {/* Nome da Missão e Importar */}
