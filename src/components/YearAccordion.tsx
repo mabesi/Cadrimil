@@ -6,6 +6,7 @@ import { Colors } from '../constants/colors';
 interface YearAccordionProps {
     year: number;
     count: number;
+    summary?: string;
     expanded: boolean;
     onToggle: () => void;
     children: ReactNode;
@@ -14,6 +15,7 @@ interface YearAccordionProps {
 export function YearAccordion({
     year,
     count,
+    summary,
     expanded,
     onToggle,
     children,
@@ -27,11 +29,14 @@ export function YearAccordion({
                 accessibilityRole="button"
                 accessibilityState={{ expanded }}
             >
-                <View style={styles.titleRow}>
-                    <Text style={styles.year}>{year}</Text>
-                    <Text style={styles.count}>
-                        {count} {count === 1 ? 'missão' : 'missões'}
-                    </Text>
+                <View style={styles.titleContainer}>
+                    <View style={styles.titleRow}>
+                        <Text style={styles.year}>{year}</Text>
+                        <Text style={styles.count}>
+                            {count} {count === 1 ? 'missão' : 'missões'}
+                        </Text>
+                    </View>
+                    {summary && <Text style={styles.summary}>{summary}</Text>}
                 </View>
                 <Text style={styles.icon}>{expanded ? '▼' : '▶'}</Text>
             </TouchableOpacity>
@@ -56,10 +61,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
     },
+    titleContainer: {
+        flex: 1,
+    },
     titleRow: {
         flexDirection: 'row',
         alignItems: 'baseline',
         gap: 8,
+    },
+    summary: {
+        fontSize: 12,
+        color: Colors.textSecondary,
+        marginTop: 3,
     },
     year: {
         fontSize: 16,

@@ -211,6 +211,7 @@ export function HelpScreen() {
                         Na aba "Missões", a seção "Minhas Missões" fica recolhida por padrão.
                         Toque no cabeçalho para expandir e ver os cartões com apenas os trechos
                         marcados, as suas diárias, o AED (quando incluído) e o total individual.
+                        Cada grupo de ano mostra no cabeçalho o total recebido naquele ano.
                     </Text>
                     <Text style={styles.paragraph}>
                         Ao final da seção é exibido o total recebido por você, somando todos os

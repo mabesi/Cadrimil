@@ -14,6 +14,7 @@ import { MissionCard } from '../components/MissionCard';
 import { MyMissionCard } from '../components/MyMissionCard';
 import { YearAccordion } from '../components/YearAccordion';
 import { CustomButton } from '../components/CustomButton';
+import { Mission } from '../types';
 import { calculateIndividualMissionTotal } from '../utils/calculations';
 import { groupMissionsByYear } from '../utils/missionGrouping';
 import { formatCurrency } from '../utils/formatters';
@@ -65,14 +66,18 @@ export function MissionsScreen() {
         return !collapsedYears[`${section}-${year}`];
     };
 
-    const myMissionsTotal = myMissions.reduce((total, mission) => {
-        return total + calculateIndividualMissionTotal(
-            mission.periodos,
-            mission.incluirAED,
-            cadrimilData,
-            mission.aedValue
-        ).total;
-    }, 0);
+    const calculateMyMissionsTotal = (missions: Mission[]) => {
+        return missions.reduce((total, mission) => {
+            return total + calculateIndividualMissionTotal(
+                mission.periodos,
+                mission.incluirAED,
+                cadrimilData,
+                mission.aedValue
+            ).total;
+        }, 0);
+    };
+
+    const myMissionsTotal = calculateMyMissionsTotal(myMissions);
 
     return (
         <View style={GlobalStyles.container}>
@@ -136,6 +141,9 @@ export function MissionsScreen() {
                                                     key={group.year}
                                                     year={group.year}
                                                     count={group.missions.length}
+                                                    summary={`Total recebido: R$ ${formatCurrency(
+                                                        calculateMyMissionsTotal(group.missions)
+                                                    )}`}
                                                     expanded={isYearExpanded('my', group.year)}
                                                     onToggle={() => toggleYear('my', group.year)}
                                                 >
