@@ -16,6 +16,15 @@ function formatMetaDate(value: string | undefined): string | null {
   return DateHelpers.format(parsed, 'dd/MM/yyyy');
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /**
  * Generate HTML content for PDF
  */
@@ -34,8 +43,8 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
     periodosHTML += `
       <tr style="border-bottom: 1px solid #e0e0e0;">
         <td style="padding: 10px;">${index + 1}</td>
-        <td style="padding: 10px; max-width: 150px; word-wrap: break-word;">${period.grupo} - ${data.grupos[period.grupo]}</td>
-        <td style="padding: 10px;">${data.localidades[period.localidade]}</td>
+        <td style="padding: 10px; max-width: 150px; word-wrap: break-word;">${escapeHtml(period.grupo)} - ${escapeHtml(data.grupos[period.grupo] ?? period.grupo)}</td>
+        <td style="padding: 10px;">${escapeHtml(data.localidades[period.localidade] ?? period.localidade)}</td>
         <td style="padding: 10px;">${period.quantidadeMilitares}</td>
         <td style="padding: 10px;">
           ${DateHelpers.format(period.dataInicio, 'dd/MM/yy')}<br>
@@ -139,7 +148,7 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
         </div>
         
         <div class="mission-info">
-          <h2>${mission.nomeMissao}</h2>
+          <h2>${escapeHtml(mission.nomeMissao ?? '')}</h2>
           <p><strong>Data de Criação:</strong> ${new Date(mission.dataCriacao).toLocaleDateString('pt-BR')}</p>
           <p><strong>Total de Períodos:</strong> ${mission.periodos.length}</p>
           <p><strong>AED Incluído:</strong> ${mission.incluirAED ? 'Sim' : 'Não'}</p>
@@ -179,7 +188,7 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
         <div class="footer">
           ${dataValidity ? `<p>${dataValidity}</p>` : ''}
           <p><strong>Referências Legais:</strong></p>
-          ${mission.decretosReferencia.map(d => `<p>• ${d.decree}, de ${d.date}</p>`).join('')}
+          ${mission.decretosReferencia.map(d => `<p>• ${escapeHtml(d.decree)}, de ${escapeHtml(d.date)}</p>`).join('')}
           <p style="margin-top: 15px;">Relatório gerado pelo aplicativo Cadrimil</p>
         </div>
       </body>

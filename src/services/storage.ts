@@ -1,87 +1,172 @@
 // Storage service using AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Mission } from '../types';
+import { Mission, Period } from '../types';
 import { DateHelpers } from '../utils/dateHelpers';
+import { createId } from '../utils/id';
+import { serializeMissionDates } from '../utils/missionSerialization';
 
 const MISSIONS_KEY = 'cadrimil_missions';
 
+type UnknownRecord = Record<string, unknown>;
+
+export interface LoadedMissions {
+    missions: Mission[];
+    corrupted: boolean;
+}
+
+function isRecord(value: unknown): value is UnknownRecord {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function toDate(value: unknown): Date | null {
+    if (value instanceof Date) {
+        return Number.isNaN(value.getTime()) ? null : new Date(value.getTime());
+    }
+
+    if (typeof value !== 'string' || value.trim() === '') return null;
+
+    const parsed = DateHelpers.fromISOString(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function toPositiveInteger(value: unknown): number | null {
+    const parsed = typeof value === 'string' && value.trim() !== ''
+        ? Number(value)
+        : value;
+
+    if (typeof parsed !== 'number' || !Number.isInteger(parsed) || parsed <= 0) {
+        return null;
+    }
+
+    return parsed;
+}
+
 /**
- * Load all missions from AsyncStorage
+ * Normalizes a mission loaded from storage. Throws when the stored payload is
+ * structurally invalid so callers can protect the original data.
  */
-export async function loadMissions(): Promise<Mission[]> {
-    try {
-        const missionsJson = await AsyncStorage.getItem(MISSIONS_KEY);
-        if (!missionsJson) {
-            return [];
+function normalizeMission(value: UnknownRecord): Mission {
+    if (!Array.isArray(value.periodos)) {
+        throw new Error('Mission has no valid period list');
+    }
+
+    // Legacy missions had the individual registration at mission level.
+    // They are migrated to the per-period flag on load.
+    const legacyMeuGrupo = typeof value.meuGrupo === 'string' ? value.meuGrupo : null;
+    const legacyRegistrar =
+        Boolean(value.registrarEmMinhasMissoes) && legacyMeuGrupo !== null;
+
+    const {
+        meuGrupo: _legacyMeuGrupo,
+        registrarEmMinhasMissoes: _legacyRegistrar,
+        ...missionData
+    } = value;
+
+    const periodos = value.periodos.map((rawPeriod, index): Period => {
+        if (!isRecord(rawPeriod)) {
+            throw new Error(`Invalid mission period at index ${index}`);
         }
 
-        // Legacy missions had the individual registration at mission level.
-        // They are migrated to the per-period flag on load.
-        type LegacyMission = Mission & {
-            meuGrupo?: string | null;
-            registrarEmMinhasMissoes?: boolean;
-        };
+        const dataInicio = toDate(rawPeriod.dataInicio);
+        const dataFim = toDate(rawPeriod.dataFim);
+        const quantidadeMilitares = toPositiveInteger(rawPeriod.quantidadeMilitares);
 
-        const missions: LegacyMission[] = JSON.parse(missionsJson);
+        if (!dataInicio || !dataFim || quantidadeMilitares === null) {
+            throw new Error(`Invalid mission period at index ${index}`);
+        }
 
-        // Convert date strings back to Date objects and normalize
-        // fields added after the first released version.
-        return missions.map(mission => {
-            const legacyMeuGrupo = mission.meuGrupo ?? null;
-            const legacyRegistrar =
-                Boolean(mission.registrarEmMinhasMissoes) && legacyMeuGrupo !== null;
+        if (DateHelpers.differenceInDays(dataFim, dataInicio) < 0) {
+            throw new Error(`Invalid mission period range at index ${index}`);
+        }
 
-            const {
-                meuGrupo: _legacyMeuGrupo,
-                registrarEmMinhasMissoes: _legacyRegistrar,
-                ...missionData
-            } = mission;
+        const id = typeof rawPeriod.id === 'string' && rawPeriod.id.length > 0
+            ? rawPeriod.id
+            : createId();
 
-            return {
-                ...missionData,
-                periodos: mission.periodos.map(p => ({
-                    ...p,
-                    registrarEmMinhasMissoes:
-                        typeof p.registrarEmMinhasMissoes === 'boolean'
-                            ? p.registrarEmMinhasMissoes
-                            : legacyRegistrar && p.grupo === legacyMeuGrupo,
-                    dataInicio: typeof p.dataInicio === 'string'
-                        ? DateHelpers.fromISOString(p.dataInicio as unknown as string)
-                        : p.dataInicio,
-                    dataFim: typeof p.dataFim === 'string'
-                        ? DateHelpers.fromISOString(p.dataFim as unknown as string)
-                        : p.dataFim,
-                })),
-            };
-        });
+        return {
+            ...rawPeriod,
+            id,
+            dataInicio,
+            dataFim,
+            quantidadeMilitares,
+            contarUltimoDiaInteiro: Boolean(rawPeriod.contarUltimoDiaInteiro),
+            registrarEmMinhasMissoes:
+                typeof rawPeriod.registrarEmMinhasMissoes === 'boolean'
+                    ? rawPeriod.registrarEmMinhasMissoes
+                    : legacyRegistrar && rawPeriod.grupo === legacyMeuGrupo,
+        } as unknown as Period;
+    });
+
+    return {
+        ...missionData,
+        periodos,
+    } as unknown as Mission;
+}
+
+async function readMissions(): Promise<LoadedMissions> {
+    let raw: string | null;
+
+    try {
+        raw = await AsyncStorage.getItem(MISSIONS_KEY);
     } catch (error) {
-        console.error('Error loading missions:', error);
-        return [];
+        console.error('Error reading missions:', error);
+        return { missions: [], corrupted: true };
+    }
+
+    if (!raw) {
+        return { missions: [], corrupted: false };
+    }
+
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(raw);
+    } catch (error) {
+        console.error('Corrupted missions JSON:', error);
+        return { missions: [], corrupted: true };
+    }
+
+    if (!Array.isArray(parsed)) {
+        console.error('Corrupted missions payload: expected an array');
+        return { missions: [], corrupted: true };
+    }
+
+    try {
+        return {
+            missions: parsed.map(item => {
+                if (!isRecord(item)) {
+                    throw new Error('Invalid mission record');
+                }
+                return normalizeMission(item);
+            }),
+            corrupted: false,
+        };
+    } catch (error) {
+        console.error('Corrupted missions payload:', error);
+        return { missions: [], corrupted: true };
     }
 }
 
 /**
- * Convert Date objects to ISO strings before storing.
+ * Loads all missions with a flag indicating whether the stored payload could
+ * be read. Callers can avoid replacing the in-memory list on corruption.
  */
-function serializeMission(mission: Mission) {
-    return {
-        ...mission,
-        periodos: mission.periodos.map(p => ({
-            ...p,
-            dataInicio: DateHelpers.toISOString(p.dataInicio) as unknown as Date,
-            dataFim: DateHelpers.toISOString(p.dataFim) as unknown as Date,
-        })),
-    };
+export async function loadMissionsWithStatus(): Promise<LoadedMissions> {
+    return readMissions();
 }
 
 /**
- * Save the whole mission list. Used by migrations and bulk updates.
+ * Load all missions from AsyncStorage.
  */
-export async function saveMissions(missions: Mission[]): Promise<boolean> {
+export async function loadMissions(): Promise<Mission[]> {
+    const result = await readMissions();
+    return result.missions;
+}
+
+async function writeMissions(missions: Mission[]): Promise<boolean> {
     try {
         await AsyncStorage.setItem(
             MISSIONS_KEY,
-            JSON.stringify(missions.map(serializeMission))
+            JSON.stringify(missions.map(serializeMissionDates))
         );
         return true;
     } catch (error) {
@@ -91,37 +176,55 @@ export async function saveMissions(missions: Mission[]): Promise<boolean> {
 }
 
 /**
+ * Save the whole mission list. Used by migrations and bulk updates.
+ * Refuses to overwrite a payload that could not be read.
+ */
+export async function saveMissions(missions: Mission[]): Promise<boolean> {
+    const current = await readMissions();
+
+    if (current.corrupted) {
+        console.error('Refusing to overwrite corrupted mission storage');
+        return false;
+    }
+
+    return writeMissions(missions);
+}
+
+/**
  * Save or update a mission in AsyncStorage
  */
 export async function saveMission(mission: Mission): Promise<boolean> {
-    try {
-        const missions = await loadMissions();
-        const existingIndex = missions.findIndex(m => m.id === mission.id);
+    const current = await readMissions();
 
-        if (existingIndex > -1) {
-            missions[existingIndex] = mission;
-        } else {
-            missions.push(mission);
-        }
-
-        return await saveMissions(missions);
-    } catch (error) {
-        console.error('Error saving mission:', error);
+    if (current.corrupted) {
+        console.error('Refusing to overwrite corrupted mission storage');
         return false;
     }
+
+    const missions = current.missions;
+    const existingIndex = missions.findIndex(m => m.id === mission.id);
+
+    if (existingIndex > -1) {
+        missions[existingIndex] = mission;
+    } else {
+        missions.push(mission);
+    }
+
+    return writeMissions(missions);
 }
 
 /**
  * Delete a mission from AsyncStorage
  */
 export async function deleteMission(id: string): Promise<boolean> {
-    try {
-        const missions = await loadMissions();
-        return await saveMissions(missions.filter(m => m.id !== id));
-    } catch (error) {
-        console.error('Error deleting mission:', error);
+    const current = await readMissions();
+
+    if (current.corrupted) {
+        console.error('Refusing to overwrite corrupted mission storage');
         return false;
     }
+
+    return writeMissions(current.missions.filter(m => m.id !== id));
 }
 
 /**

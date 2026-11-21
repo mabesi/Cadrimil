@@ -69,6 +69,7 @@ export interface Mission {
 export interface MissionState {
     id: string | null;
     nomeMissao: string;
+    dataCriacao: string | null;
     aedValue: number | null;
     tabelaMeta: CadrimilMeta | null;
 }

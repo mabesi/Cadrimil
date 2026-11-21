@@ -6,9 +6,9 @@ import { DataProvider } from './src/context/DataContext';
 import { MissionProvider, useMission } from './src/context/MissionContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { Header } from './src/components/Header';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Alert } from 'react-native';
 import * as Linking from 'expo-linking';
-import * as FileSystem from 'expo-file-system/legacy';
+import { isLocalFileUrl, isMissionFileUrl, readMissionFile } from './src/utils/missionImport';
 
 const prefix = Linking.createURL('/');
 
@@ -29,13 +29,19 @@ const linking: any = {
   },
   async getInitialURL() {
     const url = await Linking.getInitialURL();
-    if (url != null) {
+    if (url != null && !isLocalFileUrl(url)) {
       return url;
     }
     return null;
   },
   subscribe(listener: (url: string) => void) {
-    const onReceiveURL = ({ url }: { url: string }) => listener(url);
+    const onReceiveURL = ({ url }: { url: string }) => {
+      // Files are handled by DeepLinkHandler; navigation only receives routes.
+      if (isLocalFileUrl(url)) {
+        return;
+      }
+      listener(url);
+    };
     const subscription = Linking.addEventListener('url', onReceiveURL);
     return () => {
       subscription.remove();
@@ -49,23 +55,17 @@ function DeepLinkHandler() {
   React.useEffect(() => {
     const handleDeepLink = async (event: { url: string }) => {
       const { url } = event;
-      if (url && (url.endsWith('.cmil') || url.startsWith('content://') || url.startsWith('file://'))) {
-        try {
-          let fileUri = url;
-          if (url.startsWith('content://')) {
-            const fileName = `temp_import_${Date.now()}.cmil`;
-            const destination = `${FileSystem.cacheDirectory}${fileName}`;
-            await FileSystem.copyAsync({ from: url, to: destination });
-            fileUri = destination;
-          }
-
-          const content = await FileSystem.readAsStringAsync(fileUri);
-          const missionData = JSON.parse(content);
-          loadMissionFromObject(missionData);
-        } catch (error) {
-          console.error('Error reading file:', error);
-        }
+      if (!url || !isMissionFileUrl(url)) {
+        return;
       }
+
+      const imported = await readMissionFile(url);
+      if (!imported.ok) {
+        Alert.alert('Erro ao importar missão', imported.error);
+        return;
+      }
+
+      loadMissionFromObject(imported.mission);
     };
 
     const subscription = Linking.addEventListener('url', handleDeepLink);

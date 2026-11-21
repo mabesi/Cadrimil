@@ -1,10 +1,11 @@
 // Mission Context for managing missions and periods
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Mission, Period, MissionState } from '../types';
-import { loadMissions, saveMission as saveMissionToStorage, saveMissions, deleteMission as deleteMissionFromStorage } from '../services/storage';
+import { loadMissionsWithStatus, saveMission as saveMissionToStorage, saveMissions, deleteMission as deleteMissionFromStorage } from '../services/storage';
 import { useData } from './DataContext';
 import { calculateTotal, getValorDiaria } from '../utils/calculations';
 import { DateHelpers } from '../utils/dateHelpers';
+import { createId } from '../utils/id';
 import { Alert } from 'react-native';
 
 interface MissionContextType {
@@ -33,6 +34,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     const [currentMissionState, setCurrentMissionState] = useState<MissionState>({
         id: null,
         nomeMissao: '',
+        dataCriacao: null,
         aedValue: null,
         tabelaMeta: null,
     });
@@ -62,7 +64,16 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     }, [currentPeriods, incluirAED, cadrimilData, currentMissionState.aedValue]);
 
     const loadSavedMissions = async (migrateSnapshots: boolean = true) => {
-        const missions = await loadMissions();
+        const result = await loadMissionsWithStatus();
+
+        if (result.corrupted) {
+            // Never replace the in-memory list when the stored payload could
+            // not be read. Writes are also blocked by the storage service.
+            console.error('Saved missions could not be read; keeping current list.');
+            return;
+        }
+
+        const missions = result.missions;
         const shouldMigrate = migrateSnapshots && !isRefreshing;
 
         if (!shouldMigrate) {
@@ -128,7 +139,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     const addPeriod = (period: Omit<Period, 'id'>) => {
         const newPeriod: Period = {
             ...period,
-            id: Date.now().toString(),
+            id: createId(),
         };
         setCurrentPeriods([...currentPeriods, newPeriod]);
     };
@@ -153,11 +164,15 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         }
 
         const aedValue = currentMissionState.aedValue ?? cadrimilData.aed.value;
-        const missionId = currentMissionState.id || Date.now().toString();
+        const missionId = currentMissionState.id || createId();
+        // Editing a mission must keep its original creation date.
+        const dataCriacao = currentMissionState.id
+            ? currentMissionState.dataCriacao ?? new Date().toISOString()
+            : new Date().toISOString();
         const mission: Mission = {
             id: missionId,
             nomeMissao: nomeMissao || 'Missão Sem Título',
-            dataCriacao: new Date().toISOString(),
+            dataCriacao,
             periodos: currentPeriods,
             incluirAED,
             aedValue,
@@ -184,7 +199,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             resetCalculator();
             return true;
         } else {
-            Alert.alert('Erro', 'Erro ao salvar a missão localmente.');
+            Alert.alert('Erro', 'Erro ao salvar a missão localmente. Os dados existentes não foram alterados.');
             return false;
         }
     };
@@ -207,6 +222,9 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         setCurrentMissionState({
             id: mission.id,
             nomeMissao: mission.nomeMissao,
+            dataCriacao: typeof mission.dataCriacao === 'string'
+                ? mission.dataCriacao
+                : null,
             aedValue: typeof mission.aedValue === 'number'
                 ? mission.aedValue
                 : cadrimilData.aed.value,
@@ -244,6 +262,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         setCurrentMissionState({
             id: null,
             nomeMissao: '',
+            dataCriacao: null,
             aedValue: null,
             tabelaMeta: null,
         });
@@ -268,6 +287,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             // User request: "import a mission". Usually implies loading data.
             // Let's clear ID to treat as a new copy unless saved.
             nomeMissao: mission.nomeMissao,
+            dataCriacao: null,
             aedValue: typeof mission.aedValue === 'number'
                 ? mission.aedValue
                 : cadrimilData.aed.value,

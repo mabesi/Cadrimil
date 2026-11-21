@@ -6,6 +6,7 @@ import * as Sharing from 'expo-sharing';
 import { Mission } from '../types';
 import { Colors } from '../constants/colors';
 import { formatCurrency } from '../utils/formatters';
+import { serializeMissionDates } from '../utils/missionSerialization';
 
 interface MissionCardProps {
     mission: Mission;
@@ -25,7 +26,10 @@ export function MissionCard({ mission, onEdit, onDelete }: MissionCardProps) {
             const fileName = `${normalizedName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.cmil`;
             // @ts-ignore
             const fileUri = (FileSystem.cacheDirectory || FileSystem.documentDirectory) + fileName;
-            await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(mission, null, 2));
+            await FileSystem.writeAsStringAsync(
+                fileUri,
+                JSON.stringify(serializeMissionDates(mission), null, 2)
+            );
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri, {

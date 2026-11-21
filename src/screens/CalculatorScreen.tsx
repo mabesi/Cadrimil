@@ -12,8 +12,6 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
-// @ts-ignore
-import * as FileSystem from 'expo-file-system/legacy';
 import { useData } from '../context/DataContext';
 import { useMission } from '../context/MissionContext';
 import { CustomInput } from '../components/CustomInput';
@@ -27,6 +25,8 @@ import { GlobalStyles } from '../constants/styles';
 import { exportPDF } from '../utils/pdfGenerator';
 import { getValorDiaria } from '../utils/calculations';
 import { DateHelpers } from '../utils/dateHelpers';
+import { readMissionFile } from '../utils/missionImport';
+import { createId } from '../utils/id';
 import { formatCurrency } from '../utils/formatters';
 
 export function CalculatorScreen() {
@@ -85,6 +85,11 @@ export function CalculatorScreen() {
         label: `${key} - ${cadrimilData.grupos[key]}`,
         value: key,
     }));
+
+    const aedValue = currentMissionState.aedValue ?? cadrimilData.aed.value;
+    const isHistoricalAed =
+        currentMissionState.aedValue !== null &&
+        currentMissionState.aedValue !== cadrimilData.aed.value;
 
     const handleAddPeriod = () => {
         if (!grupo || !localidade || !quantidade || parseInt(quantidade) <= 0) {
@@ -239,7 +244,7 @@ export function CalculatorScreen() {
 
         try {
             const mission = {
-                id: currentMissionState.id || Date.now().toString(),
+                id: currentMissionState.id || createId(),
                 nomeMissao: nomeMissao.trim() || 'Missão Sem Nome',
                 dataCriacao: new Date().toISOString(),
                 periodos: currentPeriods,
@@ -262,7 +267,9 @@ export function CalculatorScreen() {
     const handleImportMission = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
-                type: 'application/json',
+                type: Platform.OS === 'ios'
+                    ? '*/*'
+                    : ['application/json', 'application/octet-stream', 'text/plain'],
                 copyToCacheDirectory: true,
             });
 
@@ -270,17 +277,20 @@ export function CalculatorScreen() {
                 return;
             }
 
-            const fileUri = result.assets[0].uri;
-            const fileContent = await FileSystem.readAsStringAsync(fileUri);
-            const missionData = JSON.parse(fileContent);
-
-            if (!missionData.periodos || !Array.isArray(missionData.periodos)) {
-                Alert.alert('Erro', 'Arquivo de missão inválido.');
+            const asset = result.assets[0];
+            if (!asset) {
+                Alert.alert('Erro', 'Nenhum arquivo foi selecionado.');
                 return;
             }
 
-            loadMissionFromObject(missionData);
-            Alert.alert('Sucesso', `Missão "${missionData.nomeMissao}" importada!`);
+            const imported = await readMissionFile(asset.uri);
+            if (!imported.ok) {
+                Alert.alert('Arquivo de missão inválido', imported.error);
+                return;
+            }
+
+            loadMissionFromObject(imported.mission);
+            Alert.alert('Sucesso', `Missão "${imported.mission.nomeMissao}" importada!`);
 
         } catch (error) {
             Alert.alert('Erro', 'Falha ao importar missão.');
@@ -445,7 +455,8 @@ export function CalculatorScreen() {
                         onValueChange={setIncluirAED}
                     />
                     <Text style={styles.aedText}>
-                        Valor do AED: R$ {formatCurrency(cadrimilData.aed.value)} / militar
+                        Valor do AED: R$ {formatCurrency(aedValue)} / militar
+                        {isHistoricalAed ? ' (valor histórico desta missão)' : ''}
                     </Text>
                 </View>
 
