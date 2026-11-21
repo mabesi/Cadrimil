@@ -1,5 +1,5 @@
 // Calculator Screen
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -57,10 +57,11 @@ export function CalculatorScreen() {
     const [showDatePickerInicio, setShowDatePickerInicio] = useState(false);
     const [showDatePickerFim, setShowDatePickerFim] = useState(false);
     const scrollRef = useRef<ScrollViewInstance>(null);
+    const meuGrupoRegistradoRef = useRef<string | null>(null);
 
     // Sync mission name when loading a saved mission or resetting
     // Sync mission name and reset form when loading a saved mission or resetting
-    useEffect(() => {
+    useLayoutEffect(() => {
         setNomeMissao(currentMissionState.nomeMissao);
         // Reset form fields
         setLocalidade('');
@@ -70,6 +71,7 @@ export function CalculatorScreen() {
         setDataFim(new Date());
         setContarInteiro(false);
         setRegistrarEmMinhasMissoes(false);
+        meuGrupoRegistradoRef.current = null;
         setEditingPeriodId(null);
     }, [calculatorRevision]);
 
@@ -135,9 +137,12 @@ export function CalculatorScreen() {
         setQuantidade('');
         setContarInteiro(false);
         setRegistrarEmMinhasMissoes(false);
+        meuGrupoRegistradoRef.current = null;
     };
 
     const handleEditPeriod = (period: any) => {
+        const isRegistered = Boolean(period.registrarEmMinhasMissoes);
+
         setEditingPeriodId(period.id);
         setGrupo(period.grupo);
         setLocalidade(period.localidade);
@@ -145,14 +150,22 @@ export function CalculatorScreen() {
         setDataInicio(new Date(period.dataInicio));
         setDataFim(new Date(period.dataFim));
         setContarInteiro(period.contarUltimoDiaInteiro);
-        setRegistrarEmMinhasMissoes(Boolean(period.registrarEmMinhasMissoes));
+        setRegistrarEmMinhasMissoes(isRegistered);
+        meuGrupoRegistradoRef.current = isRegistered ? period.grupo : null;
 
         scrollRef.current?.scrollTo({ y: 0, animated: true });
     };
 
     const handleGrupoChange = (value: string) => {
+        if (
+            registrarEmMinhasMissoes &&
+            value !== meuGrupoRegistradoRef.current
+        ) {
+            setRegistrarEmMinhasMissoes(false);
+            meuGrupoRegistradoRef.current = null;
+        }
+
         setGrupo(value);
-        setRegistrarEmMinhasMissoes(false);
     };
 
     const handleCancelEdit = () => {
@@ -160,6 +173,7 @@ export function CalculatorScreen() {
         setQuantidade('');
         setContarInteiro(false);
         setRegistrarEmMinhasMissoes(false);
+        meuGrupoRegistradoRef.current = null;
         setGrupo('');
         setLocalidade('');
         setDataInicio(new Date());
@@ -195,6 +209,7 @@ export function CalculatorScreen() {
         }
 
         setRegistrarEmMinhasMissoes(value);
+        meuGrupoRegistradoRef.current = value ? grupo : null;
     };
 
     const handleGeneratePDF = async () => {
