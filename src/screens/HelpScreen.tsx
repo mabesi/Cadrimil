@@ -9,11 +9,17 @@ import {
     Linking,
     LayoutAnimation,
     Alert,
+    Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
-import { RewardedAd, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
+import {
+    AdsConsent,
+    AdsConsentPrivacyOptionsRequirementStatus,
+    TestIds,
+    useRewardedAd,
+} from 'react-native-google-mobile-ads';
 import { GlobalStyles } from '../constants/styles';
 import { Colors } from '../constants/colors';
 
@@ -23,38 +29,113 @@ export function HelpScreen() {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
-    const [loaded, setLoaded] = useState(false);
+    const [adsAllowed, setAdsAllowed] = useState<boolean | null>(__DEV__ ? true : null);
+    const [privacyOptionsRequired, setPrivacyOptionsRequired] = useState(false);
 
-    // Use the provided Ad Unit ID from config or Test ID for development
-    // The ID is now managed in adConfig.js and exposed via app.config.ts
-    const adUnitId = __DEV__ ? TestIds.REWARDED : (Constants.expoConfig?.extra?.adUnitId || TestIds.REWARDED);
+    // Use the provided Ad Unit ID from config or Test ID for development.
+    // The ID is managed in adConfig.js / ADMOB_* env vars via app.config.ts.
+    const configuredAdUnitId = Platform.OS === 'ios'
+        ? Constants.expoConfig?.extra?.adMob?.iosRewardedUnitId
+        : Constants.expoConfig?.extra?.adMob?.androidRewardedUnitId;
+    const adUnitId = __DEV__
+        ? TestIds.REWARDED
+        : (configuredAdUnitId || TestIds.REWARDED);
 
-    const rewarded = React.useMemo(() => {
-        return RewardedAd.createForAdRequest(adUnitId, {
-            requestNonPersonalizedAdsOnly: true,
-        });
-    }, [adUnitId]);
+    const rewarded = useRewardedAd(
+        adsAllowed ? adUnitId : null,
+        { requestNonPersonalizedAdsOnly: true }
+    );
+    const { isLoaded, isShowing, isClosed, error, load, show, isEarnedReward } = rewarded;
+
+    // In production, ask for UMP consent before loading any ad.
+    React.useEffect(() => {
+        if (__DEV__) return;
+
+        let mounted = true;
+
+        AdsConsent.gatherConsent()
+            .then(consentInfo => {
+                if (!mounted) return;
+
+                setAdsAllowed(consentInfo.canRequestAds);
+                setPrivacyOptionsRequired(
+                    consentInfo.privacyOptionsRequirementStatus ===
+                    AdsConsentPrivacyOptionsRequirementStatus.REQUIRED
+                );
+            })
+            .catch(consentError => {
+                console.warn('Unable to gather ads consent:', consentError);
+                if (mounted) setAdsAllowed(false);
+            });
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
     React.useEffect(() => {
-        const unsubscribeLoaded = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
-            setLoaded(true);
+        if (adsAllowed) {
+            load();
+        }
+    }, [adsAllowed, load]);
+
+    React.useEffect(() => {
+        if (isEarnedReward) {
+            Alert.alert(
+                'Obrigado!',
+                'Obrigado por apoiar o desenvolvimento do Cadrimil!'
+            );
+        }
+    }, [isEarnedReward]);
+
+    // The rewarded ad is consumed after being shown. Load a new one so the
+    // button remains useful the next time the user opens Help.
+    React.useEffect(() => {
+        if (isClosed && adsAllowed) {
+            load();
+        }
+    }, [isClosed, adsAllowed, load]);
+
+    const handleWatchAd = () => {
+        if (!adsAllowed) {
+            Alert.alert(
+                'Anúncios indisponíveis',
+                'Não foi possível carregar anúncios neste dispositivo ou o consentimento não foi concedido.'
+            );
+            return;
+        }
+
+        if (isLoaded) {
+            show();
+            return;
+        }
+
+        if (error) {
+            load();
+            return;
+        }
+
+        Alert.alert('Aguarde', 'Carregando anúncio...');
+    };
+
+    const handlePrivacyOptions = () => {
+        AdsConsent.showPrivacyOptionsForm().catch(privacyError => {
+            console.warn('Unable to show privacy options:', privacyError);
+            Alert.alert('Erro', 'Não foi possível abrir as opções de privacidade.');
         });
-        const unsubscribeEarned = rewarded.addAdEventListener(
-            RewardedAdEventType.EARNED_REWARD,
-            reward => {
-                Alert.alert('Obrigado!', 'Obrigado por apoiar o desenvolvimento do Cadrimil!');
-            },
-        );
+    };
 
-        // Start loading the ad straight away
-        rewarded.load();
-
-        // Unsubscribe from events on unmount
-        return () => {
-            unsubscribeLoaded();
-            unsubscribeEarned();
-        };
-    }, [rewarded]);
+    const adButtonLabel = adsAllowed === false
+        ? 'INDISPONÍVEL'
+        : adsAllowed === null
+            ? 'AGUARDE...'
+            : isShowing
+                ? 'EXIBINDO...'
+                : isLoaded
+                    ? 'VER ANÚNCIO'
+                    : error
+                        ? 'TENTAR NOVAMENTE'
+                        : 'CARREGANDO...';
 
     const toggleSection = (title: string) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -126,22 +207,34 @@ export function HelpScreen() {
                             style={[
                                 styles.customDonationButton,
                                 styles.adButton,
-                                !loaded && styles.disabledButton
+                                !adsAllowed && styles.disabledButton
                             ]}
-                            onPress={() => {
-                                if (loaded) {
-                                    rewarded.show();
-                                } else {
-                                    Alert.alert('Aguarde', 'Carregando anúncio...');
-                                }
-                            }}
+                            onPress={handleWatchAd}
                             activeOpacity={0.7}
-                            disabled={!loaded}
+                            disabled={!adsAllowed}
                         >
                             <Text style={styles.adIcon}>📺</Text>
-                            <Text style={styles.adButtonText}>VER ANÚNCIO</Text>
+                            <Text style={styles.adButtonText}>{adButtonLabel}</Text>
                         </TouchableOpacity>
                     </View>
+
+                    {error && (
+                        <Text style={styles.adErrorText}>
+                            Não foi possível carregar o anúncio.
+                        </Text>
+                    )}
+
+                    {privacyOptionsRequired && (
+                        <TouchableOpacity
+                            style={styles.privacyButton}
+                            onPress={handlePrivacyOptions}
+                            activeOpacity={0.7}
+                        >
+                            <Text style={styles.privacyText}>
+                                Opções de privacidade
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Usage Information */}
@@ -438,6 +531,21 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
         textTransform: 'uppercase',
+    },
+    adErrorText: {
+        fontSize: 12,
+        color: Colors.danger,
+        textAlign: 'center',
+        marginTop: 8,
+    },
+    privacyButton: {
+        marginTop: 8,
+        padding: 4,
+    },
+    privacyText: {
+        fontSize: 12,
+        color: Colors.primary,
+        textDecorationLine: 'underline',
     },
     heartIcon: {
         fontSize: 18,

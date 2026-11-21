@@ -46,17 +46,41 @@
 
 ## ⚙️ Configuração inicial
 
-O `app.config.ts` importa o arquivo `adConfig.js`, que não é versionado (está no `.gitignore`). Crie-o na raiz do projeto antes de iniciar o app:
+Os IDs do AdMob vêm de variáveis de ambiente lidas pelo `app.config.ts`. A precedência é:
 
-```js
-module.exports = {
-    androidAppId: 'ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX',
-    iosAppId: 'ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX',
-    adUnitId: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
-};
+1. variáveis `ADMOB_*` do ambiente;
+2. `adConfig.js` local (não versionado);
+3. `adConfig.example.js` versionado, com IDs de teste do Google.
+
+| Variável | Uso |
+|---|---|
+| `ADMOB_ANDROID_APP_ID` | App ID Android (`ca-app-pub-...~...`) |
+| `ADMOB_IOS_APP_ID` | App ID iOS (`ca-app-pub-...~...`) |
+| `ADMOB_ANDROID_REWARDED_UNIT_ID` | Bloco premiado Android (`ca-app-pub-.../...`) |
+| `ADMOB_IOS_REWARDED_UNIT_ID` | Bloco premiado iOS (`ca-app-pub-.../...`) |
+
+Para desenvolvimento local, copie o arquivo de exemplo e preencha os IDs reais quando estiverem disponíveis:
+
+```bash
+cp .env.example .env
 ```
 
-Durante o desenvolvimento, utilize os IDs de teste do AdMob. Sem esse arquivo, o Expo não consegue carregar a configuração do aplicativo.
+O `.env` não é versionado. Outra opção é copiar `adConfig.example.js` para `adConfig.js` e editar os valores.
+
+### Variáveis no EAS
+
+Cadastre as quatro variáveis no ambiente `production` (e, se desejar, em `preview`/`development`) usando o EAS CLI:
+
+```bash
+eas env:set --name ADMOB_ANDROID_APP_ID --value "ca-app-pub-...~..." --environment production --visibility sensitive
+eas env:set --name ADMOB_IOS_APP_ID --value "ca-app-pub-...~..." --environment production --visibility sensitive
+eas env:set --name ADMOB_ANDROID_REWARDED_UNIT_ID --value "ca-app-pub-.../..." --environment production --visibility sensitive
+eas env:set --name ADMOB_IOS_REWARDED_UNIT_ID --value "ca-app-pub-.../..." --environment production --visibility sensitive
+```
+
+Os perfis do `eas.json` já apontam para os ambientes `development`, `preview` e `production`.
+
+> Builds de produção com IDs de teste/exemplo ou em formato inválido são bloqueados pelo `app.config.ts`. Durante o desenvolvimento, os IDs de teste oficiais do Google são usados automaticamente.
 
 ## 🚀 Instalação e execução
 
@@ -114,6 +138,15 @@ eas build --platform ios --profile production
 
 > O projeto já está vinculado a um projeto EAS em `app.config.ts`. Execute `eas login` antes dos builds na nuvem.
 
+### Checklist de release
+
+- [ ] Configurar os IDs reais do AdMob no ambiente `production` do EAS.
+- [ ] Atualizar manualmente `version` em `package.json` e `app.config.ts`.
+- [ ] Incrementar `android.versionCode` em `app.config.ts` quando necessário.
+- [ ] Revisar a política de privacidade e as opções de consentimento de anúncios.
+- [ ] Validar cálculo, edição, exportação/importação `.cmil` e geração de PDF.
+- [ ] Gerar o build de produção e instalar em um dispositivo limpo.
+
 ## 🗂️ Estrutura do App
 
 ```
@@ -129,7 +162,9 @@ cadrimil/
 │   └── utils/            # Funções utilitárias (Cálculos, Formatação, PDF e Validação da API)
 ├── assets/               # Imagens e ícones
 ├── app.config.ts         # Configuração do Expo
-├── adConfig.js           # IDs do AdMob (não versionado)
+├── adConfig.example.js   # Exemplo de IDs do AdMob (versionado)
+├── adConfig.js           # IDs locais do AdMob (não versionado)
+├── .env.example          # Exemplo das variáveis ADMOB_*
 ├── eas.json              # Perfis de build do EAS
 └── App.tsx               # Ponto de entrada da aplicação
 ```

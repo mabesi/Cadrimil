@@ -5,16 +5,20 @@
     "build": {
         "development": {
             "developmentClient": true,
+            "environment": "development",
             "android": {
                 "buildType": "apk"
             }
         },
         "preview": {
+            "environment": "preview",
             "android": {
                 "buildType": "apk"
             }
         },
-        "production": {}
+        "production": {
+            "environment": "production"
+        }
     },
     "submit": {
         "production": {}
