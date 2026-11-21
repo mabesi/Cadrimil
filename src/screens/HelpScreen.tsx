@@ -11,6 +11,7 @@ import {
     Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import { RewardedAd, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
 import { GlobalStyles } from '../constants/styles';
@@ -20,6 +21,7 @@ import { Colors } from '../constants/colors';
 
 export function HelpScreen() {
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [loaded, setLoaded] = useState(false);
 
@@ -97,7 +99,13 @@ export function HelpScreen() {
                 <View style={{ width: 60 }} />
             </View>
 
-            <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
+            <ScrollView
+                style={styles.content}
+                contentContainerStyle={[
+                    styles.scrollContent,
+                    { paddingBottom: insets.bottom + 96 },
+                ]}
+            >
 
                 {/* Donation Section */}
                 <View style={styles.donationContainer}>
@@ -369,8 +377,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        padding: 16, // Reduced from 20
-        paddingBottom: 10, // Reduced from 60
+        padding: 16,
     },
     donationContainer: {
         backgroundColor: Colors.white,
