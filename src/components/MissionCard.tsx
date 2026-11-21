@@ -67,6 +67,7 @@ export function MissionCard({ mission, onEdit, onDelete }: MissionCardProps) {
                 </View>
 
                 <View style={styles.totalContainer}>
+                    <Text style={styles.totalLabel}>Total:</Text>
                     <Text style={styles.totalValue}>
                         R$ {formatCurrency(mission.valorTotal)}
                     </Text>
@@ -169,14 +170,21 @@ const styles = StyleSheet.create({
         color: Colors.textMuted,
     },
     totalContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         borderTopWidth: 1,
         borderTopColor: Colors.borderLight,
         paddingTop: 6,
-        alignItems: 'flex-end',
+        marginTop: 2,
+    },
+    totalLabel: {
+        fontSize: 12,
+        color: Colors.textMuted,
     },
     totalValue: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: Colors.primary,
+        fontSize: 15,
+        fontWeight: '600',
+        color: Colors.textSecondary,
     },
 });
