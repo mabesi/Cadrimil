@@ -373,6 +373,7 @@ Cada lição recebe uma classificação:
 - Criar uma interface `Repository<T>` (`list`, `get`, `save`, `remove`, `clear`).
 - Namespacear chaves por app/entidade.
 - Incluir `schemaVersion` e migrações.
+- Persistir snapshots de valores (preço unitário, taxa) usados no lançamento; não recalcular registros históricos com a tabela atual.
 - Tratar JSON corrompido sem apagar dados silenciosamente.
 - Para dados sensíveis, avaliar SecureStore/banco criptografado.
 
@@ -565,6 +566,7 @@ type MonetizationConfig = {
 - Não confundir quantidade do grupo com quantidade individual.
 - Definir se o adicional (AED) é por período, por missão ou por militar.
 - Participantes podem aparecer em vários períodos do mesmo grupo.
+- Guardar o valor unitário por período e o AED da missão para preservar o histórico.
 - Missões antigas precisam de migração/default para os novos campos.
 
 **Tag**: `ADAPT`.

@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Period } from '../types';
 import { DateHelpers } from '../utils/dateHelpers';
-import { calcularDiarias, getValorDiaria } from '../utils/calculations';
+import { calcularDiarias, getPeriodValorUnitario } from '../utils/calculations';
 import { formatCurrency } from '../utils/formatters';
 import { Colors } from '../constants/colors';
 import { CustomButton } from './CustomButton';
@@ -25,11 +25,7 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
         period.dataFim,
         period.contarUltimoDiaInteiro
     );
-    const valorUnitario = getValorDiaria(
-        period.grupo,
-        period.localidade,
-        cadrimilData
-    );
+    const valorUnitario = getPeriodValorUnitario(period, cadrimilData);
     const custoPeriodo = numDiarias * valorUnitario * period.quantidadeMilitares;
 
     return (

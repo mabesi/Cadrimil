@@ -50,6 +50,7 @@ export interface Period {
     dataFim: Date;
     quantidadeMilitares: number;
     contarUltimoDiaInteiro: boolean;
+    valorUnitario: number;
 }
 
 export interface Mission {
@@ -58,6 +59,8 @@ export interface Mission {
     dataCriacao: string;
     periodos: Period[];
     incluirAED: boolean;
+    aedValue: number;
+    tabelaMeta: CadrimilMeta;
     valorTotal: number;
     decretosReferencia: Array<{ decree: string; date: string }>;
     meuGrupo: string | null;
@@ -69,4 +72,6 @@ export interface MissionState {
     nomeMissao: string;
     meuGrupo: string | null;
     registrarEmMinhasMissoes: boolean;
+    aedValue: number | null;
+    tabelaMeta: CadrimilMeta | null;
 }

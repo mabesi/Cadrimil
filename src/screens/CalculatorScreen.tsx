@@ -25,6 +25,7 @@ import { DataStatusBanner } from '../components/DataStatusBanner';
 import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
 import { exportPDF } from '../utils/pdfGenerator';
+import { getValorDiaria } from '../utils/calculations';
 import { DateHelpers } from '../utils/dateHelpers';
 import { formatCurrency } from '../utils/formatters';
 
@@ -92,6 +93,20 @@ export function CalculatorScreen() {
             return;
         }
 
+        const editingPeriod = editingPeriodId
+            ? currentPeriods.find(period => period.id === editingPeriodId)
+            : undefined;
+
+        // Preserve the historical rate when editing dates/quantity.
+        // If the group or locality changes, use the current table rate.
+        const valorUnitario =
+            editingPeriod &&
+            editingPeriod.grupo === grupo &&
+            editingPeriod.localidade === localidade &&
+            typeof editingPeriod.valorUnitario === 'number'
+                ? editingPeriod.valorUnitario
+                : getValorDiaria(grupo, localidade, cadrimilData);
+
         const periodData = {
             grupo,
             localidade,
@@ -99,6 +114,7 @@ export function CalculatorScreen() {
             dataFim,
             quantidadeMilitares: parseInt(quantidade),
             contarUltimoDiaInteiro: contarInteiro,
+            valorUnitario,
         };
 
         if (editingPeriodId) {
@@ -184,6 +200,8 @@ export function CalculatorScreen() {
                 dataCriacao: new Date().toISOString(),
                 periodos: currentPeriods,
                 incluirAED,
+                aedValue: currentMissionState.aedValue ?? cadrimilData.aed.value,
+                tabelaMeta: currentMissionState.tabelaMeta ?? cadrimilData.meta,
                 valorTotal,
                 decretosReferencia: cadrimilData.decretos.map(d => ({
                     decree: d.decree,

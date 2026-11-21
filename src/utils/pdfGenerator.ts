@@ -4,7 +4,7 @@ import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Mission, CadrimilData, Period } from '../types';
 import { DateHelpers } from './dateHelpers';
-import { calcularDiarias, getValorDiaria } from './calculations';
+import { calcularDiarias, getPeriodValorUnitario } from './calculations';
 import { formatCurrency } from './formatters';
 
 function formatMetaDate(value: string | undefined): string | null {
@@ -28,7 +28,7 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
       period.dataFim,
       period.contarUltimoDiaInteiro
     );
-    const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
+    const valorUnitario = getPeriodValorUnitario(period, data);
     const custoPeriodo = numDiarias * valorUnitario * period.quantidadeMilitares;
 
     periodosHTML += `
@@ -48,10 +48,12 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
   });
 
   const totalMilitares = mission.periodos.reduce((sum, p) => sum + p.quantidadeMilitares, 0);
-  const aedTotal = mission.incluirAED ? data.aed.value * totalMilitares : 0;
+  const aedValue = typeof mission.aedValue === 'number' ? mission.aedValue : data.aed.value;
+  const aedTotal = mission.incluirAED ? aedValue * totalMilitares : 0;
 
-  const validFrom = formatMetaDate(data.meta.validFrom);
-  const updatedAt = formatMetaDate(data.meta.updatedAt);
+  const tabelaMeta = mission.tabelaMeta ?? data.meta;
+  const validFrom = formatMetaDate(tabelaMeta.validFrom);
+  const updatedAt = formatMetaDate(tabelaMeta.updatedAt);
   const dataValidity = validFrom
     ? `Tabela de valores com vigência desde ${validFrom}.`
     : updatedAt
@@ -165,7 +167,7 @@ function generateMissionHTML(mission: Mission, data: CadrimilData): string {
           <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 20px;">
             <strong>Adicional de Embarque e Desembarque (AED):</strong> 
             R$ ${formatCurrency(aedTotal)} 
-            (${totalMilitares} militares × R$ ${formatCurrency(data.aed.value)})
+            (${totalMilitares} militares × R$ ${formatCurrency(aedValue)})
           </div>
         ` : ''}
         

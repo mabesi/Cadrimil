@@ -45,6 +45,36 @@ export async function loadMissions(): Promise<Mission[]> {
 }
 
 /**
+ * Convert Date objects to ISO strings before storing.
+ */
+function serializeMission(mission: Mission) {
+    return {
+        ...mission,
+        periodos: mission.periodos.map(p => ({
+            ...p,
+            dataInicio: DateHelpers.toISOString(p.dataInicio) as unknown as Date,
+            dataFim: DateHelpers.toISOString(p.dataFim) as unknown as Date,
+        })),
+    };
+}
+
+/**
+ * Save the whole mission list. Used by migrations and bulk updates.
+ */
+export async function saveMissions(missions: Mission[]): Promise<boolean> {
+    try {
+        await AsyncStorage.setItem(
+            MISSIONS_KEY,
+            JSON.stringify(missions.map(serializeMission))
+        );
+        return true;
+    } catch (error) {
+        console.error('Error saving missions:', error);
+        return false;
+    }
+}
+
+/**
  * Save or update a mission in AsyncStorage
  */
 export async function saveMission(mission: Mission): Promise<boolean> {
@@ -52,24 +82,13 @@ export async function saveMission(mission: Mission): Promise<boolean> {
         const missions = await loadMissions();
         const existingIndex = missions.findIndex(m => m.id === mission.id);
 
-        // Convert Date objects to ISO strings for storage
-        const missionToSave = {
-            ...mission,
-            periodos: mission.periodos.map(p => ({
-                ...p,
-                dataInicio: DateHelpers.toISOString(p.dataInicio) as unknown as Date,
-                dataFim: DateHelpers.toISOString(p.dataFim) as unknown as Date,
-            })),
-        };
-
         if (existingIndex > -1) {
-            missions[existingIndex] = missionToSave;
+            missions[existingIndex] = mission;
         } else {
-            missions.push(missionToSave);
+            missions.push(mission);
         }
 
-        await AsyncStorage.setItem(MISSIONS_KEY, JSON.stringify(missions));
-        return true;
+        return await saveMissions(missions);
     } catch (error) {
         console.error('Error saving mission:', error);
         return false;
@@ -82,9 +101,7 @@ export async function saveMission(mission: Mission): Promise<boolean> {
 export async function deleteMission(id: string): Promise<boolean> {
     try {
         const missions = await loadMissions();
-        const filteredMissions = missions.filter(m => m.id !== id);
-        await AsyncStorage.setItem(MISSIONS_KEY, JSON.stringify(filteredMissions));
-        return true;
+        return await saveMissions(missions.filter(m => m.id !== id));
     } catch (error) {
         console.error('Error deleting mission:', error);
         return false;

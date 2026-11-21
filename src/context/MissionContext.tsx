@@ -1,9 +1,9 @@
 // Mission Context for managing missions and periods
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Mission, Period, MissionState } from '../types';
-import { loadMissions, saveMission as saveMissionToStorage, deleteMission as deleteMissionFromStorage } from '../services/storage';
+import { loadMissions, saveMission as saveMissionToStorage, saveMissions, deleteMission as deleteMissionFromStorage } from '../services/storage';
 import { useData } from './DataContext';
-import { calculateTotal } from '../utils/calculations';
+import { calculateTotal, getValorDiaria } from '../utils/calculations';
 import { DateHelpers } from '../utils/dateHelpers';
 import { Alert } from 'react-native';
 
@@ -23,19 +23,21 @@ interface MissionContextType {
     resetCalculator: () => void;
     setIncluirAED: (value: boolean) => void;
     setMyMissionsRegistration: (value: boolean, grupo: string | null) => void;
-    loadSavedMissions: () => Promise<void>;
+    loadSavedMissions: (migrateSnapshots?: boolean) => Promise<void>;
     loadMissionFromObject: (mission: Mission) => void;
 }
 
 const MissionContext = createContext<MissionContextType | undefined>(undefined);
 
 export function MissionProvider({ children }: { children: ReactNode }) {
-    const { cadrimilData } = useData();
+    const { cadrimilData, dataSource, isRefreshing } = useData();
     const [currentMissionState, setCurrentMissionState] = useState<MissionState>({
         id: null,
         nomeMissao: '',
         meuGrupo: null,
         registrarEmMinhasMissoes: false,
+        aedValue: null,
+        tabelaMeta: null,
     });
     const [currentPeriods, setCurrentPeriods] = useState<Period[]>([]);
     const [savedMissions, setSavedMissions] = useState<Mission[]>([]);
@@ -43,22 +45,85 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     const [valorTotal, setValorTotal] = useState<number>(0);
     const [calculatorRevision, setCalculatorRevision] = useState<number>(0);
 
-    // Load saved missions on mount
+    // Load saved missions immediately, but only freeze legacy snapshots after
+    // the data refresh finishes, so we use the most recent table available.
     useEffect(() => {
-        loadSavedMissions();
+        loadSavedMissions(false);
     }, []);
+
+    useEffect(() => {
+        if (!isRefreshing) {
+            loadSavedMissions(true);
+        }
+    }, [isRefreshing, dataSource]);
 
     // Recalculate total whenever periods or AED changes
     useEffect(() => {
-        if (cadrimilData) {
-            const total = calculateTotal(currentPeriods, incluirAED, cadrimilData);
-            setValorTotal(total);
-        }
-    }, [currentPeriods, incluirAED, cadrimilData]);
+        const aedValue = currentMissionState.aedValue ?? cadrimilData.aed.value;
+        const total = calculateTotal(currentPeriods, incluirAED, cadrimilData, aedValue);
+        setValorTotal(total);
+    }, [currentPeriods, incluirAED, cadrimilData, currentMissionState.aedValue]);
 
-    const loadSavedMissions = async () => {
+    const loadSavedMissions = async (migrateSnapshots: boolean = true) => {
         const missions = await loadMissions();
-        setSavedMissions(missions.sort((a, b) =>
+        const shouldMigrate = migrateSnapshots && !isRefreshing;
+
+        if (!shouldMigrate) {
+            setSavedMissions(missions.sort((a, b) =>
+                new Date(b.dataCriacao).getTime() - new Date(a.dataCriacao).getTime()
+            ));
+            return;
+        }
+
+        let changed = false;
+
+        const normalized = missions.map(mission => {
+            let missionChanged = false;
+
+            const periodos = mission.periodos.map(period => {
+                if (typeof period.valorUnitario === 'number') return period;
+
+                missionChanged = true;
+                return {
+                    ...period,
+                    valorUnitario: getValorDiaria(
+                        period.grupo,
+                        period.localidade,
+                        cadrimilData
+                    ),
+                };
+            });
+
+            const aedValue = typeof mission.aedValue === 'number'
+                ? mission.aedValue
+                : cadrimilData.aed.value;
+            if (aedValue !== mission.aedValue) missionChanged = true;
+
+            const tabelaMeta = mission.tabelaMeta ?? cadrimilData.meta;
+            if (tabelaMeta !== mission.tabelaMeta) missionChanged = true;
+
+            if (!missionChanged) return mission;
+
+            changed = true;
+            return {
+                ...mission,
+                periodos,
+                aedValue,
+                tabelaMeta,
+                valorTotal: calculateTotal(
+                    periodos,
+                    mission.incluirAED,
+                    cadrimilData,
+                    aedValue
+                ),
+            };
+        });
+
+        if (changed) {
+            await saveMissions(normalized);
+        }
+
+        setSavedMissions(normalized.sort((a, b) =>
             new Date(b.dataCriacao).getTime() - new Date(a.dataCriacao).getTime()
         ));
     };
@@ -102,6 +167,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             currentMissionState.registrarEmMinhasMissoes &&
             currentMissionState.meuGrupo !== null;
 
+        const aedValue = currentMissionState.aedValue ?? cadrimilData.aed.value;
         const missionId = currentMissionState.id || Date.now().toString();
         const mission: Mission = {
             id: missionId,
@@ -109,7 +175,14 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             dataCriacao: new Date().toISOString(),
             periodos: currentPeriods,
             incluirAED,
-            valorTotal,
+            aedValue,
+            tabelaMeta: currentMissionState.tabelaMeta ?? cadrimilData.meta,
+            valorTotal: calculateTotal(
+                currentPeriods,
+                incluirAED,
+                cadrimilData,
+                aedValue
+            ),
             decretosReferencia: cadrimilData.decretos.map(d => ({
                 decree: d.decree,
                 date: d.date,
@@ -141,6 +214,12 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         }
 
         const meuGrupo = mission.meuGrupo ?? null;
+        const periodos = mission.periodos.map(period => ({
+            ...period,
+            valorUnitario: typeof period.valorUnitario === 'number'
+                ? period.valorUnitario
+                : getValorDiaria(period.grupo, period.localidade, cadrimilData),
+        }));
 
         setCurrentMissionState({
             id: mission.id,
@@ -148,8 +227,12 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             meuGrupo,
             registrarEmMinhasMissoes:
                 Boolean(mission.registrarEmMinhasMissoes) && meuGrupo !== null,
+            aedValue: typeof mission.aedValue === 'number'
+                ? mission.aedValue
+                : cadrimilData.aed.value,
+            tabelaMeta: mission.tabelaMeta ?? cadrimilData.meta,
         });
-        setCurrentPeriods(mission.periodos);
+        setCurrentPeriods(periodos);
         setIncluirAED(mission.incluirAED);
         setCalculatorRevision(prev => prev + 1);
     };
@@ -183,6 +266,8 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             nomeMissao: '',
             meuGrupo: null,
             registrarEmMinhasMissoes: false,
+            aedValue: null,
+            tabelaMeta: null,
         });
         setCurrentPeriods([]);
         setIncluirAED(false);
@@ -211,9 +296,16 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             meuGrupo,
             registrarEmMinhasMissoes:
                 Boolean(mission.registrarEmMinhasMissoes) && meuGrupo !== null,
+            aedValue: typeof mission.aedValue === 'number'
+                ? mission.aedValue
+                : cadrimilData.aed.value,
+            tabelaMeta: mission.tabelaMeta ?? cadrimilData.meta,
         });
         const parsedPeriods = mission.periodos.map(p => ({
             ...p,
+            valorUnitario: typeof p.valorUnitario === 'number'
+                ? p.valorUnitario
+                : getValorDiaria(p.grupo, p.localidade, cadrimilData),
             dataInicio: typeof p.dataInicio === 'string' ? DateHelpers.fromISOString(p.dataInicio as unknown as string) : p.dataInicio,
             dataFim: typeof p.dataFim === 'string' ? DateHelpers.fromISOString(p.dataFim as unknown as string) : p.dataFim,
         }));

@@ -17,6 +17,16 @@ export function getValorDiaria(
 }
 
 /**
+ * Get the daily rate snapshot for a period, falling back to the current
+ * table only for legacy periods saved before snapshots existed.
+ */
+export function getPeriodValorUnitario(period: Period, data: CadrimilData): number {
+    return typeof period.valorUnitario === 'number'
+        ? period.valorUnitario
+        : getValorDiaria(period.grupo, period.localidade, data);
+}
+
+/**
  * Calculate the number of diárias for a period
  */
 export function calcularDiarias(
@@ -38,13 +48,14 @@ export function calcularDiarias(
 export function calculateTotal(
     periods: Period[],
     incluirAED: boolean,
-    data: CadrimilData
+    data: CadrimilData,
+    aedValue: number = data.aed.value
 ): number {
     let total = 0;
     let totalMilitares = 0;
 
     periods.forEach((period) => {
-        const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
+        const valorUnitario = getPeriodValorUnitario(period, data);
         const numDiarias = calcularDiarias(
             period.dataInicio,
             period.dataFim,
@@ -56,7 +67,7 @@ export function calculateTotal(
     });
 
     if (incluirAED) {
-        total += data.aed.value * totalMilitares;
+        total += aedValue * totalMilitares;
     }
 
     return total;
@@ -85,7 +96,8 @@ export function calculateIndividualMissionTotal(
     periods: Period[],
     meuGrupo: string | null,
     incluirAED: boolean,
-    data: CadrimilData
+    data: CadrimilData,
+    aedValue: number = data.aed.value
 ): IndividualMissionTotal {
     if (!meuGrupo) {
         return { total: 0, diariasTotal: 0, aedTotal: 0, periodos: [] };
@@ -100,7 +112,7 @@ export function calculateIndividualMissionTotal(
             period.dataFim,
             period.contarUltimoDiaInteiro
         );
-        const valorUnitario = getValorDiaria(period.grupo, period.localidade, data);
+        const valorUnitario = getPeriodValorUnitario(period, data);
         const valorDiarias = numDiarias * valorUnitario;
         diariasTotal += valorDiarias;
 
@@ -113,7 +125,7 @@ export function calculateIndividualMissionTotal(
     });
 
     // AED is paid per military in each period, matching the total calculation.
-    const aedTotal = incluirAED ? data.aed.value * userPeriods.length : 0;
+    const aedTotal = incluirAED ? aedValue * userPeriods.length : 0;
 
     return {
         total: diariasTotal + aedTotal,

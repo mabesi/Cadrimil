@@ -9,6 +9,7 @@
 - **Calculadora de Diárias**: Simule valores inserindo múltiplos trechos e localidades.
 - **Gerenciamento de Missões**: Salve, edite e exclua seus cálculos para consulta futura.
 - **Minhas Missões**: Registre as missões em que você participou e acompanhe apenas os seus valores individuais, sem os demais militares ou grupos.
+- **Histórico preservado**: Missões salvas mantêm os valores de diárias e AED vigentes no momento do lançamento, mesmo após atualizações da tabela.
 - **Importação e Exportação**: Exporte missões em `.cmil` (JSON) e importe arquivos `.json`. O app também reconhece e abre arquivos `.cmil` diretamente pelo sistema.
 - **Tabelas de Valores**: Consulte valores atualizados de diárias e Adicional de Embarque/Desembarque (AED).
 - **Funcionamento offline**: Usa a última tabela salva no dispositivo ou a tabela embutida no app quando a API não está acessível.

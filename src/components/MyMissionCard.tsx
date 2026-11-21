@@ -18,7 +18,8 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
         mission.periodos,
         mission.meuGrupo,
         mission.incluirAED,
-        cadrimilData
+        cadrimilData,
+        mission.aedValue
     );
 
     return (

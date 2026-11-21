@@ -51,7 +51,8 @@ export function MissionsScreen() {
             mission.periodos,
             mission.meuGrupo,
             mission.incluirAED,
-            cadrimilData
+            cadrimilData,
+            mission.aedValue
         ).total;
     }, 0);
 
