@@ -48,7 +48,7 @@ Cada lição recebe uma classificação:
 | L-011 | Privacidade, consentimento e licença | `BASE` | Parcial |
 | L-012 | Nomenclatura consistente e verificável | `BASE` | Corrigido |
 | L-013 | Evitar código morto e lógica duplicada | `BASE` | Corrigido |
-| L-014 | Verificação automatizada antes de entregar | `BASE` | Pendente |
+| L-014 | Verificação automatizada antes de entregar | `BASE` | Parcial |
 | L-015 | Documentação verificada contra o código | `BASE` | Adotado |
 | L-016 | Dependências, lockfile e auditoria | `BASE` | Adotado |
 | L-017 | Configuração local obrigatória e não versionada | `BASE` | Adotado |
@@ -80,7 +80,7 @@ Cada lição recebe uma classificação:
 
 ### O que precisa amadurecer
 
-- **Sem testes automatizados, lint ou CI**: a validação dependia de `tsc`, `expo-doctor` e teste manual.
+- **Sem lint nem testes de integração/E2E**: há testes unitários e CI para typecheck/testes, mas ainda faltam lint, integração e E2E.
 - **Atualização offline ainda básica**: há fallback e cache, mas falta sincronização em background e teste automatizado do fluxo.
 - **Versionamento de schema incompleto**: o JSON remoto já tem `schemaVersion`; as missões salvas ainda não têm versão nem migração.
 - **Strings em português hardcoded**: não há i18n.
@@ -129,7 +129,7 @@ Cada lição recebe uma classificação:
 
 - **Ícone adaptativo não atualizado junto com ícone/splash**.
   - **Impacto**: identidade visual inconsistente no Android.
-  - **Prevenção**: checklist de assets (`icon`, `adaptive-icon`, `splash`, `favicon`) em todo redesign.
+  - **Prevenção**: checklist de assets (`icon`, `adaptive-icon`, `splash`) em todo redesign.
   - **Tag**: `ANTI`.
 
 ### 3.2 Dados, contratos e persistência
@@ -636,7 +636,7 @@ PDF
 - Error boundary global.
 - Camada de i18n.
 - Camada de observabilidade.
-- Testes e CI.
+- Testes de integração/E2E e lint.
 
 ---
 
@@ -660,11 +660,13 @@ PDF
 
 ### Situação atual
 
-- `npx tsc --noEmit` — única verificação estática.
+- `npx tsc --noEmit` / `npm run typecheck` — verificação estática.
 - `npx expo-doctor` e `npx expo install --check` — dependências.
 - `npm audit` — vulnerabilidades.
+- `npm test` — testes unitários com Vitest.
+- CI no GitHub Actions: `npm ci`, typecheck, testes e `expo-doctor`.
 - Teste manual no emulador/dispositivo.
-- Sem lint, testes automatizados ou CI.
+- Sem lint, testes de integração ou E2E.
 
 ### Pipeline recomendada
 
@@ -742,7 +744,7 @@ PDF
 ### Build e operação
 - [ ] `app.config.ts` com versão única
 - [ ] perfis EAS
-- [ ] assets completos (`icon`, `adaptive-icon`, `splash`, `favicon`)
+- [ ] assets completos (`icon`, `adaptive-icon`, `splash`)
 - [ ] CI com typecheck/lint/test/build/audit
 - [ ] observabilidade (crash/analytics)
 - [ ] runbook de release e rollback

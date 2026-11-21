@@ -28,10 +28,13 @@
 - **AsyncStorage** (^2.2.0) - Persistência de dados local
 - **Google Mobile Ads / AdMob** (^16.5.0) - Anúncios
 - **date-fns** (^4.1.0) - Manipulação de datas
+- **Vitest** (^5.1.1) - Testes unitários
 - **Expo Dev Client** (~58.0.21) - Development builds
 - **Expo Print** (~58.0.9) e **Expo Sharing** (~58.0.23) - Geração e compartilhamento de PDF
 - **Expo Document Picker** (~58.0.5) e **Expo File System** (~58.0.14) - Importação e exportação de arquivos
 - **Expo Linear Gradient** (~58.0.4) - Estilização visual
+
+> `prop-types` é mantido como dependência direta porque `react-native-picker-select` o importa em runtime, embora não o declare no próprio `package.json`.
 
 ## 📋 Pré-requisitos
 
@@ -170,6 +173,15 @@ cadrimil/
 ```
 
 > A pasta `android/` é gerada localmente por `expo run:android`/prebuild e não é versionada.
+
+## 🧪 Qualidade
+
+```bash
+npm run typecheck  # TypeScript
+npm test           # Vitest
+```
+
+O workflow `.github/workflows/ci.yml` executa `npm ci`, typecheck, testes e `expo-doctor` em pushes para `master` e pull requests.
 
 ## 📄 Licença
 
