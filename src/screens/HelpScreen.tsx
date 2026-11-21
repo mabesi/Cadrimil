@@ -227,7 +227,8 @@ export function HelpScreen() {
                     <Text style={styles.paragraph}>
                         A aba "Missões" possui duas seções: "Minhas Missões", com a visão
                         individual, e "Todas as Missões", com a visão completa dos gastos de
-                        todos os grupos e militares.
+                        todos os grupos e militares. Em ambas, as missões são ordenadas pela
+                        data de início do primeiro trecho e agrupadas por ano.
                     </Text>
 
                     <Text style={styles.subtitle}>Todas as Missões</Text>

@@ -12,17 +12,22 @@ import { useMission } from '../context/MissionContext';
 import { useData } from '../context/DataContext';
 import { MissionCard } from '../components/MissionCard';
 import { MyMissionCard } from '../components/MyMissionCard';
+import { YearAccordion } from '../components/YearAccordion';
 import { CustomButton } from '../components/CustomButton';
 import { calculateIndividualMissionTotal } from '../utils/calculations';
+import { groupMissionsByYear } from '../utils/missionGrouping';
 import { formatCurrency } from '../utils/formatters';
 import { Colors } from '../constants/colors';
 import { GlobalStyles } from '../constants/styles';
+
+type MissionSection = 'my' | 'all';
 
 export function MissionsScreen() {
     const navigation = useNavigation();
     const { cadrimilData } = useData();
     const { savedMissions, editMission, deleteMission, resetCalculator, loadSavedMissions } = useMission();
     const [myMissionsExpanded, setMyMissionsExpanded] = useState(false);
+    const [collapsedYears, setCollapsedYears] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -45,6 +50,20 @@ export function MissionsScreen() {
     const myMissions = savedMissions.filter(mission =>
         mission.periodos.some(period => period.registrarEmMinhasMissoes)
     );
+    const myMissionGroups = groupMissionsByYear(myMissions);
+    const allMissionGroups = groupMissionsByYear(savedMissions);
+
+    const toggleYear = (section: MissionSection, year: number) => {
+        const key = `${section}-${year}`;
+        setCollapsedYears(prev => ({
+            ...prev,
+            [key]: !prev[key],
+        }));
+    };
+
+    const isYearExpanded = (section: MissionSection, year: number) => {
+        return !collapsedYears[`${section}-${year}`];
+    };
 
     const myMissionsTotal = myMissions.reduce((total, mission) => {
         return total + calculateIndividualMissionTotal(
@@ -112,11 +131,21 @@ export function MissionsScreen() {
                                         </Text>
                                     ) : (
                                         <>
-                                            {myMissions.map(mission => (
-                                                <MyMissionCard
-                                                    key={mission.id}
-                                                    mission={mission}
-                                                />
+                                            {myMissionGroups.map(group => (
+                                                <YearAccordion
+                                                    key={group.year}
+                                                    year={group.year}
+                                                    count={group.missions.length}
+                                                    expanded={isYearExpanded('my', group.year)}
+                                                    onToggle={() => toggleYear('my', group.year)}
+                                                >
+                                                    {group.missions.map(mission => (
+                                                        <MyMissionCard
+                                                            key={mission.id}
+                                                            mission={mission}
+                                                        />
+                                                    ))}
+                                                </YearAccordion>
                                             ))}
 
                                             <View style={styles.myMissionsTotalBox}>
@@ -139,13 +168,23 @@ export function MissionsScreen() {
                                 Visão completa dos gastos com todos os grupos e militares.
                             </Text>
 
-                            {savedMissions.map(mission => (
-                                <MissionCard
-                                    key={mission.id}
-                                    mission={mission}
-                                    onEdit={() => handleEdit(mission.id)}
-                                    onDelete={() => deleteMission(mission.id)}
-                                />
+                            {allMissionGroups.map(group => (
+                                <YearAccordion
+                                    key={group.year}
+                                    year={group.year}
+                                    count={group.missions.length}
+                                    expanded={isYearExpanded('all', group.year)}
+                                    onToggle={() => toggleYear('all', group.year)}
+                                >
+                                    {group.missions.map(mission => (
+                                        <MissionCard
+                                            key={mission.id}
+                                            mission={mission}
+                                            onEdit={() => handleEdit(mission.id)}
+                                            onDelete={() => deleteMission(mission.id)}
+                                        />
+                                    ))}
+                                </YearAccordion>
                             ))}
                         </View>
                     </>
