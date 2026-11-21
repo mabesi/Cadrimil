@@ -551,8 +551,8 @@ type MonetizationConfig = {
 
 **No Cadrimil**:
 - `Mission.valorTotal` continua sendo o total de todos os grupos e militares.
-- `Mission.meuGrupo` e `Mission.registrarEmMinhasMissoes` indicam que a missão deve aparecer em "Minhas Missões".
-- `calculateIndividualMissionTotal` filtra apenas os períodos do grupo do usuário e calcula com quantidade 1.
+- `Period.registrarEmMinhasMissoes` marca os trechos que pertencem ao usuário.
+- `calculateIndividualMissionTotal` filtra apenas os períodos marcados e calcula com quantidade 1.
 - `MyMissionCard` exibe somente os períodos e valores do usuário.
 
 **Como generalizar**:

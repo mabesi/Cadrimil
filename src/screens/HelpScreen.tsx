@@ -191,29 +191,30 @@ export function HelpScreen() {
                     <Text style={styles.text}>
                         <Text style={styles.bold}>Como registrar:</Text>
                         {'\n'}
-                        1. Selecione o seu grupo no formulário de cálculo.
+                        1. Selecione o grupo do trecho no formulário de cálculo.
                         {'\n'}
                         2. Marque a opção "Registrar em Minhas Missões", logo abaixo de
                         "Contar último dia como diária inteira".
                         {'\n'}
-                        3. O app exibirá "Meu grupo: ...". Esse é o grupo usado no cálculo
-                        individual.
+                        3. O app exibirá "Meu grupo: ...". A marcação vale para o trecho que
+                        está sendo lançado.
                         {'\n'}
-                        4. Salve a missão normalmente.
+                        4. Adicione ou atualize o período e salve a missão normalmente.
                         {'\n\n'}
-                        Para trocar o grupo registrado, desmarque e marque novamente a opção
-                        com o grupo correto selecionado.
+                        Ao alterar o Grupo, a marcação é desfeita automaticamente. Marque
+                        novamente se o novo trecho também for seu. Ao editar um trecho, a
+                        marcação é carregada junto com as demais informações.
                     </Text>
 
                     <Text style={styles.subtitle}>Visualização</Text>
                     <Text style={styles.paragraph}>
                         Na aba "Missões", a seção "Minhas Missões" fica recolhida por padrão.
-                        Toque no cabeçalho para expandir e ver os cartões com apenas os seus
-                        períodos, as suas diárias, o AED (quando incluído) e o total individual.
+                        Toque no cabeçalho para expandir e ver os cartões com apenas os trechos
+                        marcados, as suas diárias, o AED (quando incluído) e o total individual.
                     </Text>
                     <Text style={styles.paragraph}>
-                        Ao final da seção é exibido o total recebido por você, somando todas as
-                        missões registradas.
+                        Ao final da seção é exibido o total recebido por você, somando todos os
+                        trechos marcados.
                     </Text>
 
                     <Text style={styles.note}>
@@ -261,9 +262,9 @@ export function HelpScreen() {
                         gerenciador de arquivos; o Cadrimil reconhece a extensão.
                     </Text>
                     <Text style={styles.paragraph}>
-                        Missões importadas preservam os valores históricos gravados no arquivo.
-                        Arquivos antigos sem esses valores são congelados com a tabela
-                        disponível no momento da importação.
+                        Missões importadas preservam os valores históricos e as marcações de
+                        "Minhas Missões" gravadas no arquivo. Arquivos antigos sem esses dados
+                        são congelados com a tabela disponível no momento da importação.
                     </Text>
                 </AccordionItem>
 

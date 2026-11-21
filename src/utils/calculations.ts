@@ -94,16 +94,11 @@ export interface IndividualMissionTotal {
  */
 export function calculateIndividualMissionTotal(
     periods: Period[],
-    meuGrupo: string | null,
     incluirAED: boolean,
     data: CadrimilData,
     aedValue: number = data.aed.value
 ): IndividualMissionTotal {
-    if (!meuGrupo) {
-        return { total: 0, diariasTotal: 0, aedTotal: 0, periodos: [] };
-    }
-
-    const userPeriods = periods.filter(period => period.grupo === meuGrupo);
+    const userPeriods = periods.filter(period => period.registrarEmMinhasMissoes);
     let diariasTotal = 0;
 
     const periodos = userPeriods.map(period => {

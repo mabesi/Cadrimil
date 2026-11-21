@@ -41,7 +41,6 @@ export function CalculatorScreen() {
         removePeriod,
         saveMission,
         setIncluirAED,
-        setMyMissionsRegistration,
         updatePeriod,
         loadMissionFromObject,
     } = useMission();
@@ -54,6 +53,7 @@ export function CalculatorScreen() {
     const [dataInicio, setDataInicio] = useState(new Date());
     const [dataFim, setDataFim] = useState(new Date());
     const [contarInteiro, setContarInteiro] = useState(false);
+    const [registrarEmMinhasMissoes, setRegistrarEmMinhasMissoes] = useState(false);
     const [showDatePickerInicio, setShowDatePickerInicio] = useState(false);
     const [showDatePickerFim, setShowDatePickerFim] = useState(false);
     const scrollRef = useRef<ScrollViewInstance>(null);
@@ -69,6 +69,7 @@ export function CalculatorScreen() {
         setDataInicio(new Date());
         setDataFim(new Date());
         setContarInteiro(false);
+        setRegistrarEmMinhasMissoes(false);
         setEditingPeriodId(null);
     }, [calculatorRevision]);
 
@@ -115,6 +116,7 @@ export function CalculatorScreen() {
             quantidadeMilitares: parseInt(quantidade),
             contarUltimoDiaInteiro: contarInteiro,
             valorUnitario,
+            registrarEmMinhasMissoes,
         };
 
         if (editingPeriodId) {
@@ -129,9 +131,10 @@ export function CalculatorScreen() {
         }
 
         // Reset form. Keep group/locality so the user can quickly add another
-        // period or mark the mission for their own group after an update.
+        // period; the individual flag must be explicitly marked again.
         setQuantidade('');
         setContarInteiro(false);
+        setRegistrarEmMinhasMissoes(false);
     };
 
     const handleEditPeriod = (period: any) => {
@@ -142,14 +145,21 @@ export function CalculatorScreen() {
         setDataInicio(new Date(period.dataInicio));
         setDataFim(new Date(period.dataFim));
         setContarInteiro(period.contarUltimoDiaInteiro);
+        setRegistrarEmMinhasMissoes(Boolean(period.registrarEmMinhasMissoes));
 
         scrollRef.current?.scrollTo({ y: 0, animated: true });
+    };
+
+    const handleGrupoChange = (value: string) => {
+        setGrupo(value);
+        setRegistrarEmMinhasMissoes(false);
     };
 
     const handleCancelEdit = () => {
         setEditingPeriodId(null);
         setQuantidade('');
         setContarInteiro(false);
+        setRegistrarEmMinhasMissoes(false);
         setGrupo('');
         setLocalidade('');
         setDataInicio(new Date());
@@ -184,7 +194,7 @@ export function CalculatorScreen() {
             return;
         }
 
-        setMyMissionsRegistration(value, value ? grupo : null);
+        setRegistrarEmMinhasMissoes(value);
     };
 
     const handleGeneratePDF = async () => {
@@ -207,8 +217,6 @@ export function CalculatorScreen() {
                     decree: d.decree,
                     date: d.date,
                 })),
-                meuGrupo: currentMissionState.meuGrupo,
-                registrarEmMinhasMissoes: currentMissionState.registrarEmMinhasMissoes,
             };
 
             await exportPDF(mission, cadrimilData);
@@ -282,7 +290,7 @@ export function CalculatorScreen() {
                             <CustomSelect
                                 label="Grupo"
                                 value={grupo}
-                                onValueChange={setGrupo}
+                                onValueChange={handleGrupoChange}
                                 items={grupoOptions}
                                 placeholder="Selecione o grupo"
                             />
@@ -349,16 +357,14 @@ export function CalculatorScreen() {
                         />
                         <CustomCheckbox
                             label="Registrar em Minhas Missões"
-                            value={currentMissionState.registrarEmMinhasMissoes}
+                            value={registrarEmMinhasMissoes}
                             onValueChange={handleToggleMyMissions}
                         />
-                        {currentMissionState.registrarEmMinhasMissoes &&
-                            currentMissionState.meuGrupo && (
-                                <Text style={styles.myGroupText}>
-                                    Meu grupo: {currentMissionState.meuGrupo} -{' '}
-                                    {cadrimilData.grupos[currentMissionState.meuGrupo]}
-                                </Text>
-                            )}
+                        {registrarEmMinhasMissoes && grupo && (
+                            <Text style={styles.myGroupText}>
+                                Meu grupo: {grupo} - {cadrimilData.grupos[grupo]}
+                            </Text>
+                        )}
                     </View>
 
                     <View style={styles.buttonRow}>

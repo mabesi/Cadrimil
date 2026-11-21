@@ -1,6 +1,6 @@
 // Storage service using AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Mission, Period } from '../types';
+import { Mission } from '../types';
 import { DateHelpers } from '../utils/dateHelpers';
 
 const MISSIONS_KEY = 'cadrimil_missions';
@@ -15,20 +15,36 @@ export async function loadMissions(): Promise<Mission[]> {
             return [];
         }
 
-        const missions: Mission[] = JSON.parse(missionsJson);
+        // Legacy missions had the individual registration at mission level.
+        // They are migrated to the per-period flag on load.
+        type LegacyMission = Mission & {
+            meuGrupo?: string | null;
+            registrarEmMinhasMissoes?: boolean;
+        };
+
+        const missions: LegacyMission[] = JSON.parse(missionsJson);
 
         // Convert date strings back to Date objects and normalize
         // fields added after the first released version.
         return missions.map(mission => {
-            const meuGrupo = mission.meuGrupo ?? null;
+            const legacyMeuGrupo = mission.meuGrupo ?? null;
+            const legacyRegistrar =
+                Boolean(mission.registrarEmMinhasMissoes) && legacyMeuGrupo !== null;
+
+            const {
+                meuGrupo: _legacyMeuGrupo,
+                registrarEmMinhasMissoes: _legacyRegistrar,
+                ...missionData
+            } = mission;
 
             return {
-                ...mission,
-                meuGrupo,
-                registrarEmMinhasMissoes:
-                    Boolean(mission.registrarEmMinhasMissoes) && meuGrupo !== null,
+                ...missionData,
                 periodos: mission.periodos.map(p => ({
                     ...p,
+                    registrarEmMinhasMissoes:
+                        typeof p.registrarEmMinhasMissoes === 'boolean'
+                            ? p.registrarEmMinhasMissoes
+                            : legacyRegistrar && p.grupo === legacyMeuGrupo,
                     dataInicio: typeof p.dataInicio === 'string'
                         ? DateHelpers.fromISOString(p.dataInicio as unknown as string)
                         : p.dataInicio,

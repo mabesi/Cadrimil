@@ -51,6 +51,7 @@ export interface Period {
     quantidadeMilitares: number;
     contarUltimoDiaInteiro: boolean;
     valorUnitario: number;
+    registrarEmMinhasMissoes: boolean;
 }
 
 export interface Mission {
@@ -63,15 +64,11 @@ export interface Mission {
     tabelaMeta: CadrimilMeta;
     valorTotal: number;
     decretosReferencia: Array<{ decree: string; date: string }>;
-    meuGrupo: string | null;
-    registrarEmMinhasMissoes: boolean;
 }
 
 export interface MissionState {
     id: string | null;
     nomeMissao: string;
-    meuGrupo: string | null;
-    registrarEmMinhasMissoes: boolean;
     aedValue: number | null;
     tabelaMeta: CadrimilMeta | null;
 }

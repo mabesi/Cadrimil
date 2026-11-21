@@ -63,6 +63,9 @@ export function PeriodCard({ period, onRemove, onEdit }: PeriodCardProps) {
                 <Text style={styles.cost}>
                     Custo: R$ {formatCurrency(custoPeriodo)}
                 </Text>
+                {period.registrarEmMinhasMissoes && (
+                    <Text style={styles.myMissionBadge}>✓ Minhas Missões</Text>
+                )}
             </View>
         </View>
     );
@@ -130,6 +133,12 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '600',
         color: Colors.success,
+        marginTop: 2,
+    },
+    myMissionBadge: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: Colors.primary,
         marginTop: 2,
     },
 });

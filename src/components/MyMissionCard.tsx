@@ -16,11 +16,20 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
     const { cadrimilData } = useData();
     const result = calculateIndividualMissionTotal(
         mission.periodos,
-        mission.meuGrupo,
         mission.incluirAED,
         cadrimilData,
         mission.aedValue
     );
+
+    const grupos = Array.from(
+        new Set(result.periodos.map(item => item.period.grupo))
+    ).sort();
+    const grupoLabel = grupos.length === 0
+        ? 'Grupo —'
+        : grupos.length === 1
+            ? `Grupo ${grupos[0]}`
+            : `Grupos ${grupos.join(', ')}`;
+    const showGroupPerPeriod = grupos.length > 1;
 
     return (
         <View style={styles.container}>
@@ -29,15 +38,13 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
                     {mission.nomeMissao}
                 </Text>
                 <View style={styles.groupBadge}>
-                    <Text style={styles.groupBadgeText}>
-                        Grupo {mission.meuGrupo ?? '—'}
-                    </Text>
+                    <Text style={styles.groupBadgeText}>{grupoLabel}</Text>
                 </View>
             </View>
 
             {result.periodos.length === 0 ? (
                 <Text style={styles.empty}>
-                    Nenhum período deste grupo foi incluído na missão.
+                    Nenhum período marcado em Minhas Missões nesta missão.
                 </Text>
             ) : (
                 <View style={styles.periods}>
@@ -46,6 +53,9 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
                             <View style={styles.periodHeader}>
                                 <Text style={styles.periodTitle} numberOfLines={1}>
                                     {index + 1}.{' '}
+                                    {showGroupPerPeriod
+                                        ? `${item.period.grupo} - `
+                                        : ''}
                                     {cadrimilData.localidades[item.period.localidade]}
                                 </Text>
                                 <Text style={styles.periodValue}>

@@ -42,14 +42,13 @@ export function MissionsScreen() {
         navigation.navigate('Cálculo' as never);
     };
 
-    const myMissions = savedMissions.filter(
-        mission => mission.registrarEmMinhasMissoes && mission.meuGrupo !== null
+    const myMissions = savedMissions.filter(mission =>
+        mission.periodos.some(period => period.registrarEmMinhasMissoes)
     );
 
     const myMissionsTotal = myMissions.reduce((total, mission) => {
         return total + calculateIndividualMissionTotal(
             mission.periodos,
-            mission.meuGrupo,
             mission.incluirAED,
             cadrimilData,
             mission.aedValue

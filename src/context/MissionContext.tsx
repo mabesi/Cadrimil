@@ -22,7 +22,6 @@ interface MissionContextType {
     deleteMission: (id: string) => Promise<void>;
     resetCalculator: () => void;
     setIncluirAED: (value: boolean) => void;
-    setMyMissionsRegistration: (value: boolean, grupo: string | null) => void;
     loadSavedMissions: (migrateSnapshots?: boolean) => Promise<void>;
     loadMissionFromObject: (mission: Mission) => void;
 }
@@ -34,8 +33,6 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     const [currentMissionState, setCurrentMissionState] = useState<MissionState>({
         id: null,
         nomeMissao: '',
-        meuGrupo: null,
-        registrarEmMinhasMissoes: false,
         aedValue: null,
         tabelaMeta: null,
     });
@@ -155,18 +152,6 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             return false;
         }
 
-        if (currentMissionState.registrarEmMinhasMissoes && !currentMissionState.meuGrupo) {
-            Alert.alert(
-                'Atenção',
-                'Selecione o grupo do militar para registrar em Minhas Missões.'
-            );
-            return false;
-        }
-
-        const registrarEmMinhasMissoes =
-            currentMissionState.registrarEmMinhasMissoes &&
-            currentMissionState.meuGrupo !== null;
-
         const aedValue = currentMissionState.aedValue ?? cadrimilData.aed.value;
         const missionId = currentMissionState.id || Date.now().toString();
         const mission: Mission = {
@@ -187,8 +172,6 @@ export function MissionProvider({ children }: { children: ReactNode }) {
                 decree: d.decree,
                 date: d.date,
             })),
-            meuGrupo: registrarEmMinhasMissoes ? currentMissionState.meuGrupo : null,
-            registrarEmMinhasMissoes,
         };
 
         const success = await saveMissionToStorage(mission);
@@ -213,20 +196,17 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        const meuGrupo = mission.meuGrupo ?? null;
         const periodos = mission.periodos.map(period => ({
             ...period,
             valorUnitario: typeof period.valorUnitario === 'number'
                 ? period.valorUnitario
                 : getValorDiaria(period.grupo, period.localidade, cadrimilData),
+            registrarEmMinhasMissoes: Boolean(period.registrarEmMinhasMissoes),
         }));
 
         setCurrentMissionState({
             id: mission.id,
             nomeMissao: mission.nomeMissao,
-            meuGrupo,
-            registrarEmMinhasMissoes:
-                Boolean(mission.registrarEmMinhasMissoes) && meuGrupo !== null,
             aedValue: typeof mission.aedValue === 'number'
                 ? mission.aedValue
                 : cadrimilData.aed.value,
@@ -264,8 +244,6 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         setCurrentMissionState({
             id: null,
             nomeMissao: '',
-            meuGrupo: null,
-            registrarEmMinhasMissoes: false,
             aedValue: null,
             tabelaMeta: null,
         });
@@ -275,27 +253,21 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         setCalculatorRevision(prev => prev + 1);
     };
 
-    const setMyMissionsRegistration = (value: boolean, grupo: string | null) => {
-        const registrar = value && grupo !== null;
-
-        setCurrentMissionState(prev => ({
-            ...prev,
-            meuGrupo: registrar ? grupo : null,
-            registrarEmMinhasMissoes: registrar,
-        }));
-    };
-
     const loadMissionFromObject = (mission: Mission) => {
-        const meuGrupo = mission.meuGrupo ?? null;
+        const legacyMission = mission as Mission & {
+            meuGrupo?: string | null;
+            registrarEmMinhasMissoes?: boolean;
+        };
+        const legacyMeuGrupo = legacyMission.meuGrupo ?? null;
+        const legacyRegistrar =
+            Boolean(legacyMission.registrarEmMinhasMissoes) &&
+            legacyMeuGrupo !== null;
 
         setCurrentMissionState({
             id: null, // New ID will be generated on save, or keep it if we want to overwrite? Let's treat import as new/unsaved initially or keep ID?
             // User request: "import a mission". Usually implies loading data.
             // Let's clear ID to treat as a new copy unless saved.
             nomeMissao: mission.nomeMissao,
-            meuGrupo,
-            registrarEmMinhasMissoes:
-                Boolean(mission.registrarEmMinhasMissoes) && meuGrupo !== null,
             aedValue: typeof mission.aedValue === 'number'
                 ? mission.aedValue
                 : cadrimilData.aed.value,
@@ -303,6 +275,10 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         });
         const parsedPeriods = mission.periodos.map(p => ({
             ...p,
+            registrarEmMinhasMissoes:
+                typeof p.registrarEmMinhasMissoes === 'boolean'
+                    ? p.registrarEmMinhasMissoes
+                    : legacyRegistrar && p.grupo === legacyMeuGrupo,
             valorUnitario: typeof p.valorUnitario === 'number'
                 ? p.valorUnitario
                 : getValorDiaria(p.grupo, p.localidade, cadrimilData),
@@ -332,7 +308,6 @@ export function MissionProvider({ children }: { children: ReactNode }) {
                 deleteMission,
                 resetCalculator,
                 setIncluirAED,
-                setMyMissionsRegistration,
                 loadSavedMissions,
                 loadMissionFromObject,
             }}
