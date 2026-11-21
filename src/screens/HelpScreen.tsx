@@ -12,6 +12,7 @@ import {
     Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
@@ -23,11 +24,12 @@ import {
 } from 'react-native-google-mobile-ads';
 import { GlobalStyles } from '../constants/styles';
 import { Colors } from '../constants/colors';
+import type { RootStackParamList } from '../navigation/types';
 
 
 
 export function HelpScreen() {
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const insets = useSafeAreaInsets();
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [adsAllowed, setAdsAllowed] = useState<boolean | null>(__DEV__ ? true : null);

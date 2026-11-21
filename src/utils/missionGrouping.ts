@@ -2,13 +2,21 @@
 import { Mission } from '../types';
 import { DateHelpers } from './dateHelpers';
 
+function toDate(value: unknown): Date | null {
+    if (value instanceof Date) {
+        return Number.isNaN(value.getTime()) ? null : value;
+    }
+
+    if (typeof value !== 'string' || value.trim() === '') return null;
+
+    const parsed = DateHelpers.parseISO(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
 export function getMissionStartDate(mission: Mission): Date {
     const starts = mission.periodos
-        .map(period => {
-            if (period.dataInicio instanceof Date) return period.dataInicio;
-            return DateHelpers.parseISO(period.dataInicio as unknown as string);
-        })
-        .filter(date => !Number.isNaN(date.getTime()))
+        .map(period => toDate(period.dataInicio))
+        .filter((date): date is Date => date !== null)
         .sort((a, b) => a.getTime() - b.getTime());
 
     if (starts.length > 0) return starts[0];

@@ -8,12 +8,14 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useMission } from '../context/MissionContext';
 import { useData } from '../context/DataContext';
 import { MissionCard } from '../components/MissionCard';
 import { MyMissionCard } from '../components/MyMissionCard';
 import { YearAccordion } from '../components/YearAccordion';
 import { Mission } from '../types';
+import type { MainTabParamList } from '../navigation/types';
 import { calculateIndividualMissionTotal } from '../utils/calculations';
 import { groupMissionsByYear } from '../utils/missionGrouping';
 import { formatCurrency } from '../utils/formatters';
@@ -23,7 +25,7 @@ import { GlobalStyles } from '../constants/styles';
 type MissionSection = 'my' | 'all';
 
 export function MissionsScreen() {
-    const navigation = useNavigation();
+    const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
     const { cadrimilData } = useData();
     const { savedMissions, editMission, deleteMission, loadSavedMissions } = useMission();
     const [myMissionsExpanded, setMyMissionsExpanded] = useState(true);
@@ -45,7 +47,7 @@ export function MissionsScreen() {
 
     const handleEdit = (id: string) => {
         editMission(id);
-        navigation.navigate('Cálculo' as never);
+        navigation.navigate('Cálculo');
     };
 
     const myMissions = savedMissions.filter(mission =>

@@ -28,6 +28,7 @@ import { DateHelpers } from '../utils/dateHelpers';
 import { readMissionFile } from '../utils/missionImport';
 import { createId } from '../utils/id';
 import { formatCurrency } from '../utils/formatters';
+import { Period } from '../types';
 
 export function CalculatorScreen() {
     const { cadrimilData } = useData();
@@ -156,7 +157,7 @@ export function CalculatorScreen() {
         meuGrupoRegistradoRef.current = null;
     };
 
-    const handleEditPeriod = (period: any) => {
+    const handleEditPeriod = (period: Period) => {
         const isRegistered = Boolean(period.registrarEmMinhasMissoes);
 
         setEditingPeriodId(period.id);
@@ -634,25 +635,6 @@ const styles = StyleSheet.create({
     periodsContainer: {
         gap: 1,
     },
-    totalContainer: {
-        backgroundColor: Colors.card,
-        padding: 16,
-        borderRadius: 12,
-        marginTop: 16,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: Colors.border,
-    },
-    totalLabel: {
-        fontSize: 14,
-        color: Colors.textMuted,
-        marginBottom: 4,
-    },
-    totalValue: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: Colors.primary,
-    },
     buttonRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -661,10 +643,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         gap: 10,
-        marginBottom: 0, // CustomInput already has margin? Let's check. CustomInput usually has marginBottom.
     },
     importButton: {
-        height: 50, // Match typical input height
+        height: 50,
         width: 50,
         backgroundColor: Colors.backgroundSecondary,
         borderRadius: 8,
@@ -672,7 +653,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 1,
         borderColor: Colors.border,
-        marginBottom: 16, // Align with input's margin
+        marginBottom: 16,
     },
     importButtonText: {
         fontSize: 24,

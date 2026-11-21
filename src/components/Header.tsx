@@ -3,11 +3,13 @@ import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../constants/colors';
+import type { RootStackParamList } from '../navigation/types';
 
 export function Header() {
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const insets = useSafeAreaInsets();
 
     return (
@@ -25,7 +27,7 @@ export function Header() {
                 />
                 <TouchableOpacity
                     style={styles.helpButton}
-                    onPress={() => navigation.navigate('Ajuda' as never)}
+                    onPress={() => navigation.navigate('Ajuda')}
                     accessibilityRole="button"
                     accessibilityLabel="Abrir ajuda"
                 >

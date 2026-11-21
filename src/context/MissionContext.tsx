@@ -29,6 +29,10 @@ interface MissionContextType {
 
 const MissionContext = createContext<MissionContextType | undefined>(undefined);
 
+function coerceDate(value: Date | string): Date {
+    return typeof value === 'string' ? DateHelpers.fromISOString(value) : value;
+}
+
 export function MissionProvider({ children }: { children: ReactNode }) {
     const { cadrimilData, dataSource, isRefreshing } = useData();
     const [currentMissionState, setCurrentMissionState] = useState<MissionState>({
@@ -273,10 +277,11 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     };
 
     const loadMissionFromObject = (mission: Mission) => {
-        const legacyMission = mission as Mission & {
+        type LegacyMission = Mission & {
             meuGrupo?: string | null;
             registrarEmMinhasMissoes?: boolean;
         };
+        const legacyMission: LegacyMission = mission;
         const legacyMeuGrupo = legacyMission.meuGrupo ?? null;
         const legacyRegistrar =
             Boolean(legacyMission.registrarEmMinhasMissoes) &&
@@ -302,8 +307,8 @@ export function MissionProvider({ children }: { children: ReactNode }) {
             valorUnitario: typeof p.valorUnitario === 'number'
                 ? p.valorUnitario
                 : getValorDiaria(p.grupo, p.localidade, cadrimilData),
-            dataInicio: typeof p.dataInicio === 'string' ? DateHelpers.fromISOString(p.dataInicio as unknown as string) : p.dataInicio,
-            dataFim: typeof p.dataFim === 'string' ? DateHelpers.fromISOString(p.dataFim as unknown as string) : p.dataFim,
+            dataInicio: coerceDate(p.dataInicio),
+            dataFim: coerceDate(p.dataFim),
         }));
         setCurrentPeriods(parsedPeriods);
         setIncluirAED(mission.incluirAED);

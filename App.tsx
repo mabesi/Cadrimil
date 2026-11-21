@@ -1,17 +1,18 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, type LinkingOptions } from '@react-navigation/native';
 import { DataProvider } from './src/context/DataContext';
 import { MissionProvider, useMission } from './src/context/MissionContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { View, StyleSheet, Text, Alert } from 'react-native';
 import * as Linking from 'expo-linking';
+import type { RootStackParamList } from './src/navigation/types';
 import { isLocalFileUrl, isMissionFileUrl, readMissionFile } from './src/utils/missionImport';
 
 const prefix = Linking.createURL('/');
 
-const linking: any = {
+const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [prefix, 'cadrimil://'],
   config: {
     screens: {

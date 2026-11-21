@@ -154,14 +154,6 @@ export async function loadMissionsWithStatus(): Promise<LoadedMissions> {
     return readMissions();
 }
 
-/**
- * Load all missions from AsyncStorage.
- */
-export async function loadMissions(): Promise<Mission[]> {
-    const result = await readMissions();
-    return result.missions;
-}
-
 async function writeMissions(missions: Mission[]): Promise<boolean> {
     try {
         await AsyncStorage.setItem(
@@ -225,17 +217,4 @@ export async function deleteMission(id: string): Promise<boolean> {
     }
 
     return writeMissions(current.missions.filter(m => m.id !== id));
-}
-
-/**
- * Clear all missions from AsyncStorage
- */
-export async function clearAllMissions(): Promise<boolean> {
-    try {
-        await AsyncStorage.removeItem(MISSIONS_KEY);
-        return true;
-    } catch (error) {
-        console.error('Error clearing missions:', error);
-        return false;
-    }
 }

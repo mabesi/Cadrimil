@@ -11,9 +11,10 @@ import { HelpScreen } from '../screens/HelpScreen';
 import { Header } from '../components/Header';
 import { Colors } from '../constants/colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { MainTabParamList, RootStackParamList } from './types';
 
-const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator<MainTabParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function MainScreen() {
     return (

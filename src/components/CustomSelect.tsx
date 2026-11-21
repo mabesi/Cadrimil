@@ -1,6 +1,6 @@
 // Elegant Custom Select component
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { Colors } from '../constants/colors';
 

@@ -1,6 +1,6 @@
 // Mission Card component
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Share } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Mission } from '../types';
@@ -24,8 +24,14 @@ export function MissionCard({ mission, onEdit, onDelete }: MissionCardProps) {
                 .replace(/[\u0300-\u036f]/g, "");
 
             const fileName = `${normalizedName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.cmil`;
-            // @ts-ignore
-            const fileUri = (FileSystem.cacheDirectory || FileSystem.documentDirectory) + fileName;
+            const directory = FileSystem.cacheDirectory || FileSystem.documentDirectory;
+
+            if (!directory) {
+                Alert.alert('Erro ao Exportar', 'Armazenamento temporário indisponível.');
+                return;
+            }
+
+            const fileUri = directory + fileName;
             await FileSystem.writeAsStringAsync(
                 fileUri,
                 JSON.stringify(serializeMissionDates(mission), null, 2)
