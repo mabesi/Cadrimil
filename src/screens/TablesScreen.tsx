@@ -245,18 +245,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: Colors.borderLight,
-        minHeight: 44,
+        minHeight: 48,
         alignItems: 'center',
     },
     diariasCell: {
         paddingHorizontal: 4,
         paddingVertical: 6,
-        fontSize: 11,
+        fontSize: 12,
         color: Colors.text,
         textAlign: 'center',
     },
     grupoDescColumn: {
-        flex: 2,
+        flex: 2.4,
     },
     grupoDescCell: {
         paddingHorizontal: 8,
@@ -264,12 +264,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     grupoDescText: {
-        fontSize: 10,
-        lineHeight: 14,
+        fontSize: 11,
+        lineHeight: 15,
         color: Colors.textSecondary,
     },
     grupoCodeInline: {
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: '700',
         color: Colors.primary,
     },
