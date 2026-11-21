@@ -21,25 +21,18 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
         cadrimilData
     );
 
-    const grupoDescricao = mission.meuGrupo
-        ? cadrimilData.grupos[mission.meuGrupo] ?? mission.meuGrupo
-        : 'Não definido';
-
-    const createdAt = new Date(mission.dataCriacao);
-    const createdText = Number.isNaN(createdAt.getTime())
-        ? null
-        : DateHelpers.format(createdAt, 'dd/MM/yyyy');
-
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>{mission.nomeMissao}</Text>
-                {createdText && <Text style={styles.date}>Criada em {createdText}</Text>}
+            <View style={styles.headerRow}>
+                <Text style={styles.title} numberOfLines={1}>
+                    {mission.nomeMissao}
+                </Text>
+                <View style={styles.groupBadge}>
+                    <Text style={styles.groupBadgeText}>
+                        Grupo {mission.meuGrupo ?? '—'}
+                    </Text>
+                </View>
             </View>
-
-            <Text style={styles.group}>
-                Meu grupo: {mission.meuGrupo ?? '—'} - {grupoDescricao}
-            </Text>
 
             {result.periodos.length === 0 ? (
                 <Text style={styles.empty}>
@@ -50,7 +43,7 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
                     {result.periodos.map((item, index) => (
                         <View key={item.period.id} style={styles.periodRow}>
                             <View style={styles.periodHeader}>
-                                <Text style={styles.periodTitle}>
+                                <Text style={styles.periodTitle} numberOfLines={1}>
                                     {index + 1}.{' '}
                                     {cadrimilData.localidades[item.period.localidade]}
                                 </Text>
@@ -68,25 +61,8 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
                 </View>
             )}
 
-            <View style={styles.summary}>
-                <View style={styles.summaryItem}>
-                    <Text style={styles.summaryLabel}>Diárias</Text>
-                    <Text style={styles.summaryValue}>
-                        R$ {formatCurrency(result.diariasTotal)}
-                    </Text>
-                </View>
-                {mission.incluirAED && (
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.summaryLabel}>AED</Text>
-                        <Text style={styles.summaryValue}>
-                            R$ {formatCurrency(result.aedTotal)}
-                        </Text>
-                    </View>
-                )}
-            </View>
-
-            <View style={styles.totalBox}>
-                <Text style={styles.totalLabel}>Total individual</Text>
+            <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>Total:</Text>
                 <Text style={styles.totalValue}>
                     R$ {formatCurrency(result.total)}
                 </Text>
@@ -101,8 +77,8 @@ const styles = StyleSheet.create({
         borderLeftWidth: 4,
         borderLeftColor: Colors.accent,
         borderRadius: 8,
-        padding: 16,
-        marginBottom: 12,
+        padding: 12,
+        marginBottom: 10,
         borderWidth: 1,
         borderColor: Colors.border,
         shadowColor: Colors.black,
@@ -111,32 +87,38 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 2,
     },
-    header: {
-        marginBottom: 4,
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 8,
+        marginBottom: 8,
     },
     title: {
-        fontSize: 18,
+        flex: 1,
+        fontSize: 16,
         fontWeight: '600',
         color: Colors.text,
     },
-    date: {
-        fontSize: 12,
-        color: Colors.textLight,
-        marginTop: 2,
+    groupBadge: {
+        backgroundColor: Colors.backgroundSecondary,
+        borderRadius: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
     },
-    group: {
-        fontSize: 14,
-        color: Colors.textSecondary,
-        marginBottom: 10,
+    groupBadgeText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: Colors.primary,
     },
     periods: {
         borderTopWidth: 1,
         borderTopColor: Colors.borderLight,
-        paddingTop: 8,
-        marginBottom: 8,
+        paddingTop: 4,
+        marginBottom: 4,
     },
     periodRow: {
-        paddingVertical: 6,
+        paddingVertical: 4,
         borderBottomWidth: 1,
         borderBottomColor: Colors.backgroundSecondary,
     },
@@ -147,57 +129,43 @@ const styles = StyleSheet.create({
     },
     periodTitle: {
         flex: 1,
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '600',
         color: Colors.text,
     },
     periodValue: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '600',
         color: Colors.success,
     },
     periodDetails: {
-        fontSize: 12,
+        fontSize: 11,
         color: Colors.textLight,
-        marginTop: 2,
+        marginTop: 1,
     },
     empty: {
-        fontSize: 13,
+        fontSize: 12,
         color: Colors.textMuted,
         fontStyle: 'italic',
-        marginVertical: 8,
+        marginVertical: 4,
     },
-    summary: {
+    totalRow: {
         flexDirection: 'row',
-        gap: 16,
-        marginBottom: 12,
-    },
-    summaryItem: {
-        flex: 1,
-    },
-    summaryLabel: {
-        fontSize: 12,
-        color: Colors.textLight,
-        marginBottom: 2,
-    },
-    summaryValue: {
-        fontSize: 15,
-        fontWeight: '600',
-        color: Colors.text,
-    },
-    totalBox: {
-        backgroundColor: Colors.resultBackground,
-        borderRadius: 8,
-        padding: 12,
         alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: Colors.resultBackground,
+        borderRadius: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        marginTop: 4,
     },
     totalLabel: {
-        fontSize: 12,
+        fontSize: 14,
+        fontWeight: '600',
         color: Colors.textSecondary,
-        marginBottom: 2,
     },
     totalValue: {
-        fontSize: 22,
+        fontSize: 18,
         fontWeight: '700',
         color: Colors.primary,
     },
