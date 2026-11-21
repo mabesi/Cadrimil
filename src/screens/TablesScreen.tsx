@@ -79,52 +79,49 @@ export function TablesScreen() {
 
                 {/* Tabela de Valores de Diárias */}
                 <Text style={styles.sectionTitle}>Valores de Diárias</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-                    <View style={styles.diariasTable}>
-                        {/* Header */}
-                        <View style={styles.diariasHeaderRow}>
-                            <View style={[styles.diariasHeaderCell, styles.grupoColumn]}>
-                                <Text style={styles.diariasHeaderText}>Grupo</Text>
-                            </View>
-                            <View style={[styles.diariasHeaderCell, styles.descColumn]}>
-                                <Text style={styles.diariasHeaderText}>Descrição</Text>
-                            </View>
-                            {localidadeKeys.map(loc => (
-                                <View key={loc} style={[styles.diariasHeaderCell, styles.valueColumn]}>
-                                    <Text style={styles.diariasHeaderText} numberOfLines={2}>
-                                        {cadrimilData.localidades[loc]}
-                                    </Text>
-                                </View>
-                            ))}
+                <View style={styles.diariasTable}>
+                    {/* Header */}
+                    <View style={styles.diariasHeaderRow}>
+                        <View style={[styles.diariasHeaderCell, styles.grupoDescColumn]}>
+                            <Text style={styles.diariasHeaderText} numberOfLines={2}>
+                                Grupo / Descrição
+                            </Text>
                         </View>
-
-                        {/* Rows */}
-                        {grupoKeys.map((grupo, index) => (
-                            <View
-                                key={grupo}
-                                style={[
-                                    styles.diariasRow,
-                                    index % 2 === 0 ? styles.evenRow : styles.oddRow,
-                                ]}
-                            >
-                                <Text style={[styles.diariasCell, styles.grupoCode, styles.grupoColumn]}>
-                                    {grupo}
+                        {localidadeKeys.map(loc => (
+                            <View key={loc} style={[styles.diariasHeaderCell, styles.valueColumn]}>
+                                <Text style={styles.diariasHeaderText} numberOfLines={3}>
+                                    {cadrimilData.localidades[loc]}
                                 </Text>
-                                <Text style={[styles.diariasCell, styles.descColumn]}>
-                                    {cadrimilData.grupos[grupo]}
-                                </Text>
-                                {localidadeKeys.map(loc => {
-                                    const valor = cadrimilData.diarias[grupo][loc];
-                                    return (
-                                        <Text key={loc} style={[styles.diariasCell, styles.valueColumn]}>
-                                            {valor ? formatCurrency(valor) : 'N/D'}
-                                        </Text>
-                                    );
-                                })}
                             </View>
                         ))}
                     </View>
-                </ScrollView>
+
+                    {/* Rows */}
+                    {grupoKeys.map((grupo, index) => (
+                        <View
+                            key={grupo}
+                            style={[
+                                styles.diariasRow,
+                                index % 2 === 0 ? styles.evenRow : styles.oddRow,
+                            ]}
+                        >
+                            <View style={[styles.grupoDescColumn, styles.grupoDescCell]}>
+                                <Text style={styles.grupoDescText}>
+                                    <Text style={styles.grupoCodeInline}>{grupo}</Text>{' '}
+                                    {cadrimilData.grupos[grupo]}
+                                </Text>
+                            </View>
+                            {localidadeKeys.map(loc => {
+                                const valor = cadrimilData.diarias[grupo][loc];
+                                return (
+                                    <Text key={loc} style={[styles.diariasCell, styles.valueColumn]}>
+                                        {valor ? formatCurrency(valor) : 'N/D'}
+                                    </Text>
+                                );
+                            })}
+                        </View>
+                    ))}
+                </View>
 
                 {/* AED */}
                 <View style={styles.aedContainer}>
@@ -218,6 +215,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     diariasTable: {
+        width: '100%',
         backgroundColor: Colors.white,
         borderRadius: 8,
         marginBottom: 16,
@@ -229,7 +227,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: Colors.primary,
         borderBottomWidth: 0,
-        paddingVertical: 8,
+        paddingVertical: 6,
     },
     diariasHeaderCell: {
         padding: 4,
@@ -237,48 +235,46 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     diariasHeaderText: {
-        fontSize: 11,
+        fontSize: 10,
+        lineHeight: 13,
         fontWeight: '600',
         color: Colors.white,
         textAlign: 'center',
-        flexWrap: 'wrap',
-    },
-    diariasHeaderSubtext: {
-        fontSize: 10,
-        color: Colors.white,
-        opacity: 0.8,
-        marginTop: 2,
     },
     diariasRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: Colors.borderLight,
-        minHeight: 48,
+        minHeight: 44,
         alignItems: 'center',
     },
     diariasCell: {
-        padding: 8,
-        fontSize: 13,
+        paddingHorizontal: 4,
+        paddingVertical: 6,
+        fontSize: 11,
         color: Colors.text,
-        textAlign: 'right',
+        textAlign: 'center',
     },
-    grupoColumn: {
-        width: 70,
-        minWidth: 70,
-        maxWidth: 70,
-        alignItems: 'center',
+    grupoDescColumn: {
+        flex: 2,
     },
-    descColumn: {
-        width: 180,
-        minWidth: 180,
-        maxWidth: 180,
-        textAlign: 'left',
-        paddingRight: 12,
+    grupoDescCell: {
+        paddingHorizontal: 8,
+        paddingVertical: 6,
+        justifyContent: 'center',
+    },
+    grupoDescText: {
+        fontSize: 10,
+        lineHeight: 14,
+        color: Colors.textSecondary,
+    },
+    grupoCodeInline: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: Colors.primary,
     },
     valueColumn: {
-        width: 65,
-        minWidth: 65,
-        maxWidth: 65,
+        flex: 1,
     },
     aedContainer: {
         backgroundColor: Colors.white,
