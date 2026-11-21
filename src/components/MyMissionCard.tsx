@@ -61,6 +61,15 @@ export function MyMissionCard({ mission }: MyMissionCardProps) {
                 </View>
             )}
 
+            {mission.incluirAED && (
+                <View style={styles.aedRow}>
+                    <Text style={styles.aedLabel}>AED:</Text>
+                    <Text style={styles.aedValue}>
+                        R$ {formatCurrency(result.aedTotal)}
+                    </Text>
+                </View>
+            )}
+
             <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Total:</Text>
                 <Text style={styles.totalValue}>
@@ -148,6 +157,22 @@ const styles = StyleSheet.create({
         color: Colors.textMuted,
         fontStyle: 'italic',
         marginVertical: 4,
+    },
+    aedRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 4,
+        marginTop: 2,
+    },
+    aedLabel: {
+        fontSize: 12,
+        color: Colors.textSecondary,
+    },
+    aedValue: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: Colors.textSecondary,
     },
     totalRow: {
         flexDirection: 'row',
