@@ -47,10 +47,7 @@ export function MissionCard({ mission, onEdit, onDelete }: MissionCardProps) {
         <View style={styles.container}>
             <View style={styles.contentContainer}>
                 <View style={styles.headerRow}>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}>{mission.nomeMissao}</Text>
-                        <Text style={styles.id}>ID: {mission.id.substring(0, 8)}...</Text>
-                    </View>
+                    <Text style={styles.title}>{mission.nomeMissao}</Text>
                 </View>
 
                 <View style={styles.infoGrid}>
@@ -110,66 +107,57 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
-        padding: 16,
+        padding: 12,
     },
     actionsContainer: {
-        width: 60,
+        width: 52,
         backgroundColor: Colors.backgroundSecondary,
         borderLeftWidth: 1,
         borderLeftColor: Colors.borderLight,
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        paddingVertical: 8,
+        paddingVertical: 6,
     },
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 12,
-    },
-    titleContainer: {
-        flex: 1,
-        marginRight: 8,
+        marginBottom: 6,
     },
     title: {
-        fontSize: 18,
+        flex: 1,
+        fontSize: 16,
         fontWeight: '600',
         color: Colors.text,
-        marginBottom: 4,
     },
     iconButton: {
-        padding: 8,
-        width: 44, // Larger buttons
-        height: 44,
-        borderRadius: 8, // Slightly rounded squares
+        padding: 6,
+        width: 38,
+        height: 38,
+        borderRadius: 6,
         alignItems: 'center',
         justifyContent: 'center',
-        marginVertical: 4,
+        marginVertical: 2,
     },
     iconText: {
-        fontSize: 20, // Larger icons
+        fontSize: 18,
         color: Colors.white,
-    },
-    id: {
-        fontSize: 12,
-        color: Colors.textLight,
-        marginBottom: 4,
     },
     infoGrid: {
         flexDirection: 'row',
-        gap: 16,
-        marginBottom: 12,
+        gap: 12,
+        marginBottom: 8,
     },
     infoItem: {
         alignItems: 'flex-start',
     },
     infoLabel: {
-        fontSize: 12,
+        fontSize: 11,
         color: Colors.textLight,
         marginBottom: 2,
     },
     infoValue: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '500',
         color: Colors.text,
     },
@@ -183,11 +171,11 @@ const styles = StyleSheet.create({
     totalContainer: {
         borderTopWidth: 1,
         borderTopColor: Colors.borderLight,
-        paddingTop: 8,
+        paddingTop: 6,
         alignItems: 'flex-end',
     },
     totalValue: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         color: Colors.primary,
     },
