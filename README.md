@@ -83,6 +83,8 @@ eas env:set --name ADMOB_IOS_REWARDED_UNIT_ID --value "ca-app-pub-.../..." --env
 
 Os perfis do `eas.json` já apontam para os ambientes `development`, `preview` e `production`.
 
+> Referência completa do esquema: [`docs/admob.md`](./docs/admob.md).
+
 > Builds de produção com IDs de teste/exemplo ou em formato inválido são bloqueados pelo `app.config.ts`. Durante o desenvolvimento, os IDs de teste oficiais do Google são usados automaticamente.
 
 ## 🚀 Instalação e execução
